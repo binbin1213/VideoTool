@@ -11,6 +11,10 @@ on:
       - main
   workflow_dispatch:
 
+# 设置权限，允许创建 Release
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build (${{ matrix.os }})
@@ -72,10 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: VideoTool-macOS
-          path: |
-            release/*.dmg
-            release/*.zip
-            release/mac/*.app
+          path: release/
           if-no-files-found: warn
       
       - name: 上传构建产物 (Windows)
@@ -83,9 +84,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: VideoTool-Windows
-          path: |
-            release/*.exe
-            release/*.msi
+          path: release/
           if-no-files-found: warn
   
   release:
@@ -109,16 +108,13 @@ jobs:
         run: ls -R artifacts
       
       - name: 创建 Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: false
           generate_release_notes: true
           files: |
-            artifacts/**/*.dmg
-            artifacts/**/*.zip
-            artifacts/**/*.exe
-            artifacts/**/*.msi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            artifacts/VideoTool-macOS/**/*
+            artifacts/VideoTool-Windows/**/*
+          fail_on_unmatched_files: false
 
