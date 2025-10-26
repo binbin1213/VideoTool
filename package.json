@@ -1,0 +1,132 @@
+{
+  "name": "videotool",
+  "productName": "VideoTool",
+  "version": "1.0.0",
+  "description": "强大的跨平台视频处理工具 - 支持视频转码、音视频合并、字幕烧录和字幕格式转换",
+  "main": "dist/main/main/index.js",
+  "author": {
+    "name": "VideoTool Team",
+    "email": "support@videotool.com"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm:dev:renderer\" \"pnpm:dev:main\" -k",
+    "dev:renderer": "vite",
+    "dev:main": "cross-env NODE_ENV=development electron .",
+    "build": "pnpm run build:renderer && pnpm run build:main",
+    "build:renderer": "vite build",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:mac": "pnpm run build && electron-builder --mac",
+    "build:mac:universal": "pnpm run build && electron-builder --mac --universal",
+    "build:win": "pnpm run build && electron-builder --win",
+    "build:all": "pnpm run build && electron-builder -mw",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,css,scss}\"",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
+    "electron-log": "^5.2.4",
+    "electron-store": "^10.0.0",
+    "electron-updater": "^6.3.9",
+    "fluent-ffmpeg": "^2.1.3",
+    "fs-extra": "^11.2.0",
+    "i18next": "^24.2.0",
+    "react": "^18.3.1",
+    "react-bootstrap": "^2.10.7",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.2.0",
+    "react-icons": "^5.4.0",
+    "react-router-dom": "^7.1.3",
+    "video.js": "^8.21.2",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.27",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^2.1.8",
+    "bootstrap": "^5.3.3",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^34.0.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "prettier": "^3.4.2",
+    "sass": "^1.83.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vite-plugin-electron": "^0.29.0",
+    "vite-plugin-electron-renderer": "^0.14.6",
+    "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.videotool.app",
+    "productName": "VideoTool",
+    "directories": {
+      "output": "release",
+      "buildResources": "resources"
+    },
+    "files": [
+      "dist/**/*",
+      "public/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64",
+            "universal"
+          ]
+        }
+      ],
+      "category": "public.app-category.video",
+      "icon": "resources/icons/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "resources/icons/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "your-username",
+      "repo": "videotool"
+    }
+  }
+}
+

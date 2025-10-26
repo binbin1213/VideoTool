@@ -1,0 +1,29 @@
+[Script Info]
+Collisions: Normal
+PlayResX: 384
+PlayResY: 288
+ScaledBorderAndShadow: no
+ScriptType: v4.00+
+Synch Point: 1
+
+[Custom Info]
+OriginalTextStyle: 双语 原文
+TranslationTextStyle: 双语 原文
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding, LineSpacing
+Style: 双语 原文,微软雅黑,14,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0.5,0,2,5,5,3,1,0
+Style: 双语 译文,Microsoft YaHei,18,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,3,1,0
+Style: 双语 歌词 白色,微软雅黑,10,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,1,1,0,0,100,100,0,0,1,0.5,0,7,10,10,10,1,0
+Style: 歌词 顶部 蓝色,Microsoft YaHei,15,&H00FFAA55,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,5,5,10,1,0
+Style: 译文字幕 底部,Microsoft YaHei,18,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,10,1,1
+Style: 译文字幕 顶部,Microsoft YaHei,18,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,5,5,10,1,1
+Style: 译文字幕 贴底,Microsoft YaHei,18,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,0,1,1
+Style: 演职人员 右,Microsoft YaHei,13,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,3,0,15,10,1,1
+Style: 演职人员 左,Microsoft YaHei,13,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,1,15,0,10,1,1
+Style: 注 底部,Microsoft YaHei,13,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,10,1,1
+Style: 注 顶部,Microsoft YaHei,13,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,5,5,10,1,1
+Style: 注 贴底,Microsoft YaHei,13,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,0,1,1
+Style: 译文字幕 底部 - 复制 18,Microsoft YaHei,18,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,18,1,1
+Style: 注 顶部 - 复制 18,Microsoft YaHei,13,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,5,5,18,1,1
+

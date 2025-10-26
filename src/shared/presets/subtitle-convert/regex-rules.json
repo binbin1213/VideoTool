@@ -1,0 +1,69 @@
+{
+  "version": "1.0",
+  "rules": [
+    {
+      "id": "rule-001",
+      "name": "移除斜体标签",
+      "pattern": "</?i>",
+      "replacement": "",
+      "description": "用于替换<i>和</i>",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "rule-002",
+      "name": "移除中文引号",
+      "pattern": "[\\u201C\\u201D]+",
+      "replacement": "",
+      "description": "用于替换中文引号",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "rule-003",
+      "name": "替换中文标点",
+      "pattern": "\\s*[，。；、~·？！￥—]+\\s*",
+      "replacement": " ",
+      "description": "用于替换中文标点符号",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "rule-004",
+      "name": "格式化连字符（非开头）",
+      "pattern": "(?<!^)\\s*-\\s*",
+      "replacement": " -",
+      "description": "用于替换不在开头的-中的多余空格",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "id": "rule-005",
+      "name": "格式化连字符（开头）",
+      "pattern": "^\\s*-\\s*",
+      "replacement": "-",
+      "description": "用于格式化在开头的-",
+      "enabled": true,
+      "order": 5
+    },
+    {
+      "id": "rule-006",
+      "name": "替换英文标点",
+      "pattern": "[,?!;'\"{}]+",
+      "replacement": " ",
+      "description": "用于替换英文标点",
+      "enabled": true,
+      "order": 6
+    },
+    {
+      "id": "rule-007",
+      "name": "清理首尾空格",
+      "pattern": "(^\\s+)|(\\s+$)",
+      "replacement": "",
+      "description": "用于去除字幕开头和结尾的所有空格",
+      "enabled": true,
+      "order": 7
+    }
+  ]
+}
+
