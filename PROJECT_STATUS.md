@@ -162,6 +162,50 @@
 
 ---
 
+### 6. FFmpeg 自动下载和安装 ✅
+- [x] FFmpeg 安装检测
+- [x] 自动下载 FFmpeg
+- [x] 跨平台支持（macOS/Windows/Linux）
+- [x] 下载进度显示
+- [x] 安装对话框提示
+- [x] 系统 FFmpeg 检测
+- [x] 自定义路径管理
+
+**支持平台**:
+- **macOS**: 从 evermeet.cx 下载（官方编译）
+- **Windows**: 从 GitHub FFmpeg-Builds 下载
+- **Linux**: 从 johnvansickle.com 下载静态编译版
+
+**功能特性**:
+- ⚡ 应用启动时自动检测
+- 📥 一键下载安装
+- 🔄 下载失败自动重试
+- 📊 实时进度反馈
+- 🎯 优先使用系统已安装的 FFmpeg
+- 💾 本地缓存管理（存储在 userData 目录）
+- 🔧 自动设置执行权限（Unix系统）
+
+**技术亮点**:
+- 智能路径检测（系统 → 本地 → 自动下载）
+- 安全的 HTTPS 下载
+- 跨平台压缩包处理（ZIP/TAR.XZ）
+- 优雅的错误处理和用户提示
+
+**相关文件**:
+- `src/main/services/FFmpegManager.ts` - FFmpeg 管理服务
+- `src/main/ipc/ffmpeg.handlers.ts` - IPC 通信接口
+- `src/main/index.ts` - 启动时初始化
+- `src/main/services/FFmpegService.ts` - FFmpeg 路径配置
+
+**下载源**:
+- macOS: https://evermeet.cx/ffmpeg/
+- Windows: https://github.com/BtbN/FFmpeg-Builds
+- Linux: https://johnvansickle.com/ffmpeg/
+
+**测试状态**: ✅ 已实现，待测试
+
+---
+
 ### 7. 应用打包和分发 ✅ (部分完成)
 - [x] macOS x64 应用打包（.app）
 - [x] 应用图标生成（.icns）
