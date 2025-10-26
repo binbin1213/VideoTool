@@ -124,30 +124,6 @@
       ],
       "icon": "resources/icons/icon.png"
     },
-    "linux": {
-      "target": [
-        {
-          "target": "AppImage",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "deb",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "category": "Video",
-      "icon": "resources/icons/icon.png"
-    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
