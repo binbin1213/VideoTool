@@ -30,15 +30,16 @@ jobs:
           node-version: '20'
       
       - name: 安装 pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           version: 8
+          run_install: false
       
       - name: 获取 pnpm store 目录
         id: pnpm-cache
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
       
       - name: 设置 pnpm 缓存
         uses: actions/cache@v4
