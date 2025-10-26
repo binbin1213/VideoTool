@@ -20,7 +20,11 @@
     "build:mac": "pnpm run build && electron-builder --mac",
     "build:mac:universal": "pnpm run build && electron-builder --mac --universal",
     "build:win": "pnpm run build && electron-builder --win",
-    "build:all": "pnpm run build && electron-builder -mw",
+    "build:linux": "pnpm run build && electron-builder --linux",
+    "build:all": "pnpm run build && electron-builder -mwl",
+    "package:mac": "electron-builder --mac --publish never",
+    "package:win": "electron-builder --win --publish never",
+    "package:linux": "electron-builder --linux --publish never",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "lint": "eslint src --ext .ts,.tsx",
@@ -114,7 +118,25 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "resources/icons/icon.ico"
+      "icon": "resources/icons/icon.png"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        },
+        {
+          "target": "rpm",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Video",
+      "icon": "resources/icons/icon.png"
     },
     "nsis": {
       "oneClick": false,
@@ -124,8 +146,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "your-username",
-      "repo": "videotool"
+      "owner": "binbin1213",
+      "repo": "VideoTool"
     }
   }
 }

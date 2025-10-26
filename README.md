@@ -8,8 +8,21 @@
   </p>
 
   <p>
+    <a href="https://github.com/binbin1213/VideoTool/actions">
+      <img src="https://github.com/binbin1213/VideoTool/workflows/Build%20and%20Release/badge.svg" alt="Build Status">
+    </a>
+    <a href="https://github.com/binbin1213/VideoTool/releases">
+      <img src="https://img.shields.io/github/v/release/binbin1213/VideoTool?include_prereleases" alt="Release">
+    </a>
+    <a href="https://github.com/binbin1213/VideoTool/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+    </a>
+  </p>
+
+  <p>
     <a href="#功能特性">功能特性</a> •
     <a href="#快速开始">快速开始</a> •
+    <a href="#下载安装">下载安装</a> •
     <a href="#开发">开发</a> •
     <a href="#文档">文档</a>
   </p>
@@ -25,12 +38,29 @@
 - 🎨 **专业样式** - 12种内置字幕样式模板
 - 🌐 **跨平台** - 支持 macOS 和 Windows
 
+## 📥 下载安装
+
+### 下载预编译版本
+
+访问 [Releases 页面](https://github.com/binbin1213/VideoTool/releases) 下载适合您系统的版本：
+
+- **macOS**: `VideoTool-{version}-universal.dmg` (支持 Intel 和 Apple Silicon)
+- **Windows**: `VideoTool-Setup-{version}.exe` (安装版) 或 `VideoTool-{version}.exe` (便携版)
+- **Linux**: `VideoTool-{version}.AppImage` / `.deb` / `.rpm`
+
+### 从源码构建
+
+如果您想从源码构建，请参阅[开发](#开发)部分。
+
+---
+
 ## 🚀 快速开始
 
 ### 系统要求
 
 - Node.js 18+ 
 - pnpm 8+
+- FFmpeg（自动包含在打包版本中）
 
 ### 安装依赖
 
@@ -53,9 +83,23 @@ pnpm build:mac
 # 构建 Windows 版本
 pnpm build:win
 
+# 构建 Linux 版本
+pnpm build:linux
+
 # 构建所有平台
 pnpm build:all
 \`\`\`
+
+### GitHub Actions 自动构建
+
+本项目配置了 GitHub Actions 自动构建。创建 Git Tag 即可触发自动构建和发布：
+
+\`\`\`bash
+git tag v1.0.0
+git push origin v1.0.0
+\`\`\`
+
+详细说明请查看 [.github/RELEASE.md](./.github/RELEASE.md)
 
 ## 🛠️ 开发
 
@@ -143,8 +187,8 @@ VideoTool 的亮点功能 - SRT转ASS字幕转换器:
 
 ## 📞 联系方式
 
-- Email: support@videotool.com
-- GitHub: [VideoTool](https://github.com/your-username/videotool)
+- GitHub Issues: [问题反馈](https://github.com/binbin1213/VideoTool/issues)
+- GitHub Discussions: [讨论区](https://github.com/binbin1213/VideoTool/discussions)
 
 ---
 
