@@ -3,6 +3,9 @@ import path from 'path';
 import log from 'electron-log';
 import { registerMergeHandlers } from './ipc/merge.handlers';
 import { registerSubtitleBurnHandlers } from './ipc/subtitle-burn.handlers';
+import { registerFFmpegHandlers } from './ipc/ffmpeg.handlers';
+import { FFmpegManager } from './services/FFmpegManager';
+import { initializeFFmpegPath } from './services/FFmpegService';
 
 // 配置日志
 log.transports.file.level = 'info';
@@ -74,8 +77,21 @@ function createWindow() {
 /**
  * 应用准备就绪
  */
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // 初始化 FFmpeg
+  log.info('正在初始化 FFmpeg...');
+  const ffmpegStatus = await FFmpegManager.initialize();
+  
+  if (ffmpegStatus.installed) {
+    log.info('FFmpeg 已就绪:', ffmpegStatus.version);
+    // 更新 FFmpegService 使用的路径
+    initializeFFmpegPath();
+  } else {
+    log.warn('FFmpeg 未安装，某些功能可能无法使用');
+  }
+  
   // 注册 IPC handlers
+  registerFFmpegHandlers();
   registerMergeHandlers();
   registerSubtitleBurnHandlers();
   

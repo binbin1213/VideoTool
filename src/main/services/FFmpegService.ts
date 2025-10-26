@@ -5,9 +5,29 @@ import fs from 'fs-extra';
 import log from 'electron-log';
 import type { MergeOptions, MergeProgress, VideoInfo, AudioInfo } from '../../shared/types/merge.types';
 import type { SubtitleBurnOptions, SubtitleBurnProgress } from '../../shared/types/subtitle-burn.types';
+import { FFmpegManager } from './FFmpegManager';
 
 // 设置 FFmpeg 路径
-ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+export function initializeFFmpegPath(): void {
+  const customPath = FFmpegManager.getFFmpegPath();
+  const customProbePath = FFmpegManager.getFFprobePath();
+  
+  if (customPath) {
+    log.info('使用自定义 FFmpeg 路径:', customPath);
+    ffmpeg.setFfmpegPath(customPath);
+    
+    if (customProbePath) {
+      ffmpeg.setFfprobePath(customProbePath);
+    }
+  } else {
+    // 回退到 @ffmpeg-installer/ffmpeg
+    log.info('使用 ffmpeg-installer 路径:', ffmpegInstaller.path);
+    ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+  }
+}
+
+// 初始化
+initializeFFmpegPath();
 
 export class FFmpegService {
   /**
