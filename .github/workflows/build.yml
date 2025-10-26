@@ -18,7 +18,7 @@ jobs:
     
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, windows-latest]
     
     steps:
       - name: 检出代码
@@ -67,12 +67,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: 打包应用 (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: pnpm run package:linux
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
       - name: 上传构建产物 (macOS)
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
@@ -92,17 +86,6 @@ jobs:
           path: |
             release/*.exe
             release/*.msi
-          if-no-files-found: warn
-      
-      - name: 上传构建产物 (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: VideoTool-Linux
-          path: |
-            release/*.AppImage
-            release/*.deb
-            release/*.rpm
           if-no-files-found: warn
   
   release:
@@ -136,9 +119,6 @@ jobs:
             artifacts/**/*.zip
             artifacts/**/*.exe
             artifacts/**/*.msi
-            artifacts/**/*.AppImage
-            artifacts/**/*.deb
-            artifacts/**/*.rpm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
