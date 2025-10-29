@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage, Menu } from 'electron';
+import { app, BrowserWindow, nativeImage, Menu, type MenuItemConstructorOptions } from 'electron';
 import path from 'path';
 import log from 'electron-log';
 import { registerMergeHandlers } from './ipc/merge.handlers';
@@ -72,7 +72,7 @@ function createWindow() {
   });
 
   // 设置应用菜单（中文化）
-  const template: Electron.MenuItemConstructorOptions[] = [
+  const template: MenuItemConstructorOptions[] = [
     {
       label: 'VideoTool',
       submenu: [
@@ -120,7 +120,7 @@ function createWindow() {
       { label: '显示全部', role: 'unhide' },
       { type: 'separator' },
       { label: '退出 VideoTool', role: 'quit' },
-    ] as Electron.MenuItemConstructorOptions[];
+    ] as MenuItemConstructorOptions[];
   }
 
   const menu = Menu.buildFromTemplate(template);
