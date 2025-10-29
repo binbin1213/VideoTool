@@ -54,6 +54,18 @@ jobs:
       - name: 构建应用
         run: pnpm run build
       
+      - name: 检查构建输出
+        shell: bash
+        run: |
+          echo "=== 检查 dist 目录 ==="
+          ls -la dist/ || echo "dist 目录不存在"
+          echo "=== 检查 dist/main 目录 ==="
+          ls -la dist/main/ || echo "dist/main 目录不存在"
+          echo "=== 检查 dist/main/main 目录 ==="
+          ls -la dist/main/main/ || echo "dist/main/main 目录不存在"
+          echo "=== 检查入口文件 ==="
+          ls -la dist/main/main/index.js || echo "入口文件不存在"
+      
       - name: 打包应用 (macOS)
         if: matrix.os == 'macos-latest'
         run: pnpm run package:mac
