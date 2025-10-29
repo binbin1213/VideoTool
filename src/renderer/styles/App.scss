@@ -70,6 +70,8 @@ html, body {
     border-bottom: 1px solid #dee2e6;
     margin: 0; // 移除所有margin
     margin-bottom: 8px; // 只保留底部margin
+    -webkit-app-region: drag; // 允许拖动窗口
+    user-select: none; // 禁止文本选择
     
     img {
       width: 32px;
@@ -132,6 +134,8 @@ html, body {
   padding: 12px 16px;
   border-bottom: 1px solid #dee2e6;
   flex-shrink: 0;
+  -webkit-app-region: drag; // 允许拖动窗口
+  user-select: none; // 禁止文本选择
   
   h2 {
     margin: 0;
@@ -293,6 +297,8 @@ select option {
   padding: 12px 16px;
   border-bottom: 1px solid #dee2e6;
   flex-shrink: 0;
+  -webkit-app-region: drag; // 允许拖动窗口
+  user-select: none; // 禁止文本选择
   
   h2 {
     margin: 0;
@@ -387,6 +393,8 @@ select option {
   padding: 12px 16px;
   border-bottom: 1px solid #dee2e6;
   flex-shrink: 0;
+  -webkit-app-region: drag; // 允许拖动窗口
+  user-select: none; // 禁止文本选择
   
   h2 {
     margin: 0;
@@ -431,6 +439,8 @@ select option {
   padding: 12px 16px;
   border-bottom: 1px solid #dee2e6;
   flex-shrink: 0;
+  -webkit-app-region: drag; // 允许拖动窗口
+  user-select: none; // 禁止文本选择
   
   h2 {
     margin: 0;
