@@ -26,8 +26,9 @@ export function initializeFFmpegPath(): void {
   }
 }
 
-// 初始化
-initializeFFmpegPath();
+// 注意：不要在这里自动初始化！
+// initializeFFmpegPath() 必须在 app.whenReady() 之后调用
+// 在 main/index.ts 中会正确调用
 
 export class FFmpegService {
   /**
