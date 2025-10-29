@@ -249,7 +249,18 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
             </Card.Header>
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <Button variant="outline-primary" onClick={handleSelectVideo}>
+                <Button 
+                  onClick={handleSelectVideo}
+                  style={{ 
+                    backgroundColor: '#e9ecef',
+                    border: '1px solid #ced4da',
+                    color: '#495057',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontWeight: '500',
+                    padding: '0.375rem 0.75rem',
+                    borderRadius: '0.25rem'
+                  }}
+                >
                   浏览...
                 </Button>
                 <div className="flex-grow-1">
@@ -283,7 +294,18 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
             </Card.Header>
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <Button variant="outline-primary" onClick={handleSelectSubtitle}>
+                <Button 
+                  onClick={handleSelectSubtitle}
+                  style={{ 
+                    backgroundColor: '#e9ecef',
+                    border: '1px solid #ced4da',
+                    color: '#495057',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontWeight: '500',
+                    padding: '0.375rem 0.75rem',
+                    borderRadius: '0.25rem'
+                  }}
+                >
                   浏览...
                 </Button>
                 <div className="flex-grow-1">
@@ -329,7 +351,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                     onChange={(e) => setUseHardwareAccel(e.target.checked)}
                     disabled={taskProgress.isRunning}
                 />
-                <Form.Text>
+                <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                   使用 GPU 加速视频编码，大幅提升处理速度
                 </Form.Text>
               </Form.Group>
@@ -348,7 +370,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                         <option value="nvenc">NVENC (NVIDIA GPU)</option>
                         <option value="qsv">Quick Sync Video (Intel GPU)</option>
                       </Form.Select>
-                      <Form.Text>
+                      <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                         根据您的系统和硬件选择合适的加速方式
                       </Form.Text>
                     </Form.Group>
@@ -365,7 +387,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                       <option value="libx264">H.264 (推荐)</option>
                       <option value="libx265">H.265 (更小体积)</option>
                     </Form.Select>
-                    <Form.Text>
+                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                       {useHardwareAccel ? '硬件加速时自动选择编码器' : 'H.264 兼容性好，H.265 压缩率高'}
                     </Form.Text>
                   </Form.Group>
@@ -381,7 +403,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                       <option value="copy">直接复制（推荐）</option>
                       <option value="aac">AAC 重新编码</option>
                     </Form.Select>
-                    <Form.Text>
+                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                       直接复制音频最快且无损
                     </Form.Text>
                   </Form.Group>
@@ -399,7 +421,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                       onChange={(e) => setCrf(parseInt(e.target.value))}
                       disabled={taskProgress.isRunning}
                     />
-                    <Form.Text>
+                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                       18=极高质量（大文件） | 23=标准 | 28=低质量（小文件）
                     </Form.Text>
                   </Form.Group>
@@ -422,7 +444,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                       <option value="slower">很慢</option>
                       <option value="veryslow">极慢（质量极好）</option>
                     </Form.Select>
-                    <Form.Text>
+                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                       速度越慢质量越好，文件越小
                     </Form.Text>
                   </Form.Group>

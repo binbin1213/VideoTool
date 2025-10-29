@@ -5,11 +5,12 @@ import SubtitleConvertTab from './components/Features/SubtitleConvertTab';
 import MergeTab from './components/Features/MergeTab';
 import SubtitleBurnTab from './components/Features/SubtitleBurnTab';
 import LogViewerTab from './components/Features/LogViewerTab';
+import AboutTab from './components/Features/AboutTab';
 import './styles/App.scss';
 
 const { ipcRenderer } = window.require('electron');
 
-type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | 'batch' | 'logs';
+type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | 'batch' | 'logs' | 'about';
 
 export interface LogEntry {
   timestamp: string;
@@ -158,6 +159,8 @@ function App() {
         return <SubtitleBurnTab addLog={addLog} taskProgress={taskProgress} setTaskProgress={setTaskProgress} />;
       case 'logs':
         return <LogViewerTab logs={globalLogs} onClearLogs={clearLogs} />;
+      case 'about':
+        return <AboutTab />;
       case 'transcode':
         return <div className="p-4"><h3>视频转码功能开发中...</h3></div>;
       case 'batch':
@@ -169,9 +172,9 @@ function App() {
 
   return (
     <div className="app">
-      <Container fluid className="main-content">
-        <Row className="h-100">
-          <Col xs="auto" className="sidebar-col p-0">
+      <Container fluid className="main-content" style={{ padding: 0 }}>
+        <Row className="h-100" style={{ margin: 0 }}>
+          <Col className="sidebar-col p-0" style={{ flex: '0 0 180px', maxWidth: '180px' }}>
             <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
           </Col>
           <Col className="content-col p-0">

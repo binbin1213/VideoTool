@@ -170,8 +170,8 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
               >
-                <FaFileUpload size={48} className="text-muted mb-3" />
-                <p className="mb-2">
+                <FaFileUpload size={48} className="mb-3" style={{ color: '#667eea' }} />
+                <p className="mb-2" style={{ fontSize: '15px', fontWeight: '500', color: '#495057' }}>
                   {selectedFile ? (
                     <strong>{selectedFile.name}</strong>
                   ) : (
@@ -209,7 +209,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                     </option>
                   ))}
                 </Form.Select>
-                <Form.Text>
+                <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                   选择字幕样式模板，共 {styles.length} 种预设样式
                 </Form.Text>
               </Form.Group>
@@ -221,7 +221,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                   checked={applyRegex}
                   onChange={(e) => setApplyRegex(e.target.checked)}
                 />
-                <Form.Text>
+                <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                   自动清理标签、格式化标点符号等
                 </Form.Text>
               </Form.Group>
@@ -292,17 +292,6 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                 <li>清理标点符号</li>
                 <li>格式化空格</li>
                 <li>统一换行符</li>
-              </ul>
-
-              <hr />
-
-              <h6>ASS样式模板：</h6>
-              <ul className="small">
-                <li>双语字幕（原文/译文）</li>
-                <li>歌词样式</li>
-                <li>演职人员名单</li>
-                <li>注释说明</li>
-                <li>...共12种样式</li>
               </ul>
             </Card.Body>
           </Card>

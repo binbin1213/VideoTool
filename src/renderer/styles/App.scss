@@ -1,6 +1,14 @@
 // 全局字体大小设置
 html, body {
   font-size: 16px; // 增加基础字号（默认是 14px）
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+// 重置所有元素的默认边距
+* {
+  box-sizing: border-box;
 }
 
 .app {
@@ -9,6 +17,13 @@ html, body {
   background-color: #ffffff;
   overflow: hidden;
   font-size: 1rem; // 继承 html 的字号
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .main-content {
@@ -23,11 +38,13 @@ html, body {
 }
 
 .sidebar-col {
-  width: 140px;
-  background-color: #f8f9fa;
+  width: 180px;
+  background-color: transparent;
   border-right: 1px solid #dee2e6;
   overflow: hidden;
   height: 100vh;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .content-col {
@@ -35,17 +52,24 @@ html, body {
   background-color: #ffffff;
   overflow: hidden;
   height: 100vh;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 // Sidebar styles
 .sidebar {
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  
   .sidebar-logo {
-    padding: 16px 12px;
+    padding: 46px 8px 16px 20px; // 顶部46px（向下），左侧20px（向右），右侧8px，底部16px
     display: flex;
     align-items: center;
     gap: 10px;
     border-bottom: 1px solid #dee2e6;
-    margin-bottom: 8px;
+    margin: 0; // 移除所有margin
+    margin-bottom: 8px; // 只保留底部margin
     
     img {
       width: 32px;
@@ -54,15 +78,20 @@ html, body {
     }
     
     .logo-text {
-      font-size: 18px; // 增大 logo 文字
-      font-weight: 600;
-      color: #212529;
+      font-size: 20px; // 增大字号
+      font-weight: 700; // 加粗
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); // 渐变色
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px; // 字母间距
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
   }
   
   .sidebar-item {
-    padding: 8px 10px;
-    margin-bottom: 3px;
+    padding: 8px 12px;
+    margin: 0 8px 3px 16px; // 左侧16px，右侧8px，稍微向右
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -126,7 +155,7 @@ html, body {
   .info-area {
     width: 220px;
     flex-shrink: 0;
-    background-color: #f8f9fa;
+    background-color: transparent;
     border-left: 1px solid #dee2e6;
     padding: 14px;
     overflow-y: auto;
@@ -379,7 +408,7 @@ select option {
   .info-area {
     width: 220px;
     flex-shrink: 0;
-    background-color: #f8f9fa;
+    background-color: transparent;
     border-left: 1px solid #dee2e6;
     padding: 14px;
     overflow-y: auto;
@@ -422,7 +451,7 @@ select option {
   .info-area {
     width: 220px;
     flex-shrink: 0;
-    background-color: #f8f9fa;
+    background-color: transparent;
     border-left: 1px solid #dee2e6;
     padding: 14px;
     overflow-y: auto;

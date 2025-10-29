@@ -245,7 +245,18 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             </Card.Header>
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <Button variant="outline-primary" onClick={handleSelectVideo}>
+                <Button 
+                  onClick={handleSelectVideo}
+                  style={{ 
+                    backgroundColor: '#e9ecef',
+                    border: '1px solid #ced4da',
+                    color: '#495057',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontWeight: '500',
+                    padding: '0.375rem 0.75rem',
+                    borderRadius: '0.25rem'
+                  }}
+                >
                   浏览...
                 </Button>
                 <div className="flex-grow-1">
@@ -279,7 +290,18 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             </Card.Header>
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <Button variant="outline-primary" onClick={handleSelectAudio}>
+                <Button 
+                  onClick={handleSelectAudio}
+                  style={{ 
+                    backgroundColor: '#e9ecef',
+                    border: '1px solid #ced4da',
+                    color: '#495057',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontWeight: '500',
+                    padding: '0.375rem 0.75rem',
+                    borderRadius: '0.25rem'
+                  }}
+                >
                   浏览...
                 </Button>
                 <div className="flex-grow-1">
@@ -331,7 +353,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                     onChange={(e) => setUseHardwareAccel(e.target.checked)}
                     disabled={taskProgress.isRunning || videoCodec === 'copy'}
                 />
-                <Form.Text>
+                <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                   {videoCodec === 'copy' 
                     ? '直接复制模式不需要硬件加速（已是最快方式）。选择重新编码可启用硬件加速。'
                     : '使用 GPU 加速视频编码，大幅提升处理速度'
@@ -351,7 +373,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                     <option value="nvenc">NVENC (NVIDIA GPU)</option>
                     <option value="qsv">Quick Sync Video (Intel GPU)</option>
                   </Form.Select>
-                  <Form.Text>
+                  <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                     根据您的系统和硬件选择合适的加速方式
                   </Form.Text>
                 </Form.Group>
@@ -370,7 +392,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                       <option value="libx264">H.264 重新编码</option>
                       <option value="libx265">H.265 重新编码</option>
                     </Form.Select>
-                    <Form.Text>
+                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                       {videoCodec === 'copy' 
                         ? '推荐使用"直接复制"以获得最快速度且无损质量'
                         : '重新编码可启用硬件加速，大幅提升处理速度'
@@ -390,7 +412,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                       <option value="mp3">MP3</option>
                       <option value="copy">直接复制</option>
                     </Form.Select>
-                    <Form.Text>
+                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
                       AAC 是最通用的音频格式
                     </Form.Text>
                   </Form.Group>

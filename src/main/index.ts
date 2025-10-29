@@ -30,12 +30,13 @@ function createWindow() {
   const icon = nativeImage.createFromPath(iconPath);
   
   mainWindow = new BrowserWindow({
-    width: 976,
+    width: 1120,
     height: 956,
     resizable: false, // 禁止手动调整大小
     maximizable: true, // 允许最大化
     fullscreenable: true, // 允许全屏
     icon: icon,
+    titleBarStyle: 'hiddenInset', // macOS: 隐藏标题栏，保留交通灯按钮
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
