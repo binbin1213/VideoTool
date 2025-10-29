@@ -168,9 +168,10 @@ export class FFmpegService {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : '未知错误';
         log.error('合并过程异常:', errorMessage);
+        log.error('异常详情:', error);
         reject({
           success: false,
-          message: errorMessage,
+          message: `合并异常: ${errorMessage}`,
         });
       }
     });
@@ -567,9 +568,10 @@ export class FFmpegService {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : '未知错误';
         log.error('烧录过程异常:', errorMessage);
+        log.error('异常详情:', error);
         reject({
           success: false,
-          message: errorMessage,
+          message: `烧录异常: ${errorMessage}`,
         });
       }
     });
