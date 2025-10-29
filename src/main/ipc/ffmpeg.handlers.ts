@@ -42,6 +42,13 @@ export function registerFFmpegHandlers(): void {
     }
   });
 
+  /**
+   * 获取日志文件路径
+   */
+  ipcMain.handle('get-log-path', () => {
+    return log.transports.file.getFile().path;
+  });
+
   log.info('FFmpeg IPC handlers registered');
 }
 

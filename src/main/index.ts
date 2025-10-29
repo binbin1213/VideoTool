@@ -9,7 +9,19 @@ import { initializeFFmpegPath } from './services/FFmpegService';
 
 // 配置日志
 log.transports.file.level = 'info';
-log.info('App starting...');
+log.transports.file.maxSize = 10 * 1024 * 1024; // 10MB
+log.transports.console.level = 'debug';
+
+// 打印日志文件路径
+log.info('='.repeat(80));
+log.info('VideoTool 启动');
+log.info('日志文件路径:', log.transports.file.getFile().path);
+log.info('应用版本:', app.getVersion());
+log.info('Electron 版本:', process.versions.electron);
+log.info('Node 版本:', process.versions.node);
+log.info('平台:', process.platform);
+log.info('架构:', process.arch);
+log.info('='.repeat(80));
 
 // 主窗口引用
 let mainWindow: BrowserWindow | null = null;
