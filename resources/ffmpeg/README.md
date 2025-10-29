@@ -4,10 +4,10 @@
 
 ## 🚀 自动化说明
 
-**GitHub Actions 构建时会自动下载 FFmpeg，无需手动提交二进制文件到仓库。**
+**GitHub Actions 构建时只会为 Windows 自动下载 FFmpeg，无需手动提交二进制文件到仓库。**
 
-- macOS: 通过 Homebrew 安装（~660 KB）
 - Windows: 从 gyan.dev 下载 essentials 版本（~94 MB）
+- macOS: 默认不随应用打包，为节省构建时间/体积，可在需要时手动放置到本目录
 
 **本地开发时**，可以选择：
 1. 手动放置 FFmpeg 到对应目录（如下方说明）
@@ -20,7 +20,7 @@ resources/ffmpeg/
 ├── win/          # Windows 平台
 │   ├── ffmpeg.exe
 │   └── ffprobe.exe
-└── mac/          # macOS 平台
+└── mac/          # macOS 平台（可选）
     ├── ffmpeg
     └── ffprobe
 ```
@@ -43,7 +43,7 @@ resources/ffmpeg/
 
 ### macOS
 
-**方法 1: 使用 Homebrew**
+**方法 1: 使用 Homebrew（可选）**
 ```bash
 brew install ffmpeg
 
@@ -56,19 +56,19 @@ cp /usr/local/bin/ffmpeg resources/ffmpeg/mac/
 cp /usr/local/bin/ffprobe resources/ffmpeg/mac/
 ```
 
-**方法 2: 下载静态编译版本**
+**方法 2: 下载静态编译版本（可选）**
 - 下载地址：https://evermeet.cx/ffmpeg/
 - 下载 `ffmpeg` 和 `ffprobe`
 - 解压后复制到 `resources/ffmpeg/mac/`
 
 ## 注意事项
 
-1. **文件大小**: FFmpeg 可执行文件较大（100-200MB），会增加安装包大小
+1. **文件大小**: FFmpeg 可执行文件较大（100-200MB），会增加安装包大小（因此 macOS 默认不内置）
 2. **许可证**: 确保使用的 FFmpeg 构建符合 GPL 许可要求
 3. **架构支持**: 
    - Windows: x64
    - macOS: 建议使用 Universal Binary（支持 Intel + Apple Silicon）
-4. **可执行权限**: macOS 需要设置执行权限：
+4. **可执行权限**: macOS 放置后需设置执行权限：
    ```bash
    chmod +x resources/ffmpeg/mac/ffmpeg
    chmod +x resources/ffmpeg/mac/ffprobe

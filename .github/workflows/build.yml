@@ -51,19 +51,6 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
       
-      - name: 下载 FFmpeg (macOS)
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          echo "=== 下载 FFmpeg for macOS ==="
-          brew install ffmpeg
-          mkdir -p resources/ffmpeg/mac
-          cp $(which ffmpeg) resources/ffmpeg/mac/ffmpeg
-          cp $(which ffprobe) resources/ffmpeg/mac/ffprobe
-          chmod +x resources/ffmpeg/mac/ffmpeg
-          chmod +x resources/ffmpeg/mac/ffprobe
-          ls -lh resources/ffmpeg/mac/
-      
       - name: 下载 FFmpeg (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
