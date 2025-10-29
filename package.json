@@ -2,12 +2,13 @@
   "name": "videotool",
   "productName": "VideoTool",
   "version": "1.0.0",
-  "description": "强大的跨平台视频处理工具 - 支持视频转码、音视频合并、字幕烧录和字幕格式转换",
+  "description": "强大的跨平台视频处理工具 - 支持视频转码、音视频合并、字幕烧录和字幕智能修复转换（自动清理格式问题、HTML标签，智能格式化）",
   "main": "dist/main/main/index.js",
   "author": {
-    "name": "VideoTool Team",
-    "email": "support@videotool.com"
+    "name": "Binbin",
+    "email": "piaozhitian@gmail.com"
   },
+  "copyright": "Copyright © 2025 Binbin. All rights reserved.",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -105,7 +106,14 @@
       "category": "public.app-category.video",
       "icon": "resources/icons/icon.icns",
       "hardenedRuntime": true,
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "CFBundleDisplayName": "VideoTool",
+        "CFBundleName": "VideoTool",
+        "CFBundleShortVersionString": "1.0.0",
+        "CFBundleVersion": "1.0.0",
+        "NSHumanReadableCopyright": "Copyright © 2025 Binbin. All rights reserved."
+      }
     },
     "win": {
       "target": [
@@ -122,7 +130,9 @@
           ]
         }
       ],
-      "icon": "resources/icons/icon.png"
+      "icon": "resources/icons/icon.png",
+      "legalTrademarks": "Copyright © 2025 Binbin. All rights reserved.",
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,

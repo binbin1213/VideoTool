@@ -1,8 +1,14 @@
+// 全局字体大小设置
+html, body {
+  font-size: 16px; // 增加基础字号（默认是 14px）
+}
+
 .app {
   height: 100vh;
   width: 100vw;
   background-color: #ffffff;
   overflow: hidden;
+  font-size: 1rem; // 继承 html 的字号
 }
 
 .main-content {
@@ -48,7 +54,7 @@
     }
     
     .logo-text {
-      font-size: 16px;
+      font-size: 18px; // 增大 logo 文字
       font-weight: 600;
       color: #212529;
     }
@@ -62,7 +68,7 @@
     transition: all 0.2s ease;
     color: #495057;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 15px; // 增大侧边栏字号
     
     &:hover {
       background-color: #e9ecef;
@@ -80,7 +86,7 @@
     }
     
     svg {
-      font-size: 14px;
+      font-size: 16px; // 增大图标大小
     }
   }
 }
@@ -100,7 +106,7 @@
   
   h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.3rem; // 增大标题字号
     font-weight: 600;
   }
 }

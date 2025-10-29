@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage } from 'electron';
+import { app, BrowserWindow, nativeImage, Menu } from 'electron';
 import path from 'path';
 import log from 'electron-log';
 import { registerMergeHandlers } from './ipc/merge.handlers';
@@ -30,11 +30,11 @@ function createWindow() {
   const icon = nativeImage.createFromPath(iconPath);
   
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 600,
-    minWidth: 900,
-    minHeight: 600,
-    resizable: true,
+    width: 976,
+    height: 956,
+    resizable: false, // 禁止手动调整大小
+    maximizable: true, // 允许最大化
+    fullscreenable: true, // 允许全屏
     icon: icon,
     webPreferences: {
       nodeIntegration: true,
@@ -70,6 +70,61 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  // 设置应用菜单（中文化）
+  const template: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: 'VideoTool',
+      submenu: [
+        {
+          label: '关于 VideoTool',
+          role: 'about',
+        },
+        { type: 'separator' },
+        {
+          label: '退出',
+          role: 'quit',
+        },
+      ],
+    },
+    {
+      label: '编辑',
+      submenu: [
+        { label: '撤销', role: 'undo' },
+        { label: '重做', role: 'redo' },
+        { type: 'separator' },
+        { label: '剪切', role: 'cut' },
+        { label: '复制', role: 'copy' },
+        { label: '粘贴', role: 'paste' },
+        { label: '全选', role: 'selectAll' },
+      ],
+    },
+    {
+      label: '窗口',
+      submenu: [
+        { label: '最小化', role: 'minimize' },
+        { label: '关闭', role: 'close' },
+        { type: 'separator' },
+        { label: '最大化', role: 'zoom' },
+      ],
+    },
+  ];
+
+  // macOS 需要特殊处理
+  if (process.platform === 'darwin') {
+    template[0].submenu = [
+      { label: '关于 VideoTool', role: 'about' },
+      { type: 'separator' },
+      { label: '隐藏 VideoTool', role: 'hide' },
+      { label: '隐藏其他', role: 'hideOthers' },
+      { label: '显示全部', role: 'unhide' },
+      { type: 'separator' },
+      { label: '退出 VideoTool', role: 'quit' },
+    ] as Electron.MenuItemConstructorOptions[];
+  }
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
   log.info('Main window created');
 }
