@@ -256,7 +256,7 @@ export class FFmpegService {
   /**
    * 解析 FFmpeg 错误信息，提取关键错误并提供友好提示
    */
-  private static parseFFmpegError(stderr: string, defaultMessage: string): string {
+  private static parseFFmpegError(stderr: string | null, defaultMessage: string): string {
     if (!stderr || stderr.trim() === '') {
       return defaultMessage || '未知错误';
     }
