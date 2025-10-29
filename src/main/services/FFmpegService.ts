@@ -155,9 +155,13 @@ export class FFmpegService {
           .on('error', (err, _stdout, stderr) => {
             log.error('音视频合并失败:', err.message);
             log.error('FFmpeg stderr:', stderr);
+            
+            // 从 stderr 中提取关键错误信息
+            const errorDetail = FFmpegService.parseFFmpegError(stderr, err.message);
+            
             reject({
               success: false,
-              message: `合并失败: ${err.message}`,
+              message: `合并失败: ${errorDetail}`,
             });
           })
           .save(outputPath);
@@ -247,6 +251,112 @@ export class FFmpegService {
       return hours * 3600 + minutes * 60 + seconds;
     }
     return 0;
+  }
+
+  /**
+   * 解析 FFmpeg 错误信息，提取关键错误并提供友好提示
+   */
+  private static parseFFmpegError(stderr: string, defaultMessage: string): string {
+    if (!stderr || stderr.trim() === '') {
+      return defaultMessage || '未知错误';
+    }
+
+    // 提取完整的错误日志，方便调试
+    log.error('完整 FFmpeg 错误输出:', stderr);
+
+    // 常见的 FFmpeg 错误模式
+    const errorPatterns = [
+      // 硬件加速相关错误
+      {
+        pattern: /Device creation failed|Cannot load.*qsv|No such filter.*qsv|hwaccel.*not available/i,
+        message: 'QSV 硬件加速不可用。请检查：\n1. CPU 是否为 Intel 第7代及以上\n2. BIOS 是否启用了集成显卡\n3. 是否安装了 Intel 显卡驱动'
+      },
+      {
+        pattern: /cuda|nvenc.*not found|Cannot load.*nvenc/i,
+        message: 'NVENC 硬件加速不可用。请检查：\n1. 是否有 NVIDIA 显卡\n2. 是否安装了最新的 NVIDIA 驱动\n3. 显卡是否支持 NVENC'
+      },
+      {
+        pattern: /videotoolbox.*failed|No device available|Cannot load.*videotoolbox/i,
+        message: 'VideoToolbox 硬件加速失败。系统可能不支持或资源占用过高'
+      },
+      // 编码器错误
+      {
+        pattern: /Unknown encoder|Encoder.*not found/i,
+        message: '找不到指定的编码器。FFmpeg 可能编译时未包含该编码器'
+      },
+      // 文件相关错误
+      {
+        pattern: /No such file or directory|Cannot open.*file/i,
+        message: '找不到输入文件或无法访问。请检查文件路径是否正确'
+      },
+      {
+        pattern: /Permission denied/i,
+        message: '没有文件访问权限。请检查文件/文件夹权限'
+      },
+      {
+        pattern: /Invalid data found|Invalid argument/i,
+        message: '输入文件格式无效或已损坏'
+      },
+      // 编解码错误
+      {
+        pattern: /Codec.*not currently supported/i,
+        message: '不支持的编解码格式。请使用其他编码器或转换输入文件格式'
+      },
+      {
+        pattern: /Conversion failed/i,
+        message: '编码转换失败。可能是参数不兼容或文件格式问题'
+      },
+      // 过滤器错误
+      {
+        pattern: /No such filter|Cannot find.*filter/i,
+        message: '找不到指定的过滤器。可能是 FFmpeg 版本不支持'
+      },
+      // 字幕相关错误
+      {
+        pattern: /subtitles.*failed|ass.*error/i,
+        message: '字幕处理失败。请检查字幕文件格式是否正确'
+      },
+      // 资源不足
+      {
+        pattern: /Out of memory|Cannot allocate memory/i,
+        message: '内存不足。请关闭其他应用程序或使用较低的质量设置'
+      },
+    ];
+
+    // 匹配错误模式
+    for (const { pattern, message } of errorPatterns) {
+      if (pattern.test(stderr)) {
+        return message;
+      }
+    }
+
+    // 尝试提取 FFmpeg 的最后一个错误行
+    const lines = stderr.split('\n').filter(line => line.trim());
+    const errorLines = lines.filter(line => 
+      line.includes('Error') || 
+      line.includes('error') || 
+      line.includes('failed') ||
+      line.includes('Fatal') ||
+      line.includes('Cannot')
+    );
+
+    if (errorLines.length > 0) {
+      // 返回最相关的错误信息
+      const lastError = errorLines[errorLines.length - 1];
+      // 清理 FFmpeg 的日志前缀
+      const cleanError = lastError
+        .replace(/^\[\w+\s@\s[^\]]+\]\s*/, '')  // 移除 [h264 @ 0x...] 这样的前缀
+        .replace(/^Error\s*/i, '')
+        .trim();
+      
+      if (cleanError.length > 10) {
+        return cleanError.length > 200 ? cleanError.substring(0, 200) + '...' : cleanError;
+      }
+    }
+
+    // 如果没有匹配到，返回默认消息和部分 stderr
+    const lastLines = lines.slice(-5).join('\n');
+    return `${defaultMessage}\n\n详细信息:\n${lastLines.substring(0, 300)}`;
   }
 
   /**
@@ -444,9 +554,13 @@ export class FFmpegService {
           .on('error', (err, _stdout, stderr) => {
             log.error('字幕烧录失败:', err.message);
             log.error('FFmpeg stderr:', stderr);
+            
+            // 从 stderr 中提取关键错误信息
+            const errorDetail = FFmpegService.parseFFmpegError(stderr, err.message);
+            
             reject({
               success: false,
-              message: `烧录失败: ${err.message}`,
+              message: `烧录失败: ${errorDetail}`,
             });
           })
           .save(outputPath);
