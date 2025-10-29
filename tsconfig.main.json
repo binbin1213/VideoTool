@@ -5,6 +5,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "outDir": "dist/main",
+    "rootDir": "src",
     "noEmit": false,
     "jsx": "preserve",
     "allowImportingTsExtensions": false,
