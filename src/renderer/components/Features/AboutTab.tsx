@@ -1,5 +1,5 @@
-import { Card, Badge } from 'react-bootstrap';
-import { FaGithub, FaEnvelope, FaCode, FaInfoCircle } from 'react-icons/fa';
+import { Card } from 'react-bootstrap';
+import { FaGithub, FaEnvelope } from 'react-icons/fa';
 
 function AboutTab() {
   return (

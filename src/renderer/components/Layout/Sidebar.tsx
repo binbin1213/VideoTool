@@ -33,7 +33,7 @@ function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         <span className="logo-text">VideoTool</span>
       </div>
       <Nav className="flex-column" style={{ padding: 0 }}>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <div key={item.id}>
             {item.divider && <hr className="my-2" style={{ borderColor: '#dee2e6', margin: '8px 0' }} />}
             <Nav.Link
@@ -44,9 +44,6 @@ function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             >
               <item.icon className="me-2" />
               <span>{item.label}</span>
-              {item.badge && (
-                <span className="badge bg-danger ms-auto">{item.badge}</span>
-              )}
             </Nav.Link>
           </div>
         ))}

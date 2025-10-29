@@ -9,7 +9,8 @@
     "jsx": "preserve",
     "allowImportingTsExtensions": false,
     "isolatedModules": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "composite": true
   },
   "include": ["src/main/**/*", "src/shared/**/*"],
   "exclude": ["node_modules", "dist", "release"]
