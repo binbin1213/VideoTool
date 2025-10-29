@@ -78,8 +78,17 @@ export class FFmpegService {
             command.outputOptions(['-b:v 5M']);
           } else if (hwaccel === 'nvenc') {
             log.info('启用 NVENC 硬件加速');
-            command.inputOptions(['-hwaccel cuda']);
+            command.inputOptions(['-hwaccel cuda', '-hwaccel_output_format cuda']);
             command.videoCodec('h264_nvenc');
+            // NVENC 默认质量参数
+            command.outputOptions([
+              '-preset p4',        // p1-p7, p4 平衡速度和质量
+              '-tune hq',          // 高质量模式
+              '-rc vbr',           // 可变比特率
+              '-cq 23',            // 恒定质量 (0-51, 类似 CRF)
+              '-b:v 0',            // VBR 模式下设置为 0
+              '-pix_fmt nv12',     // NVENC 原生格式
+            ]);
           } else if (hwaccel === 'qsv') {
             log.info('启用 QSV 硬件加速');
             command.inputOptions(['-hwaccel qsv', '-hwaccel_output_format qsv']);
@@ -289,14 +298,30 @@ export class FFmpegService {
           } else if (hwaccel === 'nvenc') {
             // NVIDIA NVENC 硬件加速
             log.info('启用 NVENC 硬件加速');
-            command.inputOptions(['-hwaccel cuda']);
+            command.inputOptions(['-hwaccel cuda', '-hwaccel_output_format cuda']);
             command.videoCodec('h264_nvenc');
+            // NVENC preset 映射: medium -> p4, fast -> p2, slow -> p6
+            const nvencPresetMap: Record<string, string> = {
+              'ultrafast': 'p1',
+              'superfast': 'p2',
+              'veryfast': 'p2',
+              'faster': 'p3',
+              'fast': 'p3',
+              'medium': 'p4',
+              'slow': 'p5',
+              'slower': 'p6',
+              'veryslow': 'p7',
+            };
+            const nvencPreset = nvencPresetMap[preset] || 'p4';
             command.outputOptions([
-              `-preset ${preset}`,
-              `-cq ${crf}`,
+              `-preset ${nvencPreset}`,
+              '-tune hq',          // 高质量模式
+              '-rc vbr',           // 可变比特率
+              `-cq ${crf}`,        // 恒定质量
+              '-b:v 0',            // VBR 模式下设置为 0
               '-g 240',
               '-bf 2',
-              '-pix_fmt yuv420p',
+              '-pix_fmt nv12',     // NVENC 原生格式
               '-profile:v high',
               '-level 4.1',
             ]);
