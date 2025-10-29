@@ -7,6 +7,7 @@ import { promisify } from 'util';
 import https from 'https';
 import { createWriteStream } from 'fs';
 import { Extract } from 'unzipper';
+import { findBundledFFmpeg } from './FFmpegPathResolver';
 
 const execAsync = promisify(exec);
 
@@ -134,8 +135,28 @@ export class FFmpegManager {
 
       log.warn('系统未找到 FFmpeg');
 
+      // 3. 检查打包的 FFmpeg
+      const bundledFFmpeg = findBundledFFmpeg();
+      if (bundledFFmpeg) {
+        try {
+          const { stdout } = await execAsync(`"${bundledFFmpeg.ffmpegPath}" -version`);
+          const version = stdout.split('\n')[0];
+          log.info('使用打包的 FFmpeg:', version);
 
-      // 3. 都没有找到
+          this.ffmpegPath = bundledFFmpeg.ffmpegPath;
+          this.ffprobePath = bundledFFmpeg.ffprobePath;
+
+          return {
+            installed: true,
+            version,
+            path: bundledFFmpeg.ffmpegPath,
+          };
+        } catch (error) {
+          log.warn('打包的 FFmpeg 无法执行:', error);
+        }
+      }
+
+      // 4. 都没有找到
       return {
         installed: false,
         error: 'FFmpeg 未安装',

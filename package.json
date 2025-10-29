@@ -82,6 +82,7 @@
   "build": {
     "appId": "com.videotool.app",
     "productName": "VideoTool",
+    "afterPack": "scripts/afterPack.js",
     "directories": {
       "output": "release",
       "buildResources": "resources"
@@ -91,6 +92,13 @@
       "public/**/*",
       "node_modules/**/*",
       "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/ffmpeg",
+        "to": "ffmpeg",
+        "filter": ["**/*"]
+      }
     ],
     "mac": {
       "target": [

@@ -1,0 +1,15 @@
+# 忽略所有 FFmpeg 二进制文件
+# 这些文件会在 GitHub Actions 构建时自动下载
+
+# Windows
+win/ffmpeg.exe
+win/ffprobe.exe
+
+# macOS
+mac/ffmpeg
+mac/ffprobe
+
+# 保留目录结构
+!win/.gitkeep
+!mac/.gitkeep
+

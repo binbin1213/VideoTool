@@ -5,30 +5,41 @@ import log from 'electron-log';
 import type { MergeOptions, MergeProgress, VideoInfo, AudioInfo } from '../../shared/types/merge.types';
 import type { SubtitleBurnOptions, SubtitleBurnProgress } from '../../shared/types/subtitle-burn.types';
 import { FFmpegManager } from './FFmpegManager';
+import { findBundledFFmpeg } from './FFmpegPathResolver';
 
 // 设置 FFmpeg 路径
 export function initializeFFmpegPath(): void {
+  // 优先级 1: 用户自定义路径（通过下载管理器设置）
   const customPath = FFmpegManager.getFFmpegPath();
   const customProbePath = FFmpegManager.getFFprobePath();
   
   if (customPath) {
-    log.info('使用自定义 FFmpeg 路径:', customPath);
+    log.info('✅ 使用自定义 FFmpeg 路径:', customPath);
     ffmpeg.setFfmpegPath(customPath);
     
     if (customProbePath) {
       ffmpeg.setFfprobePath(customProbePath);
     }
-  } else {
-    // 回退到 @ffmpeg-installer/ffmpeg（延迟加载避免模块初始化时出错）
-    try {
-      // 使用 require 延迟加载，避免在模块初始化时执行
-      const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-      log.info('使用 ffmpeg-installer 路径:', ffmpegInstaller.path);
-      ffmpeg.setFfmpegPath(ffmpegInstaller.path);
-    } catch (error) {
-      log.error('加载 ffmpeg-installer 失败:', error);
-      log.warn('FFmpeg 初始化失败，请手动安装 FFmpeg');
-    }
+    return;
+  }
+  
+  // 优先级 2: 打包的 FFmpeg
+  const bundledFFmpeg = findBundledFFmpeg();
+  if (bundledFFmpeg) {
+    log.info('✅ 使用打包的 FFmpeg:', bundledFFmpeg.ffmpegPath);
+    ffmpeg.setFfmpegPath(bundledFFmpeg.ffmpegPath);
+    ffmpeg.setFfprobePath(bundledFFmpeg.ffprobePath);
+    return;
+  }
+  
+  // 优先级 3: 回退到 @ffmpeg-installer/ffmpeg
+  try {
+    const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+    log.info('⚠️ 使用 ffmpeg-installer 路径:', ffmpegInstaller.path);
+    ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+  } catch (error) {
+    log.error('❌ 加载 ffmpeg-installer 失败:', error);
+    log.warn('⚠️ FFmpeg 初始化失败，请手动安装 FFmpeg');
   }
 }
 
@@ -389,14 +400,21 @@ export class FFmpegService {
 
         // 处理字幕文件路径（Windows 路径需要转义）
         const escapedSubtitlePath = subtitlePath.replace(/\\/g, '/').replace(/:/g, '\\:');
+        const subtitlesFilter = `subtitles='${escapedSubtitlePath}'`;
 
         let totalDuration = 0;
 
         const command = ffmpeg()
           .input(videoPath);
 
+        let enableHardware = useHardwareAccel && hwaccel !== 'none';
+        if (enableHardware && hwaccel === 'qsv') {
+          log.warn('QSV 硬件加速与字幕滤镜兼容性较差，自动切换为软件编码');
+          enableHardware = false;
+        }
+
         // 硬件加速配置
-        if (useHardwareAccel && hwaccel !== 'none') {
+        if (enableHardware) {
           if (hwaccel === 'videotoolbox') {
             // macOS VideoToolbox 硬件加速（支持 Intel 和 Apple Silicon）
             log.info('启用 VideoToolbox 硬件加速');
@@ -491,8 +509,8 @@ export class FFmpegService {
         command.audioCodec(audioCodec);
 
         // 如果视频需要重新编码，设置编码参数
-        if (videoCodec !== 'copy' || (useHardwareAccel && hwaccel !== 'none')) {
-          command.videoFilters(`subtitles='${escapedSubtitlePath}'`);
+        if (videoCodec !== 'copy' || enableHardware) {
+          command.videoFilters(subtitlesFilter);
         } else {
           // copy 模式不支持滤镜，需要重新编码
           log.warn('字幕烧录需要重新编码视频，自动切换到 libx264');
@@ -509,7 +527,7 @@ export class FFmpegService {
               '-movflags +faststart',
               '-x264opts keyint=240:min-keyint=24:scenecut=40',
             ])
-            .videoFilters(`subtitles='${escapedSubtitlePath}'`);
+            .videoFilters(subtitlesFilter);
         }
         
         // 设置帧率和时间戳模式
