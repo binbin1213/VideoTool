@@ -1,7 +1,7 @@
 {
   "name": "videotool",
   "productName": "VideoTool",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "强大的跨平台视频处理工具 - 支持视频转码、音视频合并、字幕烧录和字幕智能修复转换（自动清理格式问题、HTML标签，智能格式化）",
   "main": "dist/main/main/index.js",
   "author": {
@@ -110,8 +110,8 @@
       "extendInfo": {
         "CFBundleDisplayName": "VideoTool",
         "CFBundleName": "VideoTool",
-        "CFBundleShortVersionString": "1.0.0",
-        "CFBundleVersion": "1.0.0",
+        "CFBundleShortVersionString": "1.0.2",
+        "CFBundleVersion": "1.0.2",
         "NSHumanReadableCopyright": "Copyright © 2025 Binbin. All rights reserved."
       }
     },
