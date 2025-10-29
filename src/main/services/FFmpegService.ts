@@ -82,8 +82,14 @@ export class FFmpegService {
             command.videoCodec('h264_nvenc');
           } else if (hwaccel === 'qsv') {
             log.info('启用 QSV 硬件加速');
-            command.inputOptions(['-hwaccel qsv']);
+            command.inputOptions(['-hwaccel qsv', '-hwaccel_output_format qsv']);
             command.videoCodec('h264_qsv');
+            // QSV 默认质量参数
+            command.outputOptions([
+              '-global_quality 23',
+              '-look_ahead 1',
+              '-pix_fmt nv12',
+            ]);
           }
         } else {
           command.videoCodec(videoCodec);
@@ -297,16 +303,17 @@ export class FFmpegService {
           } else if (hwaccel === 'qsv') {
             // Intel Quick Sync Video 硬件加速
             log.info('启用 QSV 硬件加速');
-            command.inputOptions(['-hwaccel qsv']);
+            command.inputOptions(['-hwaccel qsv', '-hwaccel_output_format qsv']);
             command.videoCodec('h264_qsv');
+            // QSV 质量控制: global_quality 范围 1-51 (类似CRF，越小质量越好)
+            const qsvQuality = Math.max(1, Math.min(51, crf));
             command.outputOptions([
-              `-preset ${preset}`,
-              `-global_quality ${crf}`,
+              `-global_quality ${qsvQuality}`,
+              '-look_ahead 1',
+              '-look_ahead_depth 40',
               '-g 240',
               '-bf 2',
-              '-pix_fmt yuv420p',
-              '-profile:v high',
-              '-level 4.1',
+              '-pix_fmt nv12',
             ]);
           }
         } else {
