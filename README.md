@@ -147,6 +147,7 @@ pnpm format       # 代码格式化
 
 - **[Wiki 文档](https://github.com/binbin1213/VideoTool/wiki)** - 完整使用指南和开发文档
 - **[快速开始](https://github.com/binbin1213/VideoTool/wiki/Quick-Start)** - 新手入门教程
+- **[硬件加速](https://github.com/binbin1213/VideoTool/wiki/Hardware-Acceleration)** - VideoToolbox/QSV/NVENC 详解
 - **[项目状态](https://github.com/binbin1213/VideoTool/wiki/Project-Status)** - 开发进度和功能清单
 - **[发布流程](https://github.com/binbin1213/VideoTool/wiki/Release-Process)** - GitHub Actions 自动构建说明
 

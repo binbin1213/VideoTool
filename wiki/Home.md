@@ -24,6 +24,7 @@
 - **[字幕转换](Subtitle-Conversion)** - SRT→ASS 智能转换详解
 - **[音视频合并](Audio-Video-Merge)** - 音视频合并功能说明
 - **[字幕烧录](Subtitle-Burn)** - 字幕烧录功能说明
+- **[硬件加速](Hardware-Acceleration)** - 硬件加速支持详解（VideoToolbox/QSV/NVENC）
 - **[常见问题](FAQ)** - FAQ 和问题排查
 
 ---

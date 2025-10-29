@@ -75,7 +75,14 @@ export class FFmpegService {
             log.info('启用 VideoToolbox 硬件加速');
             command.inputOptions(['-hwaccel videotoolbox']);
             command.videoCodec('h264_videotoolbox');
-            command.outputOptions(['-b:v 5M']);
+            // VideoToolbox 支持 Intel 和 Apple Silicon
+            command.outputOptions([
+              '-b:v 5M',           // 比特率
+              '-q:v 65',           // 质量参数 (0-100, 越高质量越好)
+              '-allow_sw 1',       // 允许软件编码回退
+              '-realtime 0',       // 非实时编码（更高质量）
+              '-pix_fmt nv12',     // Apple Silicon 原生格式
+            ]);
           } else if (hwaccel === 'nvenc') {
             log.info('启用 NVENC 硬件加速');
             command.inputOptions(['-hwaccel cuda', '-hwaccel_output_format cuda']);
@@ -280,20 +287,22 @@ export class FFmpegService {
         // 硬件加速配置
         if (useHardwareAccel && hwaccel !== 'none') {
           if (hwaccel === 'videotoolbox') {
-            // macOS VideoToolbox 硬件加速
+            // macOS VideoToolbox 硬件加速（支持 Intel 和 Apple Silicon）
             log.info('启用 VideoToolbox 硬件加速');
             command.inputOptions(['-hwaccel videotoolbox']);
             command.videoCodec('h264_videotoolbox');
             // VideoToolbox 配置 - 针对 1080p@24fps 优化
             command.outputOptions([
-              '-b:v 5M', // 比特率 5Mbps (略高于原始 4.2Mbps)
-              '-maxrate 6M', // 最大比特率
-              '-bufsize 12M', // 缓冲区大小
-              '-q:v 70', // 质量参数 (0-100, 越高质量越好)
-              '-g 240', // 关键帧间隔 (10秒@24fps)
-              '-pix_fmt yuv420p', // 像素格式
-              '-profile:v high', // H.264 High Profile
-              '-level 4.1', // H.264 Level 4.1 (支持 1080p@30fps)
+              '-b:v 5M',           // 比特率 5Mbps
+              '-maxrate 6M',       // 最大比特率
+              '-bufsize 12M',      // 缓冲区大小
+              '-q:v 70',           // 质量参数 (0-100, 越高质量越好)
+              '-allow_sw 1',       // 允许软件编码回退
+              '-realtime 0',       // 非实时编码（更高质量）
+              '-g 240',            // 关键帧间隔 (10秒@24fps)
+              '-pix_fmt nv12',     // Apple Silicon 原生格式（Intel 也支持）
+              '-profile:v high',   // H.264 High Profile
+              '-level 4.1',        // H.264 Level 4.1 (支持 1080p@30fps)
             ]);
           } else if (hwaccel === 'nvenc') {
             // NVIDIA NVENC 硬件加速
