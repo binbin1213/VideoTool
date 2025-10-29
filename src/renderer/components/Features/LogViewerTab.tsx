@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Container, Card, Button, Form, Badge } from 'react-bootstrap';
-import { FaTrash, FaDownload, FaSearch } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { Container, Card, Button, Form, Badge, Alert } from 'react-bootstrap';
+import { FaTrash, FaDownload, FaSearch, FaFolder, FaInfoCircle } from 'react-icons/fa';
 import { LogEntry } from '../../App';
 
 interface LogViewerTabProps {
@@ -11,6 +11,20 @@ interface LogViewerTabProps {
 function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [searchText, setSearchText] = useState('');
+  const [systemLogPath, setSystemLogPath] = useState<string>('');
+
+  // 获取系统日志文件路径
+  useEffect(() => {
+    const fetchLogPath = async () => {
+      try {
+        const path = await window.electron.ipcRenderer.invoke('get-log-path');
+        setSystemLogPath(path);
+      } catch (error) {
+        console.error('获取日志路径失败:', error);
+      }
+    };
+    fetchLogPath();
+  }, []);
 
   const getLevelClass = (level: string) => {
     return `level-${level}`;
@@ -42,6 +56,15 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
     URL.revokeObjectURL(url);
   };
 
+  const handleOpenLogFolder = async () => {
+    try {
+      await window.electron.ipcRenderer.invoke('open-log-folder');
+    } catch (error) {
+      console.error('打开日志文件夹失败:', error);
+      alert('打开日志文件夹失败，请手动打开:\n' + systemLogPath);
+    }
+  };
+
   return (
     <div className="log-viewer-container">
       <div className="log-viewer-header">
@@ -51,6 +74,27 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
       <div className="log-viewer-content">
         <Card>
           <Card.Body>
+            {/* 系统日志路径提示 */}
+            {systemLogPath && (
+              <Alert variant="info" className="mb-3 d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+                  <FaInfoCircle className="me-2" />
+                  <small>
+                    <strong>完整日志文件：</strong>
+                    <code className="ms-2" style={{ fontSize: '0.85em' }}>{systemLogPath}</code>
+                  </small>
+                </div>
+                <Button 
+                  variant="outline-primary" 
+                  size="sm"
+                  onClick={handleOpenLogFolder}
+                >
+                  <FaFolder className="me-1" />
+                  打开文件夹
+                </Button>
+              </Alert>
+            )}
+            
             {/* 工具栏 */}
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div className="d-flex gap-2 align-items-center">

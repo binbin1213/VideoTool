@@ -49,6 +49,17 @@ export function registerFFmpegHandlers(): void {
     return log.transports.file.getFile().path;
   });
 
+  /**
+   * 打开日志文件夹
+   */
+  ipcMain.handle('open-log-folder', async () => {
+    const { shell } = require('electron');
+    const logPath = log.transports.file.getFile().path;
+    const logDir = require('path').dirname(logPath);
+    await shell.openPath(logDir);
+    return logDir;
+  });
+
   log.info('FFmpeg IPC handlers registered');
 }
 

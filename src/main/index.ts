@@ -1,5 +1,6 @@
 import { app, BrowserWindow, nativeImage, Menu, type MenuItemConstructorOptions } from 'electron';
 import path from 'path';
+import fs from 'fs-extra';
 import log from 'electron-log';
 import { registerMergeHandlers } from './ipc/merge.handlers';
 import { registerSubtitleBurnHandlers } from './ipc/subtitle-burn.handlers';
@@ -8,20 +9,50 @@ import { FFmpegManager } from './services/FFmpegManager';
 import { initializeFFmpegPath } from './services/FFmpegService';
 
 // 配置日志
+// 强制设置日志路径（确保在用户数据目录）
+const userDataPath = app.getPath('userData');
+const logsPath = path.join(userDataPath, 'logs');
+
+// 确保日志目录存在
+try {
+  fs.ensureDirSync(logsPath);
+} catch (error) {
+  console.error('创建日志目录失败:', error);
+}
+
+// 设置日志文件路径
+log.transports.file.resolvePathFn = () => path.join(logsPath, 'main.log');
 log.transports.file.level = 'info';
 log.transports.file.maxSize = 10 * 1024 * 1024; // 10MB
 log.transports.console.level = 'debug';
 
-// 打印日志文件路径
-log.info('='.repeat(80));
-log.info('VideoTool 启动');
-log.info('日志文件路径:', log.transports.file.getFile().path);
-log.info('应用版本:', app.getVersion());
-log.info('Electron 版本:', process.versions.electron);
-log.info('Node 版本:', process.versions.node);
-log.info('平台:', process.platform);
-log.info('架构:', process.arch);
-log.info('='.repeat(80));
+// 确保日志可以写入
+try {
+  const logFilePath = log.transports.file.getFile().path;
+  
+  // 打印日志文件路径到控制台（即使文件日志失败也能看到）
+  console.log('='.repeat(80));
+  console.log('VideoTool 启动');
+  console.log('日志文件路径:', logFilePath);
+  console.log('用户数据路径:', userDataPath);
+  console.log('应用版本:', app.getVersion());
+  console.log('平台:', process.platform);
+  console.log('='.repeat(80));
+  
+  // 同时写入日志文件
+  log.info('='.repeat(80));
+  log.info('VideoTool 启动');
+  log.info('日志文件路径:', logFilePath);
+  log.info('用户数据路径:', userDataPath);
+  log.info('应用版本:', app.getVersion());
+  log.info('Electron 版本:', process.versions.electron);
+  log.info('Node 版本:', process.versions.node);
+  log.info('平台:', process.platform);
+  log.info('架构:', process.arch);
+  log.info('='.repeat(80));
+} catch (error) {
+  console.error('日志初始化失败:', error);
+}
 
 // 主窗口引用
 let mainWindow: BrowserWindow | null = null;

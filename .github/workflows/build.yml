@@ -51,6 +51,37 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
       
+      - name: 下载 FFmpeg (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          echo "=== 下载 FFmpeg for macOS ==="
+          brew install ffmpeg
+          mkdir -p resources/ffmpeg/mac
+          cp $(which ffmpeg) resources/ffmpeg/mac/ffmpeg
+          cp $(which ffprobe) resources/ffmpeg/mac/ffprobe
+          chmod +x resources/ffmpeg/mac/ffmpeg
+          chmod +x resources/ffmpeg/mac/ffprobe
+          ls -lh resources/ffmpeg/mac/
+      
+      - name: 下载 FFmpeg (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Host "=== 下载 FFmpeg for Windows ==="
+          $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+          $output = "$env:TEMP\ffmpeg.zip"
+          Write-Host "下载中..."
+          Invoke-WebRequest -Uri $url -OutFile $output
+          Write-Host "解压中..."
+          Expand-Archive -Path $output -DestinationPath "$env:TEMP\ffmpeg" -Force
+          $ffmpegDir = Get-ChildItem -Path "$env:TEMP\ffmpeg" -Directory | Select-Object -First 1
+          Write-Host "找到 FFmpeg 目录: $($ffmpegDir.FullName)"
+          New-Item -ItemType Directory -Force -Path "resources\ffmpeg\win"
+          Copy-Item "$($ffmpegDir.FullName)\bin\ffmpeg.exe" "resources\ffmpeg\win\"
+          Copy-Item "$($ffmpegDir.FullName)\bin\ffprobe.exe" "resources\ffmpeg\win\"
+          Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
+      
       - name: 构建应用
         run: pnpm run build
       
