@@ -1,5 +1,4 @@
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import path from 'path';
 import fs from 'fs-extra';
 import log from 'electron-log';
@@ -20,9 +19,16 @@ export function initializeFFmpegPath(): void {
       ffmpeg.setFfprobePath(customProbePath);
     }
   } else {
-    // 回退到 @ffmpeg-installer/ffmpeg
-    log.info('使用 ffmpeg-installer 路径:', ffmpegInstaller.path);
-    ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+    // 回退到 @ffmpeg-installer/ffmpeg（延迟加载避免模块初始化时出错）
+    try {
+      // 使用 require 延迟加载，避免在模块初始化时执行
+      const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+      log.info('使用 ffmpeg-installer 路径:', ffmpegInstaller.path);
+      ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+    } catch (error) {
+      log.error('加载 ffmpeg-installer 失败:', error);
+      log.warn('FFmpeg 初始化失败，请手动安装 FFmpeg');
+    }
   }
 }
 

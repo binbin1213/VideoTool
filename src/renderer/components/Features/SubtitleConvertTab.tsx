@@ -152,7 +152,6 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
         <h2>
           <FaPlay className="me-2" />
           字幕格式转换 (SRT → ASS)
-          <Badge bg="danger" className="ms-2">HOT</Badge>
         </h2>
       </div>
 

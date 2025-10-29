@@ -228,7 +228,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
         <h2>
           <FaPlay className="me-2" />
           字幕烧录
-          <Badge bg="success" className="ms-2">NEW</Badge>
         </h2>
       </div>
 

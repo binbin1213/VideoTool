@@ -224,7 +224,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
         <h2>
           <FaPlay className="me-2" />
           音视频合并
-          <Badge bg="primary" className="ms-2">NEW</Badge>
         </h2>
       </div>
 

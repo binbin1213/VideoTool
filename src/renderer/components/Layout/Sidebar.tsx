@@ -16,7 +16,7 @@ interface SidebarProps {
 
 function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   const menuItems = [
-    { id: 'subtitle-convert', icon: FaLanguage, label: '字幕转换', badge: 'HOT' },
+    { id: 'subtitle-convert', icon: FaLanguage, label: '字幕转换' },
     { id: 'merge', icon: FaExchangeAlt, label: '音视频合并' },
     { id: 'transcode', icon: FaFileVideo, label: '视频转码' },
     { id: 'subtitle-burn', icon: FaClosedCaptioning, label: '字幕烧录' },
