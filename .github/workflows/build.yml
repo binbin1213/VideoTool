@@ -115,6 +115,6 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/VideoTool-macOS/**/*.dmg
-            artifacts/VideoTool-Windows/**/*.exe
+            artifacts/VideoTool-Windows/**/VideoTool Setup*.exe
           fail_on_unmatched_files: false
 
