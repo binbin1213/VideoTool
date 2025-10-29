@@ -252,16 +252,17 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                 <Button 
                   onClick={handleSelectVideo}
                   style={{ 
-                    backgroundColor: '#e9ecef',
-                    border: '1px solid #ced4da',
-                    color: '#495057',
+                    backgroundColor: '#6c757d',
+                    border: '1px solid #6c757d',
+                    color: '#ffffff',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     fontWeight: '500',
-                    padding: '0.375rem 0.75rem',
-                    borderRadius: '0.25rem'
+                    padding: '0.375rem 1.5rem',
+                    borderRadius: '0.5rem',
+                    letterSpacing: '0.3em'
                   }}
                 >
-                  浏览...
+                  浏览
                 </Button>
                 <div className="flex-grow-1">
                   {videoFile ? (
@@ -297,16 +298,17 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                 <Button 
                   onClick={handleSelectSubtitle}
                   style={{ 
-                    backgroundColor: '#e9ecef',
-                    border: '1px solid #ced4da',
-                    color: '#495057',
+                    backgroundColor: '#6c757d',
+                    border: '1px solid #6c757d',
+                    color: '#ffffff',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     fontWeight: '500',
-                    padding: '0.375rem 0.75rem',
-                    borderRadius: '0.25rem'
+                    padding: '0.375rem 1.5rem',
+                    borderRadius: '0.5rem',
+                    letterSpacing: '0.3em'
                   }}
                 >
-                  浏览...
+                  浏览
                 </Button>
                 <div className="flex-grow-1">
                   {subtitleFile ? (
