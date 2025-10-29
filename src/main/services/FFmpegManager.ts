@@ -98,23 +98,42 @@ export class FFmpegManager {
         }
       }
 
-      // 2. 检查系统环境变量中的 FFmpeg
-      try {
-        const { stdout } = await execAsync('ffmpeg -version');
-        const version = stdout.split('\n')[0];
-        log.info('找到系统 FFmpeg:', version);
-        
-        this.ffmpegPath = 'ffmpeg';
-        this.ffprobePath = 'ffprobe';
-        
-        return {
-          installed: true,
-          version,
-          path: 'ffmpeg (系统)',
-        };
-      } catch (error) {
-        log.info('系统未安装 FFmpeg');
+      // 2. 检查系统常见路径中的 FFmpeg
+      const systemPaths = [
+        '/usr/local/bin/ffmpeg',
+        '/opt/homebrew/bin/ffmpeg',
+        '/usr/bin/ffmpeg',
+        'ffmpeg', // PATH 环境变量
+      ];
+
+      for (const systemPath of systemPaths) {
+        try {
+          const command = systemPath.includes('/') 
+            ? `"${systemPath}" -version` 
+            : `${systemPath} -version`;
+          const { stdout } = await execAsync(command);
+          const version = stdout.split('\n')[0];
+          log.info(`找到系统 FFmpeg (${systemPath}):`, version);
+          
+          // 如果是绝对路径，直接使用；否则使用命令名
+          this.ffmpegPath = systemPath;
+          this.ffprobePath = systemPath.includes('/') 
+            ? systemPath.replace('ffmpeg', 'ffprobe')
+            : 'ffprobe';
+          
+          return {
+            installed: true,
+            version,
+            path: systemPath,
+          };
+        } catch (error) {
+          // 继续检查下一个路径
+          continue;
+        }
       }
+
+      log.warn('系统未找到 FFmpeg');
+
 
       // 3. 都没有找到
       return {

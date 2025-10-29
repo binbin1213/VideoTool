@@ -1,5 +1,6 @@
-import { ipcMain } from 'electron';
+import { ipcMain, BrowserWindow } from 'electron';
 import { FFmpegManager } from '../services/FFmpegManager';
+import { initializeFFmpegPath } from '../services/FFmpegService';
 import log from 'electron-log';
 
 /**
@@ -9,53 +10,36 @@ export function registerFFmpegHandlers(): void {
   /**
    * 检查 FFmpeg 状态
    */
-  ipcMain.handle('ffmpeg:check-status', async () => {
-    try {
-      const status = await FFmpegManager.checkFFmpeg();
-      return { success: true, data: status };
-    } catch (error) {
-      log.error('检查 FFmpeg 状态失败:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '未知错误',
-      };
-    }
+  ipcMain.handle('check-ffmpeg-status', async () => {
+    return await FFmpegManager.checkFFmpeg();
   });
 
   /**
    * 下载并安装 FFmpeg
    */
-  ipcMain.handle('ffmpeg:download-install', async (_, onProgressChannel: string) => {
+  ipcMain.handle('download-ffmpeg', async (event) => {
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    if (!mainWindow) {
+      log.error('无法获取主窗口进行 FFmpeg 下载进度更新');
+      return { success: false, message: '无法获取主窗口' };
+    }
+
     try {
       const success = await FFmpegManager.downloadAndInstall((message, progress) => {
-        // 发送进度更新到渲染进程
-        if (onProgressChannel) {
-          ipcMain.emit(onProgressChannel, { message, progress });
-        }
-        log.info(`FFmpeg 安装进度: ${message} ${progress}%`);
+        mainWindow.webContents.send('ffmpeg-download-progress', { progress, message });
       });
-
-      return { success };
+      
+      if (success) {
+        initializeFFmpegPath(); // 更新 FFmpegService 的路径
+        return { success: true, message: 'FFmpeg 安装成功' };
+      } else {
+        return { success: false, message: 'FFmpeg 安装失败' };
+      }
     } catch (error) {
-      log.error('下载安装 FFmpeg 失败:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '未知错误',
-      };
+      const errorMessage = error instanceof Error ? error.message : '未知错误';
+      log.error('FFmpeg 下载安装失败:', errorMessage);
+      return { success: false, message: errorMessage };
     }
-  });
-
-  /**
-   * 获取 FFmpeg 路径
-   */
-  ipcMain.handle('ffmpeg:get-path', async () => {
-    const ffmpegPath = FFmpegManager.getFFmpegPath();
-    const ffprobePath = FFmpegManager.getFFprobePath();
-    
-    return {
-      ffmpeg: ffmpegPath,
-      ffprobe: ffprobePath,
-    };
   });
 
   log.info('FFmpeg IPC handlers registered');
