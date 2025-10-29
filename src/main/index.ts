@@ -78,24 +78,31 @@ function createWindow() {
  * 应用准备就绪
  */
 app.whenReady().then(async () => {
-  // 初始化 FFmpeg
-  log.info('正在初始化 FFmpeg...');
-  const ffmpegStatus = await FFmpegManager.initialize();
-  
-  if (ffmpegStatus.installed) {
-    log.info('FFmpeg 已就绪:', ffmpegStatus.version);
-    // 更新 FFmpegService 使用的路径
-    initializeFFmpegPath();
-  } else {
-    log.warn('FFmpeg 未安装，某些功能可能无法使用');
-  }
-  
-  // 注册 IPC handlers
+  // 注册 IPC handlers（必须在窗口创建前）
   registerFFmpegHandlers();
   registerMergeHandlers();
   registerSubtitleBurnHandlers();
   
+  // 先创建窗口
   createWindow();
+  
+  // 窗口创建后再初始化 FFmpeg（避免在没有窗口时弹出对话框导致崩溃）
+  setTimeout(async () => {
+    try {
+      log.info('正在初始化 FFmpeg...');
+      const ffmpegStatus = await FFmpegManager.initialize();
+      
+      if (ffmpegStatus.installed) {
+        log.info('FFmpeg 已就绪:', ffmpegStatus.version);
+        // 更新 FFmpegService 使用的路径
+        initializeFFmpegPath();
+      } else {
+        log.warn('FFmpeg 未安装，某些功能可能无法使用');
+      }
+    } catch (error) {
+      log.error('FFmpeg 初始化失败:', error);
+    }
+  }, 1000); // 延迟1秒，确保窗口已完全加载
 
   // macOS：点击 Dock 图标时重新创建窗口
   app.on('activate', () => {

@@ -348,28 +348,17 @@ export class FFmpegManager {
 
   /**
    * 初始化 FFmpeg（应用启动时调用）
+   * 只检测状态，不弹窗，不自动安装
    */
   static async initialize(): Promise<FFmpegStatus> {
     log.info('初始化 FFmpeg...');
     
     const status = await this.checkFFmpeg();
     
-    if (!status.installed) {
-      log.warn('FFmpeg 未安装');
-      
-      // 显示安装对话框
-      const shouldInstall = await this.showInstallDialog();
-      
-      if (shouldInstall) {
-        // TODO: 显示进度窗口
-        const success = await this.downloadAndInstall((message, progress) => {
-          log.info(`安装进度: ${message} ${progress}%`);
-        });
-        
-        if (success) {
-          return await this.checkFFmpeg();
-        }
-      }
+    if (status.installed) {
+      log.info('FFmpeg 已安装:', status.version);
+    } else {
+      log.warn('FFmpeg 未安装，用户可在界面中手动安装');
     }
     
     return status;
