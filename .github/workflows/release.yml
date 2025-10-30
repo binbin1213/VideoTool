@@ -30,11 +30,51 @@ jobs:
         with:
           version: 9
 
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+      
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile=false
+        run: pnpm install --frozen-lockfile
+
+      - name: Download FFmpeg (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Host "=== 下载 FFmpeg for Windows ==="
+          $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+          $output = "$env:TEMP\ffmpeg.zip"
+          Write-Host "下载中..."
+          Invoke-WebRequest -Uri $url -OutFile $output
+          Write-Host "解压中..."
+          Expand-Archive -Path $output -DestinationPath "$env:TEMP\ffmpeg" -Force
+          $ffmpegDir = Get-ChildItem -Path "$env:TEMP\ffmpeg" -Directory | Select-Object -First 1
+          Write-Host "找到 FFmpeg 目录: $($ffmpegDir.FullName)"
+          New-Item -ItemType Directory -Force -Path "resources\ffmpeg\win"
+          Copy-Item "$($ffmpegDir.FullName)\bin\ffmpeg.exe" "resources\ffmpeg\win\"
+          Copy-Item "$($ffmpegDir.FullName)\bin\ffprobe.exe" "resources\ffmpeg\win\"
+          Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
 
       - name: Build app
         run: pnpm build
+      
+      - name: Check build output
+        shell: bash
+        run: |
+          echo "=== 检查 dist 目录结构 ==="
+          find dist -type f -name "*.js" | head -20
+          echo "=== 检查入口文件 ==="
+          ls -la dist/main/main/index.js || echo "入口文件不存在"
 
       - name: Build artifact with electron-builder (macOS)
         if: runner.os == 'macOS'
@@ -53,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: VideoTool-${{ runner.os }}
-          path: release/**/*
+          path: release/
           if-no-files-found: warn
 
   publish:
@@ -74,9 +114,12 @@ jobs:
       - name: Create/Upload GitHub Release assets
         uses: softprops/action-gh-release@v2
         with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
           files: |
             artifacts/VideoTool-macOS/**/*.dmg
-            artifacts/VideoTool-Windows/**/*.exe
+            artifacts/VideoTool-Windows/**/VideoTool Setup*.exe
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
