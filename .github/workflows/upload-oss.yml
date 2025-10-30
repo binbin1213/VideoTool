@@ -2,7 +2,13 @@ name: Upload to Aliyun OSS
 
 on:
   release:
-    types: [published]
+    types: [published, created]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g., v1.0.4)'
+        required: true
+        default: 'v1.0.4'
 
 jobs:
   upload:
@@ -12,7 +18,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG_NAME="${{ github.event.release.tag_name }}"
+          # 获取标签名（支持手动触发和自动触发）
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ github.event.inputs.tag_name }}"
+          else
+            TAG_NAME="${{ github.event.release.tag_name }}"
+          fi
+          
           echo "📦 下载 Release: $TAG_NAME"
           
           # 创建下载目录
