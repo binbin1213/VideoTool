@@ -18,8 +18,18 @@ function AboutTab() {
   const [updateInfo, setUpdateInfo] = useState<any>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadInfo, setDownloadInfo] = useState<{ transferred: number; total: number } | null>(null);
   const [updateMessage, setUpdateMessage] = useState('');
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  // 格式化文件大小
+  const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+  };
 
   useEffect(() => {
     // 监听更新状态
@@ -51,6 +61,10 @@ function AboutTab() {
         case 'download-progress':
           setDownloading(true);
           setDownloadProgress(Math.round(status.data.percent));
+          setDownloadInfo({
+            transferred: status.data.transferred,
+            total: status.data.total,
+          });
           break;
 
         case 'update-downloaded':
@@ -218,7 +232,14 @@ function AboutTab() {
             <div>
               <div className="d-flex justify-content-between mb-2">
                 <small>下载进度</small>
-                <small>{downloadProgress}%</small>
+                <small>
+                  {downloadProgress}%
+                  {downloadInfo && (
+                    <span className="ms-2 text-muted">
+                      ({formatBytes(downloadInfo.transferred)} / {formatBytes(downloadInfo.total)})
+                    </span>
+                  )}
+                </small>
               </div>
               <ProgressBar now={downloadProgress} animated striped />
             </div>
