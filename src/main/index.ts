@@ -6,8 +6,10 @@ import { registerMergeHandlers } from './ipc/merge.handlers';
 import { registerSubtitleBurnHandlers } from './ipc/subtitle-burn.handlers';
 import { registerFFmpegHandlers } from './ipc/ffmpeg.handlers';
 import { registerTranscodeHandlers } from './ipc/transcode.handlers';
+import { registerUpdateHandlers } from './ipc/update.handlers';
 import { FFmpegManager } from './services/FFmpegManager';
 import { initializeFFmpegPath } from './services/FFmpegService';
+import { autoUpdateService } from './services/AutoUpdateService';
 
 // 配置日志
 // 强制设置日志路径（确保在用户数据目录）
@@ -189,9 +191,15 @@ app.whenReady().then(async () => {
   registerMergeHandlers();
   registerSubtitleBurnHandlers();
   registerTranscodeHandlers();
+  registerUpdateHandlers();
   
   // 先创建窗口
   createWindow();
+  
+  // 设置主窗口引用给自动更新服务
+  if (mainWindow) {
+    autoUpdateService.setMainWindow(mainWindow);
+  }
   
   // 窗口创建后再初始化 FFmpeg（避免在没有窗口时弹出对话框导致崩溃）
   setTimeout(async () => {
@@ -209,6 +217,9 @@ app.whenReady().then(async () => {
     } catch (error) {
       log.error('FFmpeg 初始化失败:', error);
     }
+    
+    // FFmpeg 初始化完成后，检查应用更新
+    autoUpdateService.checkForUpdatesOnStartup();
   }, 1000); // 延迟1秒，确保窗口已完全加载
 
   // macOS：点击 Dock 图标时重新创建窗口

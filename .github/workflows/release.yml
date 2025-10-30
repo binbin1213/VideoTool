@@ -51,17 +51,17 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          echo "=== 下载 FFmpeg for macOS (arm64) ==="
+          echo "=== 下载 FFmpeg for macOS (Universal Binary) ==="
           mkdir -p resources/ffmpeg/mac
           cd resources/ffmpeg/mac
           
-          # 下载 FFmpeg arm64 版本
-          echo "下载 FFmpeg (arm64)..."
+          # 下载 FFmpeg Universal Binary（同时支持 arm64 和 x64）
+          echo "下载 FFmpeg (Universal Binary)..."
           curl -L -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
           unzip -o ffmpeg.zip
           rm ffmpeg.zip
           
-          echo "下载 FFprobe (arm64)..."
+          echo "下载 FFprobe (Universal Binary)..."
           curl -L -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
           unzip -o ffprobe.zip
           rm ffprobe.zip
@@ -69,15 +69,20 @@ jobs:
           # 设置执行权限
           chmod +x ffmpeg ffprobe
           
-          # 验证架构
+          # 验证架构（应该显示 arm64 和 x86_64）
+          echo "=== 验证 FFmpeg 架构 ==="
           ls -lh
-          file ffmpeg
-          file ffprobe
+          echo "FFmpeg 架构:"
+          lipo -info ffmpeg || file ffmpeg
+          echo "FFprobe 架构:"
+          lipo -info ffprobe || file ffprobe
+          
+          # 测试运行
           ./ffmpeg -version | head -1
           ./ffprobe -version | head -1
           
           cd ../../..
-          echo "FFmpeg for macOS (arm64) 下载完成"
+          echo "✅ FFmpeg Universal Binary 下载完成"
 
       - name: 下载 FFmpeg (Windows)
         if: runner.os == 'Windows'

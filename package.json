@@ -108,7 +108,9 @@
         {
           "target": "dmg",
           "arch": [
-            "arm64"
+            "universal",
+            "arm64",
+            "x64"
           ]
         }
       ],
@@ -116,6 +118,7 @@
       "icon": "resources/icons/icon.icns",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
       "extendInfo": {
         "CFBundleDisplayName": "VideoTool",
         "CFBundleName": "VideoTool",
@@ -123,12 +126,18 @@
       }
     },
     "dmg": {
-      "writeUpdateInfo": false
+      "writeUpdateInfo": true
     },
     "win": {
       "target": [
         {
           "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
           "arch": [
             "x64"
           ]
