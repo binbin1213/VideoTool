@@ -155,10 +155,16 @@
       "deleteAppDataOnUninstall": false,
       "differentialPackage": false
     },
-    "publish": {
-      "provider": "github",
-      "owner": "binbin1213",
-      "repo": "VideoTool"
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "binbin1213",
+        "repo": "VideoTool"
+      },
+      {
+        "provider": "generic",
+        "url": "https://videotool-updates.oss-cn-beijing.aliyuncs.com/releases"
+      }
+    ]
   }
 }

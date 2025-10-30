@@ -1,0 +1,54 @@
+name: Upload to Aliyun OSS
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 下载 Release 文件
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          echo "📦 下载 Release: $TAG_NAME"
+          
+          # 创建下载目录
+          mkdir -p release-assets
+          
+          # 下载所有资产
+          gh release download "$TAG_NAME" --repo ${{ github.repository }} --dir ./release-assets
+          
+          echo "✅ 文件下载完成："
+          ls -lh ./release-assets/
+
+      - name: 安装 OSS 工具
+        run: |
+          echo "🔧 下载 ossutil..."
+          wget -q http://gosspublic.alicdn.com/ossutil/1.7.18/ossutil64
+          chmod +x ossutil64
+          
+          echo "🔑 配置 OSS 认证..."
+          ./ossutil64 config -e ${{ secrets.OSS_ENDPOINT }} \
+                              -i ${{ secrets.OSS_ACCESS_KEY_ID }} \
+                              -k ${{ secrets.OSS_ACCESS_KEY_SECRET }}
+
+      - name: 上传到 OSS
+        run: |
+          echo "☁️  上传文件到阿里云 OSS..."
+          
+          # 上传所有文件到 OSS
+          ./ossutil64 cp -r ./release-assets oss://videotool-updates/releases/ -f -u
+          
+          echo "✅ 上传完成！"
+          echo ""
+          echo "📍 访问地址："
+          echo "https://videotool-updates.oss-cn-beijing.aliyuncs.com/releases/"
+          
+      - name: 显示上传结果
+        run: |
+          echo "📊 OSS 文件列表："
+          ./ossutil64 ls oss://videotool-updates/releases/ -d
+
