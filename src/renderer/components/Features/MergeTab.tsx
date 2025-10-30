@@ -4,7 +4,7 @@ import { FaFileVideo, FaFileAudio, FaPlay, FaCog, FaInfoCircle } from 'react-ico
 import type { VideoInfo, AudioInfo, MergeProgress } from '../../../shared/types/merge.types';
 import type { TaskProgress } from '../../App';
 
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer } = (window as any).electron;
 
 interface MergeTabProps {
   addLog: (message: string, level: 'info' | 'success' | 'error' | 'warning') => void;

@@ -179,52 +179,76 @@ export class FFmpegManager {
     onProgress?: (progress: number) => void
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      https.get(url, (response) => {
-        // 处理重定向
-        if (response.statusCode === 302 || response.statusCode === 301) {
-          const redirectUrl = response.headers.location;
-          if (redirectUrl) {
-            log.info('重定向到:', redirectUrl);
-            this.downloadFile(redirectUrl, destPath, onProgress)
-              .then(resolve)
-              .catch(reject);
+      const requestOptions = {
+        headers: {
+          'User-Agent': 'VideoTool/1.0 (+Electron)'
+        },
+        timeout: 30000,
+      } as const;
+
+      const doRequest = (requestUrl: string) => {
+        const req = https.get(requestUrl, requestOptions as any, (response) => {
+          // 处理重定向（支持 301/302/303/307/308），兼容相对 location
+          const redirectCodes = new Set([301, 302, 303, 307, 308]);
+          if (response.statusCode && redirectCodes.has(response.statusCode)) {
+            const redirectLocation = response.headers.location;
+            if (redirectLocation) {
+              try {
+                const finalUrl = new URL(redirectLocation, requestUrl).toString();
+                log.info('重定向到:', redirectLocation, '=>', finalUrl);
+                // 消耗响应并继续下一次请求
+                response.resume();
+                doRequest(finalUrl);
+                return;
+              } catch (e) {
+                reject(new Error(`重定向地址无效: ${redirectLocation}`));
+                return;
+              }
+            }
+          }
+
+          if (response.statusCode !== 200) {
+            reject(new Error(`下载失败，状态码: ${response.statusCode}`));
             return;
           }
-        }
 
-        if (response.statusCode !== 200) {
-          reject(new Error(`下载失败，状态码: ${response.statusCode}`));
-          return;
-        }
+          const totalSize = parseInt(response.headers['content-length'] || '0', 10);
+          let downloadedSize = 0;
 
-        const totalSize = parseInt(response.headers['content-length'] || '0', 10);
-        let downloadedSize = 0;
+          const fileStream = createWriteStream(destPath);
 
-        const fileStream = createWriteStream(destPath);
+          response.on('data', (chunk) => {
+            downloadedSize += chunk.length;
+            if (totalSize > 0 && onProgress) {
+              const progress = (downloadedSize / totalSize) * 100;
+              onProgress(progress);
+            }
+          });
 
-        response.on('data', (chunk) => {
-          downloadedSize += chunk.length;
-          if (totalSize > 0 && onProgress) {
-            const progress = (downloadedSize / totalSize) * 100;
-            onProgress(progress);
-          }
+          response.pipe(fileStream);
+
+          fileStream.on('finish', () => {
+            fileStream.close();
+            resolve();
+          });
+
+          fileStream.on('error', (err) => {
+            fs.unlink(destPath, () => {});
+            reject(err);
+          });
         });
 
-        response.pipe(fileStream);
-
-        fileStream.on('finish', () => {
-          fileStream.close();
-          resolve();
+        req.on('timeout', () => {
+          req.destroy(new Error('请求超时'));
         });
 
-        fileStream.on('error', (err) => {
+        req.on('error', (err) => {
           fs.unlink(destPath, () => {});
           reject(err);
         });
-      }).on('error', (err) => {
-        fs.unlink(destPath, () => {});
-        reject(err);
-      });
+      };
+
+      doRequest(url);
     });
   }
 

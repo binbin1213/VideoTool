@@ -8,7 +8,7 @@ import LogViewerTab from './components/Features/LogViewerTab';
 import AboutTab from './components/Features/AboutTab';
 import './styles/App.scss';
 
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer } = (window as any).electron;
 
 type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | 'batch' | 'logs' | 'about';
 

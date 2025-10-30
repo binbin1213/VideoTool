@@ -59,6 +59,10 @@ let mainWindow: BrowserWindow | null = null;
 
 // 判断是否是开发环境
 const isDev = process.env.NODE_ENV === 'development';
+// 开发模式静默 Electron 安全警告
+if (isDev) {
+  process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+}
 
 /**
  * 创建主窗口
@@ -81,10 +85,12 @@ function createWindow() {
     icon: icon,
     titleBarStyle: 'hiddenInset', // macOS: 隐藏标题栏，保留交通灯按钮
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      webSecurity: false,
-      devTools: true,
+      // 生产环境加固：关闭 nodeIntegration，开启 contextIsolation/webSecurity
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: true,
+      devTools: isDev,
+      preload: path.join(__dirname, 'preload.js'),
     },
     title: 'VideoTool - 视频处理工具',
     show: false, // 先不显示，等加载完成再显示

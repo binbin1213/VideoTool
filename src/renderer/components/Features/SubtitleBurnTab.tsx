@@ -5,7 +5,7 @@ import type { VideoInfo } from '../../../shared/types/merge.types';
 import type { SubtitleFileInfo, SubtitleBurnProgress } from '../../../shared/types/subtitle-burn.types';
 import type { TaskProgress } from '../../App';
 
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer } = (window as any).electron;
 
 interface SubtitleBurnTabProps {
   addLog: (message: string, level: 'info' | 'success' | 'error' | 'warning') => void;
