@@ -125,7 +125,8 @@
       }
     },
     "dmg": {
-      "writeUpdateInfo": true
+      "writeUpdateInfo": true,
+      "writeBlockMap": false
     },
     "win": {
       "target": [
@@ -152,6 +153,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "deleteAppDataOnUninstall": false,
+      "writeBlockMap": false,
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "portable": {
