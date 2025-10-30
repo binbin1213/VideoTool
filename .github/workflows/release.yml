@@ -155,11 +155,11 @@ jobs:
           prerelease: false
           generate_release_notes: true
           files: |
-            artifacts/VideoTool-macOS/**/*.dmg
-            artifacts/VideoTool-macOS/**/latest-mac.yml
-            artifacts/VideoTool-Windows/**/VideoTool-Setup*.exe
-            artifacts/VideoTool-Windows/**/VideoTool*Portable.exe
-            artifacts/VideoTool-Windows/**/latest.yml
+            artifacts/VideoTool-macOS/VideoTool-*.dmg
+            artifacts/VideoTool-macOS/latest-mac.yml
+            artifacts/VideoTool-Windows/VideoTool-Setup-*.exe
+            artifacts/VideoTool-Windows/VideoTool-*-Portable.exe
+            artifacts/VideoTool-Windows/latest.yml
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
