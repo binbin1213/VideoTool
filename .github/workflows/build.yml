@@ -53,17 +53,17 @@ jobs:
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
-          echo "=== 下载 FFmpeg for macOS ==="
+          echo "=== 下载 FFmpeg for macOS (arm64) ==="
           mkdir -p resources/ffmpeg/mac
           cd resources/ffmpeg/mac
           
-          # 下载 FFmpeg static build
-          echo "下载 FFmpeg..."
-          curl -L -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/zip"
+          # 下载 FFmpeg arm64 版本
+          echo "下载 FFmpeg (arm64)..."
+          curl -L -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
           unzip -o ffmpeg.zip
           rm ffmpeg.zip
           
-          echo "下载 FFprobe..."
+          echo "下载 FFprobe (arm64)..."
           curl -L -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
           unzip -o ffprobe.zip
           rm ffprobe.zip
@@ -71,13 +71,15 @@ jobs:
           # 设置执行权限
           chmod +x ffmpeg ffprobe
           
-          # 验证
+          # 验证架构
           ls -lh
+          file ffmpeg
+          file ffprobe
           ./ffmpeg -version | head -1
           ./ffprobe -version | head -1
           
           cd ../../..
-          echo "FFmpeg for macOS 下载完成"
+          echo "FFmpeg for macOS (arm64) 下载完成"
       
       - name: 下载 FFmpeg (Windows)
         if: matrix.os == 'windows-latest'
