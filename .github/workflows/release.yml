@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build app
+        run: pnpm build
+
+      - name: Build artifact with electron-builder
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS 无证书时自动使用临时身份签名，便于 CI 产物调试
+          CSC_IDENTITY_AUTO: 'true'
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            pnpm run build:mac
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            pnpm run build:win
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: VideoTool-${{ runner.os }}
+          path: |
+            release/**/*
+
+
