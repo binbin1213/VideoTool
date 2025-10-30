@@ -3,6 +3,7 @@ import { Container, Row, Col, Alert, Button, Spinner } from 'react-bootstrap';
 import Sidebar from './components/Layout/Sidebar';
 import SubtitleConvertTab from './components/Features/SubtitleConvertTab';
 import MergeTab from './components/Features/MergeTab';
+import TranscodeTab from './components/Features/TranscodeTab';
 import SubtitleBurnTab from './components/Features/SubtitleBurnTab';
 import LogViewerTab from './components/Features/LogViewerTab';
 import AboutTab from './components/Features/AboutTab';
@@ -162,7 +163,7 @@ function App() {
       case 'about':
         return <AboutTab />;
       case 'transcode':
-        return <div className="p-4"><h3>视频转码功能开发中...</h3></div>;
+        return <TranscodeTab />;
       case 'batch':
         return <div className="p-4"><h3>批量处理功能开发中...</h3></div>;
       default:

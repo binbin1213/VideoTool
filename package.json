@@ -17,7 +17,7 @@
     "dev:main": "cross-env NODE_ENV=development electron .",
     "build": "pnpm run build:renderer && pnpm run build:main",
     "build:renderer": "vite build",
-    "build:main": "tsc -p tsconfig.main.json",
+    "build:main": "tsc --build tsconfig.main.json",
     "build:mac": "pnpm run build && electron-builder --mac",
     "build:mac:universal": "pnpm run build && electron-builder --mac --universal",
     "build:win": "pnpm run build && electron-builder --win",

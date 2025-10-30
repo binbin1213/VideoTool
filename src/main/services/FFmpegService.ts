@@ -207,15 +207,61 @@ export class FFmpegService {
           return;
         }
 
+        const audioStream = metadata.streams.find((s) => s.codec_type === 'audio');
+
+        // 格式名称优化：根据文件扩展名判断
+        let formatName = 'UNKNOWN';
+        const ext = videoPath.split('.').pop()?.toLowerCase() || '';
+        
+        if (ext) {
+          // 优先使用文件扩展名
+          formatName = ext.toUpperCase();
+        } else if (metadata.format.format_name) {
+          // 如果没有扩展名，取第一个格式
+          formatName = metadata.format.format_name.split(',')[0].toUpperCase();
+        }
+
+        // 解析位深度（从像素格式推断）
+        const pixelFormat = videoStream.pix_fmt || '';
+        let bitDepth = 8; // 默认 8bit
+        if (pixelFormat.includes('10le') || pixelFormat.includes('10be') || pixelFormat.includes('p010')) {
+          bitDepth = 10;
+        } else if (pixelFormat.includes('12le') || pixelFormat.includes('12be')) {
+          bitDepth = 12;
+        }
+
         const info: VideoInfo = {
+          // ===== 基础信息 =====
           duration: metadata.format.duration || 0,
           width: videoStream.width || 0,
           height: videoStream.height || 0,
           codec: videoStream.codec_name || 'unknown',
           fps: eval(videoStream.r_frame_rate || '0') || 0,
           bitrate: metadata.format.bit_rate || 0,
+          videoCodec: videoStream.codec_name || 'unknown',
+          audioCodec: audioStream?.codec_name || 'none',
+          audioBitrate: audioStream?.bit_rate ? Number(audioStream.bit_rate) : 0,
+          size: metadata.format.size || 0,
+          formatName: formatName,
+
+          // ===== 视频详细参数（AI 分析用） =====
+          pixelFormat: pixelFormat || undefined,
+          colorSpace: videoStream.color_space || undefined,
+          colorRange: videoStream.color_range || undefined,
+          colorPrimaries: videoStream.color_primaries || undefined,
+          colorTransfer: videoStream.color_transfer || undefined,
+          bitDepth: bitDepth,
+          profile: videoStream.profile ? String(videoStream.profile) : undefined,
+          level: videoStream.level ? Number(videoStream.level) / 10 : undefined, // level 通常是 40, 41 等，除以 10 得到 4.0, 4.1
+
+          // ===== 音频详细参数（AI 分析用） =====
+          sampleRate: audioStream?.sample_rate ? Number(audioStream.sample_rate) : undefined,
+          channels: audioStream?.channels || undefined,
+          channelLayout: audioStream?.channel_layout || undefined,
+          audioBitDepth: audioStream?.bits_per_sample || undefined,
         };
 
+        log.info('视频信息:', info);
         resolve(info);
       });
     });

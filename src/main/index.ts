@@ -5,6 +5,7 @@ import log from 'electron-log';
 import { registerMergeHandlers } from './ipc/merge.handlers';
 import { registerSubtitleBurnHandlers } from './ipc/subtitle-burn.handlers';
 import { registerFFmpegHandlers } from './ipc/ffmpeg.handlers';
+import { registerTranscodeHandlers } from './ipc/transcode.handlers';
 import { FFmpegManager } from './services/FFmpegManager';
 import { initializeFFmpegPath } from './services/FFmpegService';
 
@@ -187,6 +188,7 @@ app.whenReady().then(async () => {
   registerFFmpegHandlers();
   registerMergeHandlers();
   registerSubtitleBurnHandlers();
+  registerTranscodeHandlers();
   
   // 先创建窗口
   createWindow();

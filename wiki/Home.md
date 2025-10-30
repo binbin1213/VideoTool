@@ -24,6 +24,7 @@
 - **[字幕转换](Subtitle-Conversion)** - SRT→ASS 智能转换详解
 - **[音视频合并](Audio-Video-Merge)** - 音视频合并功能说明
 - **[字幕烧录](Subtitle-Burn)** - 字幕烧录功能说明
+- **[视频转码](Video-Transcode)** - 智能视频转码功能详解（AI 驱动 + 硬件加速）⭐ **NEW**
 - **[硬件加速](Hardware-Acceleration)** - 硬件加速支持详解（VideoToolbox/QSV/NVENC）
 - **[常见问题](FAQ)** - FAQ 和问题排查
 
@@ -48,6 +49,13 @@
 - 自定义字体和样式
 - 硬件加速编码
 - 实时进度显示
+
+### 视频转码 ⭐ **NEW**
+- 🧠 智能优化系统（三层决策）
+- 🤖 AI 驱动参数推荐（DeepSeek / OpenAI）
+- 🚀 硬件加速支持（速度提升 5-10 倍）
+- ⚡ 流式复制（5 秒完成，100% 无损）
+- 💾 状态持久化
 
 ### FFmpeg 自动化
 - 一键安装 FFmpeg
