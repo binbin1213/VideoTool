@@ -160,7 +160,6 @@ jobs:
             artifacts/VideoTool-macOS/**/*.blockmap
             artifacts/VideoTool-macOS/**/*.yml
             artifacts/VideoTool-Windows/**/VideoTool-Setup*.exe
-            artifacts/VideoTool-Windows/**/*.nsis.7z
             artifacts/VideoTool-Windows/**/VideoTool*Portable.exe
             artifacts/VideoTool-Windows/**/*.yml
             artifacts/VideoTool-Windows/**/*.blockmap

@@ -159,7 +159,6 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "deleteAppDataOnUninstall": false,
-      "differentialPackage": true,
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "portable": {
