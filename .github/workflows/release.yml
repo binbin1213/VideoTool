@@ -159,9 +159,11 @@ jobs:
             artifacts/VideoTool-macOS/**/*.zip
             artifacts/VideoTool-macOS/**/*.blockmap
             artifacts/VideoTool-macOS/**/*.yml
-            artifacts/VideoTool-Windows/**/VideoTool Setup*.exe
+            artifacts/VideoTool-Windows/**/VideoTool-Setup*.exe
+            artifacts/VideoTool-Windows/**/*.nsis.7z
             artifacts/VideoTool-Windows/**/VideoTool*Portable.exe
             artifacts/VideoTool-Windows/**/*.yml
+            artifacts/VideoTool-Windows/**/*.blockmap
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
