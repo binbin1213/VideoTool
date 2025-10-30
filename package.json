@@ -117,8 +117,6 @@
       "extendInfo": {
         "CFBundleDisplayName": "VideoTool",
         "CFBundleName": "VideoTool",
-        "CFBundleShortVersionString": "1.0.0",
-        "CFBundleVersion": "1.0.0",
         "NSHumanReadableCopyright": "Copyright © 2025 Binbin. All rights reserved."
       }
     },
