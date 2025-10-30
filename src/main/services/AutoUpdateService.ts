@@ -163,7 +163,11 @@ export class AutoUpdateService {
    */
   quitAndInstall(): void {
     log.info('退出并安装更新...');
-    autoUpdater.quitAndInstall(false, true);
+    // macOS: 需要立即退出，更新会在后台完成
+    // Windows: 会启动安装程序
+    setImmediate(() => {
+      autoUpdater.quitAndInstall(false, true);
+    });
   }
 
   /**
