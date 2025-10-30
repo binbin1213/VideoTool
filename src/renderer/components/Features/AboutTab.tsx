@@ -1,5 +1,6 @@
 import { Card } from 'react-bootstrap';
 import { FaGithub, FaEnvelope } from 'react-icons/fa';
+import packageJson from '../../../../package.json';
 
 function AboutTab() {
   return (
@@ -14,7 +15,7 @@ function AboutTab() {
           fontSize: '2.5rem'
         }}>VideoTool</h1>
         <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
-          强大的跨平台视频处理工具 · 开源免费 · v1.0.2
+          强大的跨平台视频处理工具 · 开源免费 · v{packageJson.version}
         </p>
       </div>
 
