@@ -17,26 +17,26 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: 配置 Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Setup pnpm
+      - name: 配置 pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - name: Get pnpm store directory
+      - name: 获取 pnpm 缓存目录
         id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
       
-      - name: Setup pnpm cache
+      - name: 设置 pnpm 缓存
         uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
@@ -44,10 +44,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install dependencies
+      - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
-      - name: Download FFmpeg (macOS)
+      - name: 下载 FFmpeg (macOS)
         if: runner.os == 'macOS'
         shell: bash
         run: |
@@ -79,7 +79,7 @@ jobs:
           cd ../../..
           echo "FFmpeg for macOS (arm64) 下载完成"
 
-      - name: Download FFmpeg (Windows)
+      - name: 下载 FFmpeg (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
@@ -97,10 +97,10 @@ jobs:
           Copy-Item "$($ffmpegDir.FullName)\bin\ffprobe.exe" "resources\ffmpeg\win\"
           Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
 
-      - name: Build app
+      - name: 构建应用
         run: pnpm build
       
-      - name: Check build output
+      - name: 检查构建输出
         shell: bash
         run: |
           echo "=== 检查 dist 目录结构 ==="
@@ -108,20 +108,20 @@ jobs:
           echo "=== 检查入口文件 ==="
           ls -la dist/main/main/index.js || echo "入口文件不存在"
 
-      - name: Build artifact with electron-builder (macOS)
+      - name: 打包应用 (macOS)
         if: runner.os == 'macOS'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO: 'true'
         run: pnpm run build:mac
 
-      - name: Build artifact with electron-builder (Windows)
+      - name: 打包应用 (Windows)
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm run build:win
 
-      - name: Upload artifacts
+      - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: VideoTool-${{ runner.os }}
@@ -129,21 +129,21 @@ jobs:
           if-no-files-found: warn
 
   publish:
-    name: Publish Release
+    name: 发布版本
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download all build artifacts
+      - name: 下载所有构建产物
         uses: actions/download-artifact@v4
         with:
           path: artifacts
           pattern: VideoTool-*
           merge-multiple: false
 
-      - name: Show artifacts
+      - name: 显示构建产物
         run: ls -R artifacts || true
 
-      - name: Create/Upload GitHub Release assets
+      - name: 创建并上传 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           draft: false
