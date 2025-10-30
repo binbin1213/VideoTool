@@ -4,8 +4,12 @@ import packageJson from '../../../../package.json';
 
 function AboutTab() {
   return (
-    <div className="about-container" style={{ padding: '30px', maxWidth: '800px', margin: '0 auto' }}>
-      <div className="text-center mb-5">
+    <div className="about-container" style={{ padding: '15px 30px 30px', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="text-center mb-4" style={{
+        WebkitAppRegion: 'drag',
+        userSelect: 'none',
+        cursor: 'move'
+      } as React.CSSProperties}>
         <h1 className="mb-2" style={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           WebkitBackgroundClip: 'text',
@@ -22,9 +26,9 @@ function AboutTab() {
       {/* 软件介绍 */}
       <Card className="mb-3">
         <Card.Header className="bg-light">
-          <h5 className="mb-0">
+          <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>
             软件简介
-          </h5>
+          </div>
         </Card.Header>
         <Card.Body>
           <p className="mb-2">
@@ -46,7 +50,7 @@ function AboutTab() {
       {/* 主要功能 */}
       <Card className="mb-3">
         <Card.Header className="bg-light">
-          <h5 className="mb-0">主要功能</h5>
+          <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>主要功能</div>
         </Card.Header>
         <Card.Body>
           <ul className="mb-0" style={{ lineHeight: '1.8' }}>
@@ -62,7 +66,7 @@ function AboutTab() {
       {/* 技术特性 */}
       <Card className="mb-3">
         <Card.Header className="bg-light">
-          <h5 className="mb-0">技术特性</h5>
+          <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>技术特性</div>
         </Card.Header>
         <Card.Body>
           <ul className="mb-0" style={{ lineHeight: '1.8' }}>
@@ -78,9 +82,9 @@ function AboutTab() {
       {/* 版权信息 */}
       <Card className="mb-3">
         <Card.Header className="bg-light">
-          <h5 className="mb-0">
+          <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>
             开源协议
-          </h5>
+          </div>
         </Card.Header>
         <Card.Body>
           <p className="mb-2">
@@ -95,7 +99,7 @@ function AboutTab() {
       {/* 联系方式 */}
       <Card className="mb-3">
         <Card.Header className="bg-light">
-          <h5 className="mb-0">联系方式</h5>
+          <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>联系方式</div>
         </Card.Header>
         <Card.Body>
           <div className="d-flex align-items-center mb-3">

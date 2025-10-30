@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, Form, Alert, ProgressBar } from 'react-bootstrap';
+import { Card, Button, Form, ProgressBar } from 'react-bootstrap';
+import { FaFilm, FaInfoCircle } from 'react-icons/fa';
 import type { TranscodeConfig, VideoInfo, AIConfig } from '../../../types/transcode.types';
 
 const { ipcRenderer } = (window as any).electron;
@@ -190,100 +191,93 @@ function TranscodeTab() {
   };
 
   return (
-    <div style={{ 
-      height: '100%', 
-      overflow: 'auto', 
-      padding: '20px',
-    }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <h3 className="mb-4">🎬 视频转码</h3>
+    <div className="subtitle-burn-container">
+      <div className="subtitle-burn-header">
+        <h2>
+          <FaFilm className="me-2" />
+          视频转码
+        </h2>
+      </div>
+      
+      <div className="subtitle-burn-content">
+        <div className="main-area">
 
       {/* 文件选择 */}
       <Card className="mb-3">
         <Card.Header>
-          <strong>1. 选择文件</strong>
+          <strong style={{ fontSize: '1.1rem' }}>1. 选择文件</strong>
         </Card.Header>
         <Card.Body>
           <Form.Group className="mb-3">
             <Form.Label>输入视频</Form.Label>
-            <div className="d-flex gap-2">
-              <Form.Control
-                type="text"
-                value={videoFile || ''}
-                placeholder="选择视频文件..."
-                readOnly
-              />
-              <Button onClick={handleSelectVideo} variant="outline-primary">
-                浏览...
+            <div className="d-flex align-items-center gap-3">
+              <Button 
+                onClick={handleSelectVideo}
+                variant="secondary"
+              >
+                浏览
               </Button>
+              <div className="flex-grow-1">
+                {videoFile ? (
+                  <div 
+                    className="text-truncate" 
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      border: '1px solid #dee2e6',
+                      borderRadius: '0.375rem',
+                      backgroundColor: '#f8f9fa',
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: '38px'
+                    }}
+                  >
+                    <strong>{videoFile.split(/[\\/]/).pop()}</strong>
+                  </div>
+                ) : (
+                  <span className="text-muted">未选择视频文件</span>
+                )}
+              </div>
             </div>
           </Form.Group>
 
           {videoInfo && (
-            <Alert variant="info" className="mt-2">
-              <div style={{ fontSize: '0.9rem' }}>
-                <strong>📹 视频信息</strong>
-                <div className="mt-2" style={{ lineHeight: '1.8' }}>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <span className="text-muted">分辨率：</span>
-                      <strong>{videoInfo.width || 0}x{videoInfo.height || 0}</strong>
-                    </div>
-                    <div className="col-md-6">
-                      <span className="text-muted">帧率：</span>
-                      <strong>{(videoInfo.fps || 0).toFixed(2)} fps</strong>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <span className="text-muted">时长：</span>
-                      <strong>
-                        {Math.floor((videoInfo.duration || 0) / 60)}分{Math.round((videoInfo.duration || 0) % 60)}秒
-                      </strong>
-                    </div>
-                    <div className="col-md-6">
-                      <span className="text-muted">文件大小：</span>
-                      <strong>{((videoInfo.size || 0) / 1024 / 1024).toFixed(2)} MB</strong>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <span className="text-muted">视频编码：</span>
-                      <strong>{videoInfo.videoCodec ? videoInfo.videoCodec.toUpperCase() : 'UNKNOWN'}</strong>
-                    </div>
-                    <div className="col-md-6">
-                      <span className="text-muted">音频编码：</span>
-                      <strong>{videoInfo.audioCodec ? videoInfo.audioCodec.toUpperCase() : 'NONE'}</strong>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <span className="text-muted">总比特率：</span>
-                      <strong>{((videoInfo.bitrate || 0) / 1000000).toFixed(2)} Mbps</strong>
-                    </div>
-                    <div className="col-md-6">
-                      <span className="text-muted">音频码率：</span>
-                      <strong>{((videoInfo.audioBitrate || 0) / 1000).toFixed(0)} kbps</strong>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <span className="text-muted">格式：</span>
-                      <strong>{videoInfo.formatName || 'UNKNOWN'}</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Alert>
+            <div className="text-muted small mt-1">
+              {videoInfo.width || 0}×{videoInfo.height || 0} | {videoInfo.videoCodec?.toUpperCase() || 'UNKNOWN'} | 
+              {' '}{(videoInfo.fps || 0).toFixed(2)}fps | 
+              {' '}{Math.floor((videoInfo.duration || 0) / 60)}分{Math.round((videoInfo.duration || 0) % 60)}秒 | 
+              {' '}{((videoInfo.size || 0) / 1024 / 1024).toFixed(2)}MB
+            </div>
           )}
 
           <Form.Group>
             <Form.Label>输出路径</Form.Label>
-            <div className="d-flex gap-2">
-              <Form.Control type="text" value={outputPath || ''} readOnly />
-              <Button onClick={handleSelectOutput} variant="outline-primary">
-                浏览...
+            <div className="d-flex align-items-center gap-3">
+              <Button 
+                onClick={handleSelectOutput}
+                variant="secondary"
+              >
+                浏览
               </Button>
+              <div className="flex-grow-1">
+                {outputPath ? (
+                  <div 
+                    className="text-truncate" 
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      border: '1px solid #dee2e6',
+                      borderRadius: '0.375rem',
+                      backgroundColor: '#f8f9fa',
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: '38px'
+                    }}
+                  >
+                    <strong>{outputPath.split(/[\\/]/).pop()}</strong>
+                  </div>
+                ) : (
+                  <span className="text-muted">未选择输出路径</span>
+                )}
+              </div>
             </div>
           </Form.Group>
         </Card.Body>
@@ -292,7 +286,7 @@ function TranscodeTab() {
       {/* AI 优化 */}
       <Card className="mb-3">
         <Card.Header>
-          <strong>2. AI 智能优化 (可选)</strong>
+          <strong style={{ fontSize: '1.1rem' }}>2. AI 智能优化 (可选)</strong>
         </Card.Header>
         <Card.Body>
           <Form.Check
@@ -348,7 +342,7 @@ function TranscodeTab() {
       {/* 转码参数 */}
       <Card className="mb-3">
         <Card.Header>
-          <strong>3. 转码参数</strong>
+          <strong style={{ fontSize: '1.1rem' }}>3. 转码参数</strong>
         </Card.Header>
         <Card.Body>
           <div className="row">
@@ -454,7 +448,7 @@ function TranscodeTab() {
       {logs.length > 0 && (
         <Card className="mb-3">
           <Card.Header>
-            <strong>日志</strong>
+            <strong style={{ fontSize: '1.1rem' }}>日志</strong>
           </Card.Header>
           <Card.Body style={{ maxHeight: '150px', overflowY: 'auto' }}>
             {logs.map((log, idx) => (
@@ -494,6 +488,70 @@ function TranscodeTab() {
           </Button>
         )}
       </div>
+        </div>
+
+        <div className="info-area">
+          {/* 功能说明 */}
+          <Card className="mb-3">
+            <Card.Header>
+              <FaInfoCircle className="me-2" />
+              功能说明
+            </Card.Header>
+            <Card.Body>
+              <h6>使用步骤：</h6>
+              <ol className="small">
+                <li>选择输入视频</li>
+                <li>选择输出路径</li>
+                <li>配置 AI 优化（可选）</li>
+                <li>调整转码参数</li>
+                <li>点击"开始转码"</li>
+                <li>等待转码完成</li>
+              </ol>
+
+              <hr />
+
+              <h6>编码器选择：</h6>
+              <ul className="small mb-2">
+                <li><strong>流式复制：</strong>无损，极快</li>
+                <li><strong>H.264：</strong>兼容性最好</li>
+                <li><strong>H.265：</strong>文件更小</li>
+              </ul>
+
+              <hr />
+
+              <h6>参数说明：</h6>
+              <ul className="small mb-2">
+                <li><strong>CRF：</strong>控制质量（18-28）</li>
+                <li><strong>Preset：</strong>编码速度</li>
+                <li><strong>硬件加速：</strong>提速 3-10 倍</li>
+              </ul>
+
+              <hr />
+
+              <h6>AI 优化：</h6>
+              <ul className="small mb-0">
+                <li><strong>DeepSeek：</strong>便宜，推荐</li>
+                <li><strong>OpenAI：</strong>GPT-4o-mini</li>
+                <li>AI 会自动分析视频并推荐最佳参数</li>
+              </ul>
+            </Card.Body>
+          </Card>
+
+          {/* 日志提示 */}
+          {logs.length > 0 && (
+            <Card className="mb-3">
+              <Card.Header>📋 处理日志</Card.Header>
+              <Card.Body className="text-center" style={{ padding: '20px' }}>
+                <p className="mb-2" style={{ fontSize: '13px', color: '#6c757d' }}>
+                  共 {logs.length} 条日志记录
+                </p>
+                <p className="mb-0" style={{ fontSize: '11px', color: '#adb5bd' }}>
+                  详细日志请查看专门的日志页面
+                </p>
+              </Card.Body>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

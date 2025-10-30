@@ -247,16 +247,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
               <div className="d-flex align-items-center gap-3">
                 <Button 
                   onClick={handleSelectVideo}
-                  style={{ 
-                    backgroundColor: '#6c757d',
-                    border: '1px solid #6c757d',
-                    color: '#ffffff',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    fontWeight: '500',
-                    padding: '0.375rem 1.5rem',
-                    borderRadius: '0.5rem',
-                    letterSpacing: '0.3em'
-                  }}
+                  variant="secondary"
                 >
                   浏览
                 </Button>
@@ -293,16 +284,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
               <div className="d-flex align-items-center gap-3">
                 <Button 
                   onClick={handleSelectAudio}
-                  style={{ 
-                    backgroundColor: '#6c757d',
-                    border: '1px solid #6c757d',
-                    color: '#ffffff',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    fontWeight: '500',
-                    padding: '0.375rem 1.5rem',
-                    borderRadius: '0.5rem',
-                    letterSpacing: '0.3em'
-                  }}
+                  variant="secondary"
                 >
                   浏览
                 </Button>

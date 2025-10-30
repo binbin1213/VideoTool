@@ -47,6 +47,36 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Download FFmpeg (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "=== 下载 FFmpeg for macOS ==="
+          mkdir -p resources/ffmpeg/mac
+          cd resources/ffmpeg/mac
+          
+          # 下载 FFmpeg static build
+          echo "下载 FFmpeg..."
+          curl -L -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/zip"
+          unzip -o ffmpeg.zip
+          rm ffmpeg.zip
+          
+          echo "下载 FFprobe..."
+          curl -L -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
+          unzip -o ffprobe.zip
+          rm ffprobe.zip
+          
+          # 设置执行权限
+          chmod +x ffmpeg ffprobe
+          
+          # 验证
+          ls -lh
+          ./ffmpeg -version | head -1
+          ./ffprobe -version | head -1
+          
+          cd ../../..
+          echo "FFmpeg for macOS 下载完成"
+
       - name: Download FFmpeg (Windows)
         if: runner.os == 'Windows'
         shell: pwsh

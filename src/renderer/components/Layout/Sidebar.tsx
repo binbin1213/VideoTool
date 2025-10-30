@@ -27,7 +27,7 @@ function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   ];
 
   return (
-    <div className="sidebar h-100 border-end" style={{ padding: 0, margin: 0 }}>
+    <div className="sidebar h-100 border-end" style={{ padding: 0, margin: 0, userSelect: 'none' }}>
       <div className="sidebar-logo">
         <img src={logoImage} alt="VideoTool" />
         <span className="logo-text">VideoTool</span>
