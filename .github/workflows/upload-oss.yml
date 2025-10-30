@@ -2,7 +2,7 @@ name: Upload to Aliyun OSS
 
 on:
   release:
-    types: [published, created]
+    types: [published, created, released]
   workflow_dispatch:
     inputs:
       tag_name:
