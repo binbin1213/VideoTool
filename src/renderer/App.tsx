@@ -5,6 +5,7 @@ import SubtitleConvertTab from './components/Features/SubtitleConvertTab';
 import MergeTab from './components/Features/MergeTab';
 import TranscodeTab from './components/Features/TranscodeTab';
 import SubtitleBurnTab from './components/Features/SubtitleBurnTab';
+import BatchTab from './components/Features/BatchTab';
 import LogViewerTab from './components/Features/LogViewerTab';
 import AboutTab from './components/Features/AboutTab';
 import './styles/App.scss';
@@ -165,7 +166,7 @@ function App() {
       case 'transcode':
         return <TranscodeTab />;
       case 'batch':
-        return <div className="p-4"><h3>批量处理功能开发中...</h3></div>;
+        return <BatchTab />;
       default:
         return <div className="p-4"><h3>欢迎使用 VideoTool</h3></div>;
     }
