@@ -51,8 +51,8 @@ jobs:
         run: |
           echo "☁️  上传文件到阿里云 OSS..."
           
-          # 上传所有文件到 OSS
-          ./ossutil64 cp -r ./release-assets oss://videotool-updates/releases/ -f -u
+          # 上传所有文件到 OSS（直接上传到 releases/ 目录，不包含 release-assets 子目录）
+          ./ossutil64 cp -r ./release-assets/ oss://videotool-updates/releases/ -f -u
           
           echo "✅ 上传完成！"
           echo ""

@@ -152,17 +152,21 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "deleteAppDataOnUninstall": false,
-      "differentialPackage": false
+      "differentialPackage": false,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Portable.${ext}"
     },
     "publish": [
+      {
+        "provider": "generic",
+        "url": "https://videotool-updates.oss-cn-beijing.aliyuncs.com/releases"
+      },
       {
         "provider": "github",
         "owner": "binbin1213",
         "repo": "VideoTool"
-      },
-      {
-        "provider": "generic",
-        "url": "https://videotool-updates.oss-cn-beijing.aliyuncs.com/releases"
       }
     ]
   }

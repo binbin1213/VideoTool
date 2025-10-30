@@ -8,6 +8,42 @@ const { ipcRenderer } = (window as any).electron;
 // 状态持久化 key
 const STORAGE_KEY = 'transcode_tab_state';
 
+// 检测操作系统
+const getPlatform = (): 'darwin' | 'win32' | 'linux' => {
+  return (window as any).electron?.process?.platform || 'darwin';
+};
+
+// 获取硬件加速选项
+const getHardwareAccelOptions = () => {
+  const platform = getPlatform();
+  switch (platform) {
+    case 'darwin':
+      return {
+        label: '🚀 启用硬件加速 (VideoToolbox)',
+        value: 'videotoolbox',
+        description: '硬件加速可提升 3-10 倍速度，但 H.265 可能不支持'
+      };
+    case 'win32':
+      return {
+        label: '🚀 启用硬件加速 (NVENC/QSV)',
+        value: 'auto', // 自动检测 NVENC 或 QSV
+        description: 'NVENC (NVIDIA) 或 QSV (Intel) 硬件加速，可提升 3-10 倍速度'
+      };
+    case 'linux':
+      return {
+        label: '🚀 启用硬件加速 (VAAPI)',
+        value: 'vaapi',
+        description: '硬件加速可提升转码速度'
+      };
+    default:
+      return {
+        label: '🚀 启用硬件加速',
+        value: 'auto',
+        description: '硬件加速可提升转码速度'
+      };
+  }
+};
+
 function TranscodeTab() {
   // 从 localStorage 恢复状态
   const loadState = () => {
@@ -412,21 +448,28 @@ function TranscodeTab() {
 
             <div className="col-md-6">
               <Form.Group className="mb-3">
-                <Form.Check
-                  type="checkbox"
-                  label="🚀 启用硬件加速 (VideoToolbox)"
-                  checked={transcodeConfig.useHardwareAccel || false}
-                  onChange={(e) =>
-                    setTranscodeConfig({
-                      ...transcodeConfig,
-                      useHardwareAccel: e.target.checked,
-                      hwaccel: e.target.checked ? 'videotoolbox' : 'none',
-                    })
-                  }
-                />
-                <Form.Text className="text-muted">
-                  硬件加速可提升 3-10 倍速度，但 H.265 可能不支持
-                </Form.Text>
+                {(() => {
+                  const hwOptions = getHardwareAccelOptions();
+                  return (
+                    <>
+                      <Form.Check
+                        type="checkbox"
+                        label={hwOptions.label}
+                        checked={transcodeConfig.useHardwareAccel || false}
+                        onChange={(e) =>
+                          setTranscodeConfig({
+                            ...transcodeConfig,
+                            useHardwareAccel: e.target.checked,
+                            hwaccel: e.target.checked ? hwOptions.value : 'none',
+                          })
+                        }
+                      />
+                      <Form.Text className="text-muted">
+                        {hwOptions.description}
+                      </Form.Text>
+                    </>
+                  );
+                })()}
               </Form.Group>
             </div>
           </div>
