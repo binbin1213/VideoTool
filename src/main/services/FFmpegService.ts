@@ -88,8 +88,9 @@ export class FFmpegService {
             command.videoCodec('h264_videotoolbox');
             // VideoToolbox 支持 Intel 和 Apple Silicon
             command.outputOptions([
-              '-b:v 5M',           // 比特率
-              '-q:v 65',           // 质量参数 (0-100, 越高质量越好)
+              '-b:v 5M',           // 比特率（VideoToolbox 不支持 -q:v）
+              '-maxrate 6M',       // 最大比特率
+              '-bufsize 12M',      // 缓冲区大小
               '-allow_sw 1',       // 允许软件编码回退
               '-realtime 0',       // 非实时编码（更高质量）
               '-pix_fmt nv12',     // Apple Silicon 原生格式
@@ -422,10 +423,9 @@ export class FFmpegService {
             command.videoCodec('h264_videotoolbox');
             // VideoToolbox 配置 - 针对 1080p@24fps 优化
             command.outputOptions([
-              '-b:v 5M',           // 比特率 5Mbps
+              '-b:v 5M',           // 比特率 5Mbps（VideoToolbox 不支持 -q:v）
               '-maxrate 6M',       // 最大比特率
               '-bufsize 12M',      // 缓冲区大小
-              '-q:v 70',           // 质量参数 (0-100, 越高质量越好)
               '-allow_sw 1',       // 允许软件编码回退
               '-realtime 0',       // 非实时编码（更高质量）
               '-g 240',            // 关键帧间隔 (10秒@24fps)
