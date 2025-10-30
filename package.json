@@ -83,6 +83,7 @@
     "appId": "com.videotool.app",
     "productName": "VideoTool",
     "afterPack": "scripts/afterPack.js",
+    "generateUpdatesFilesForAllChannels": false,
     "directories": {
       "output": "release",
       "buildResources": "resources"
@@ -105,8 +106,6 @@
         {
           "target": "dmg",
           "arch": [
-            "x64",
-            "arm64",
             "universal"
           ]
         }
@@ -123,16 +122,13 @@
         "NSHumanReadableCopyright": "Copyright © 2025 Binbin. All rights reserved."
       }
     },
+    "dmg": {
+      "writeUpdateInfo": false
+    },
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
           "arch": [
             "x64"
           ]
@@ -146,7 +142,9 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "differentialPackage": false
     },
     "publish": {
       "provider": "github",
