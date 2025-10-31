@@ -1,6 +1,53 @@
 # VideoTool 项目开发状态清单
 
-> 最后更新：2025年10月26日
+> 最后更新：2025年10月31日
+
+---
+
+## 🎉 v1.1.0-dev 更新内容
+
+### 新增功能
+1. **多轨道字幕封装**
+   - 软字幕模式支持同时选择多个字幕文件
+   - 自动识别文件名中的语言代码（支持13种常见语言）
+   - 自动设置字幕元数据（语言标签和显示名称）
+   - MKV容器格式输出
+
+2. **字幕批量转换**
+   - 一次选择多个SRT文件批量转换为ASS
+   - 后端直接保存文件，避免浏览器下载限制
+   - 实时进度显示和错误处理
+
+3. **ASS样式编辑器**
+   - 可视化编辑6个核心参数（字体、大小、颜色、描边等）
+   - 实时预览样式效果
+   - 支持保存自定义预设
+   - 预设样式和自定义样式分组管理
+
+4. **字幕水印功能**
+   - 在ASS字幕中添加文字水印
+   - 可选位置（顶部/底部/中间）
+   - 独立水印样式控制
+
+### 改进优化
+1. **UI/UX优化**
+   - 表单元素对齐优化（使用统一的 fieldWrap 布局）
+   - 卡片式文件信息展示
+   - 优化"浏览"按钮设计和间距
+   - 添加帮助文本和说明
+
+2. **后端增强**
+   - 新增 `subtitle-convert.handlers.ts` 处理字幕保存
+   - `FFmpegService.embedSoftSubtitles` 支持数组参数
+   - 动态生成多个字幕流的FFmpeg命令
+   - 输出路径选择支持 MKV/AVI/MOV 格式
+
+### Bug修复
+- 修复批量转换只保存一个文件的问题
+- 修复软字幕封装按钮禁用状态判断错误
+- 修复输出文件扩展名不正确的问题（强制软字幕为.mkv）
+- 修复"浏览"按钮文字溢出和垂直显示问题
+- 修复表单元素对齐不一致的问题
 
 ---
 
@@ -8,8 +55,8 @@
 
 - **项目名称**: VideoTool - 视频处理工具
 - **技术栈**: Electron + React + TypeScript + FFmpeg
-- **当前版本**: 1.0.0
-- **完成度**: 约 55%（核心字幕转换 + 音视频合并 + 字幕烧录 + FFmpeg 自动安装已完成）
+- **当前版本**: 1.1.0-dev
+- **完成度**: 约 65%（核心字幕功能 + 音视频合并 + 字幕烧录 + FFmpeg 自动安装 + 多轨道封装已完成）
 
 ---
 
@@ -46,16 +93,22 @@
 
 ---
 
-### 3. 字幕格式转换 (SRT → ASS) ✅
+### 3. 字幕格式转换 (SRT → ASS) ✅ **v1.1.0 增强**
 - [x] SRT 文件解析
 - [x] 正则表达式预处理（7条规则）
-- [x] ASS 样式模板（3种样式）
+- [x] ASS 样式模板（预设样式）
 - [x] ASS 文件生成
 - [x] 拖拽上传文件
 - [x] 文件选择器
 - [x] 转换进度显示
 - [x] 转换结果下载
 - [x] 功能说明界面
+- [x] **批量转换** - 支持选择多个文件批量转换 ⭐ 新增
+- [x] **水印功能** - 支持在ASS字幕中添加文字水印 ⭐ 新增
+- [x] **样式编辑器** - 可视化编辑ASS样式参数 ⭐ 新增
+- [x] **实时预览** - 预览样式效果和水印位置 ⭐ 新增
+- [x] **自定义预设** - 保存和管理自定义样式预设 ⭐ 新增
+- [x] **Electron保存** - 使用后端IPC避免浏览器下载限制 ⭐ 新增
 
 **相关文件**:
 - `src/renderer/components/Features/SubtitleConvertTab.tsx` - 字幕转换UI
@@ -63,8 +116,9 @@
 - `src/shared/types/subtitle.types.ts` - 类型定义
 - `src/shared/presets/subtitle-convert/regex-rules.json` - 正则规则
 - `src/shared/presets/subtitle-convert/ass-styles.txt` - ASS样式模板
+- `src/main/ipc/subtitle-convert.handlers.ts` - 后端保存处理 ⭐ 新增
 
-**测试状态**: ✅ 已测试通过
+**测试状态**: ✅ 已测试通过（包含批量转换11个文件）
 
 ---
 
@@ -120,7 +174,7 @@
 
 ---
 
-### 6. 字幕烧录 ✅
+### 6. 字幕烧录/封装 ✅ **v1.1.0 重大升级**
 - [x] FFmpeg 字幕滤镜封装
 - [x] 视频文件选择
 - [x] 字幕文件选择（SRT/ASS/SSA/VTT）
@@ -131,34 +185,59 @@
 - [x] IPC 通信（主进程与渲染进程）
 - [x] 错误处理和日志记录
 - [x] UI 界面设计
+- [x] **硬/软字幕模式切换** ⭐ 新增
+- [x] **多轨道字幕封装** - 软字幕支持同时选择多个字幕文件 ⭐ 新增
+- [x] **语言自动识别** - 从文件名中提取语言代码（如`.zh-Hans.srt`） ⭐ 新增
+- [x] **MKV容器支持** - 软字幕自动使用MKV格式输出 ⭐ 新增
+- [x] **字幕元数据** - 自动设置语言标签和标题 ⭐ 新增
+- [x] **UI优化** - 表单对齐、卡片式布局、文件信息展示 ⭐ 新增
 
 **相关文件**:
 - `src/renderer/components/Features/SubtitleBurnTab.tsx` - 字幕烧录UI
-- `src/main/services/FFmpegService.ts` - FFmpeg 核心服务（添加 burnSubtitles 方法）
+- `src/main/services/FFmpegService.ts` - FFmpeg 核心服务（增强 embedSoftSubtitles 方法）
 - `src/main/ipc/subtitle-burn.handlers.ts` - IPC 通信处理
+- `src/main/ipc/merge.handlers.ts` - 输出路径选择（支持MKV）
 - `src/shared/types/subtitle-burn.types.ts` - 类型定义
+- `src/renderer/styles/components/FormControls.module.scss` - 表单样式 ⭐ 新增
 
 **支持格式**:
-- 字幕: SRT, ASS, SSA, VTT
+- 字幕: SRT, ASS, SSA, VTT（硬字幕），SRT/ASS（软字幕）
 - 视频: MP4, AVI, MKV, MOV, FLV, WMV, WebM, M4V
+- 输出: MP4（硬字幕），MKV（软字幕）
 
 **功能特点**:
-- 支持多种字幕格式烧录
-- H.264/H.265 编码器选择
-- ⚡ **硬件加速支持**（VideoToolbox/NVENC/QSV，5-10倍加速）
-- CRF 质量控制（18-28，可调节）
-- 编码速度预设（ultrafast ~ veryslow）
-- 音频直接复制（无损）或重新编码
-- 实时显示烧录进度和时间标记
-- 自动显示视频和字幕详细信息
+- **硬字幕模式**：
+  - 字幕永久烧录到视频画面
+  - H.264/H.265 编码器选择
+  - ⚡ 硬件加速支持（VideoToolbox/NVENC/QSV，5-10倍加速）
+  - CRF 质量控制（18-28，可调节）
+  - 编码速度预设（ultrafast ~ veryslow）
+  - 单字幕文件限制
+  
+- **软字幕模式**：
+  - 字幕作为独立轨道封装，可开关
+  - 支持多语言字幕同时封装（无数量限制）
+  - 自动识别语言代码（支持 `zh-Hans`, `en`, `ja`, `ko`, `es`, `fr`, `de`, `pt`, `th`, `vi`, `id`, `hi`, `zh-Hant` 等）
+  - 自动设置字幕元数据（语言标签和显示名称）
+  - 视频音频流直接复制（无需重新编码，速度极快）
+  - MKV 容器格式输出
+  
+- 通用功能：
+  - 音频直接复制（无损）或重新编码
+  - 实时显示烧录/封装进度和时间标记
+  - 自动显示视频和字幕详细信息
+  - 文件信息卡片展示（分辨率、编码、时长、帧率、大小）
 
 **技术要点**:
-- 使用 FFmpeg subtitles 滤镜
-- 必须重新编码视频（不支持 copy 模式）
+- 硬字幕使用 FFmpeg subtitles 滤镜，必须重新编码视频
+- 软字幕使用 `-map` 参数添加多个字幕流
+- 支持的语言代码格式：`filename.语言代码.srt`（如 `video.zh-Hans.srt`）
+- 自动设置 `-metadata:s:s:X language=CODE` 和 `title=NAME`
 - 路径特殊字符自动转义处理
 - 支持 Windows 和 macOS 路径格式
+- 强制扩展名：软字幕 `.mkv`，硬字幕 `.mp4`
 
-**测试状态**: ✅ 开发完成，待用户测试
+**测试状态**: ✅ 已完成测试（包括11轨道字幕封装）
 
 ---
 

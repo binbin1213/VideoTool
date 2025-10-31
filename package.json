@@ -2,7 +2,7 @@
   "name": "videotool",
   "productName": "VideoTool",
   "version": "1.1.0-dev",
-  "description": "强大的跨平台视频处理工具 - 支持视频转码、音视频合并、字幕烧录和字幕智能修复转换（自动清理格式问题、HTML标签，智能格式化）",
+  "description": "强大的跨平台视频处理工具 - 支持多轨道字幕封装、字幕批量转换、音视频合并、字幕烧录，内置ASS样式编辑器和实时预览",
   "main": "dist/main/main/index.js",
   "author": {
     "name": "Binbin",
