@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, Alert, ProgressBar, Modal } from 'react-bootstrap';
+import { Button, Alert, ProgressBar, Modal } from 'react-bootstrap';
 import { FaGithub, FaEnvelope, FaSync, FaDownload, FaCheckCircle } from 'react-icons/fa';
 import packageJson from '../../../../package.json';
 
@@ -177,13 +177,13 @@ function AboutTab() {
       </div>
 
       {/* 软件介绍 */}
-      <Card className="mb-2">
-        <Card.Header className="bg-light">
+      <div className="mb-2">
+        <div >
           <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>
             软件简介
           </div>
-        </Card.Header>
-        <Card.Body>
+        </div>
+        <div>
           <p className="mb-2">
             <strong style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -197,15 +197,15 @@ function AboutTab() {
           <p className="mb-0">
             支持字幕格式转换、音视频合并、字幕烧录等功能，让视频处理变得更加简单快捷。
           </p>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 更新检查 */}
-      <Card className="mb-2">
-        <Card.Header className="bg-light">
+      <div className="mb-2">
+        <div >
           <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>软件更新</div>
-        </Card.Header>
-        <Card.Body>
+        </div>
+        <div>
           <div className="d-flex align-items-center justify-content-between mb-3">
             <div>
               <strong>当前版本:</strong> v{packageJson.version}
@@ -253,8 +253,8 @@ function AboutTab() {
               </Button>
             </div>
           )}
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 更新提示模态框 */}
       <Modal show={showUpdateModal} onHide={() => setShowUpdateModal(false)} centered>
@@ -291,11 +291,11 @@ function AboutTab() {
       </Modal>
 
       {/* 主要功能 */}
-      <Card className="mb-2">
-        <Card.Header className="bg-light">
+      <div className="mb-2">
+        <div >
           <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>主要功能</div>
-        </Card.Header>
-        <Card.Body>
+        </div>
+        <div>
           <ul className="mb-0" style={{ lineHeight: '1.6' }}>
             <li><strong>字幕格式转换</strong>：支持 SRT 转 ASS，智能清理HTML标签，格式化标点符号</li>
             <li><strong>音视频合并</strong>：将音频和视频文件快速合并，支持硬件加速</li>
@@ -303,15 +303,15 @@ function AboutTab() {
             <li><strong>批量处理</strong>：一次处理多个文件，提高工作效率（开发中）</li>
             <li><strong>视频转码</strong>：支持多种视频格式转换（开发中）</li>
           </ul>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 技术特性 */}
-      <Card className="mb-2">
-        <Card.Header className="bg-light">
+      <div className="mb-2">
+        <div >
           <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>技术特性</div>
-        </Card.Header>
-        <Card.Body>
+        </div>
+        <div>
           <ul className="mb-0" style={{ lineHeight: '1.6' }}>
             <li>基于 Electron + React + TypeScript 开发</li>
             <li>跨平台支持：macOS、Windows、Linux</li>
@@ -319,32 +319,32 @@ function AboutTab() {
             <li>现代化 UI 设计，简洁易用</li>
             <li>基于 FFmpeg，强大稳定</li>
           </ul>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 版权信息 */}
-      <Card className="mb-2">
-        <Card.Header className="bg-light">
+      <div className="mb-2">
+        <div >
           <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>
             开源协议
           </div>
-        </Card.Header>
-        <Card.Body>
+        </div>
+        <div>
           <p className="mb-2">
             <strong>开源免费</strong> - MIT License
           </p>
           <p className="mb-0 text-muted" style={{ fontSize: '14px' }}>
             本软件采用 MIT 开源协议，完全免费使用。您可以自由使用、修改和分发本软件。
           </p>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 联系方式 */}
-      <Card className="mb-2">
-        <Card.Header className="bg-light">
+      <div className="mb-2">
+        <div >
           <div className="mb-0" style={{ fontSize: '14px', fontWeight: '500' }}>联系方式</div>
-        </Card.Header>
-        <Card.Body>
+        </div>
+        <div>
           <div className="d-flex align-items-center mb-3">
             <FaGithub size={20} className="me-3" style={{ color: '#333' }} />
             <div>
@@ -371,8 +371,8 @@ function AboutTab() {
               </a>
             </div>
           </div>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 版权声明 */}
       <div className="text-center mt-4" style={{ color: '#6c757d', fontSize: '14px' }}>

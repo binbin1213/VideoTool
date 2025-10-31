@@ -1,0 +1,42 @@
+@use '../tokens' as t;
+
+.tabsBar {
+  display: flex;
+  align-items: center;
+
+  :global(.nav-link) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #000 !important;
+    min-width: 72px;
+    height: 36px;
+    padding: 0 12px;
+    line-height: 1;
+    -webkit-app-region: no-drag;
+    background-color: transparent;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(0,0,0,0.04);
+      border-color: #e6e6e6;
+    }
+  }
+
+  :global(.nav-link.active) {
+    color: #000 !important;
+    background-color: #fff;
+    border-color: #dcdcdc;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  :global(.nav-item + .nav-item .nav-link) {
+    margin-left: 0;
+    border-left: 1px solid #e6e6e6;
+  }
+}
+
+

@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import log from 'electron-log';
 import { registerMergeHandlers } from './ipc/merge.handlers';
 import { registerSubtitleBurnHandlers } from './ipc/subtitle-burn.handlers';
+import { registerSubtitleConvertHandlers } from './ipc/subtitle-convert.handlers';
 import { registerFFmpegHandlers } from './ipc/ffmpeg.handlers';
 import { registerTranscodeHandlers } from './ipc/transcode.handlers';
 import { registerUpdateHandlers } from './ipc/update.handlers';
@@ -190,6 +191,7 @@ app.whenReady().then(async () => {
   registerFFmpegHandlers();
   registerMergeHandlers();
   registerSubtitleBurnHandlers();
+  registerSubtitleConvertHandlers();
   registerTranscodeHandlers();
   registerUpdateHandlers();
   

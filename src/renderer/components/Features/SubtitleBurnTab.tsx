@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, Form, Alert, ProgressBar, Badge, Row, Col } from 'react-bootstrap';
-import { FaFileVideo, FaClosedCaptioning, FaPlay, FaCog, FaInfoCircle } from 'react-icons/fa';
+import { Button, Form, Alert, ProgressBar, Badge } from 'react-bootstrap';
+import formStyles from '../../styles/components/FormControls.module.scss';
+import { FaPlay, FaInfoCircle } from 'react-icons/fa';
 import type { VideoInfo } from '../../../shared/types/merge.types';
 import type { SubtitleFileInfo, SubtitleBurnProgress } from '../../../shared/types/subtitle-burn.types';
 import type { TaskProgress } from '../../App';
@@ -15,18 +16,22 @@ interface SubtitleBurnTabProps {
 
 function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurnTabProps) {
   const [videoFile, setVideoFile] = useState<string | null>(null);
-  const [subtitleFile, setSubtitleFile] = useState<string | null>(null);
+  const [subtitleFile, setSubtitleFile] = useState<string | null>(null); // 硬字幕：单个文件
+  const [subtitleFiles, setSubtitleFiles] = useState<string[]>([]); // 软字幕：多个文件
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [subtitleInfo, setSubtitleInfo] = useState<SubtitleFileInfo | null>(null);
   const [result, setResult] = useState<{ success: boolean; message: string; outputPath?: string } | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [videoCodec, setVideoCodec] = useState<'libx264' | 'libx265'>('libx264');
   const [audioCodec, setAudioCodec] = useState<'copy' | 'aac'>('copy');
-  const [crf, setCrf] = useState(23);
-  const [preset, setPreset] = useState<'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow' | 'slower' | 'veryslow'>('medium');
+  const [crf, setCrf] = useState(18);
+  const [preset, setPreset] = useState<'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow' | 'slower' | 'veryslow'>('slow');
+  const [tune, setTune] = useState<'film' | 'grain' | 'none'>('film');
+  const [qualityPreset, setQualityPreset] = useState<'h264_quality' | 'h264_balanced' | 'h264_hw' | 'hevc_size'>('h264_quality');
   const [useHardwareAccel, setUseHardwareAccel] = useState(false);
   const [hwaccel, setHwaccel] = useState<'videotoolbox' | 'nvenc' | 'qsv' | 'none'>('videotoolbox');
   const [ffmpegAvailable, setFfmpegAvailable] = useState<boolean | null>(null);
+  const [subtitleType, setSubtitleType] = useState<'hard' | 'soft'>('soft'); // 默认软字幕
 
   // 检查 FFmpeg 是否可用
   useEffect(() => {
@@ -65,6 +70,36 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
     };
   }, [setTaskProgress]);
 
+  // 根据质量预设自动设置参数
+  useEffect(() => {
+    if (qualityPreset === 'h264_quality') {
+      setUseHardwareAccel(false);
+      setVideoCodec('libx264');
+      setCrf(18);
+      setPreset('slow');
+      setTune('film');
+    } else if (qualityPreset === 'h264_balanced') {
+      setUseHardwareAccel(false);
+      setVideoCodec('libx264');
+      setCrf(19);
+      setPreset('medium');
+      setTune('film');
+    } else if (qualityPreset === 'h264_hw') {
+      setUseHardwareAccel(true);
+      setHwaccel('videotoolbox');
+      setVideoCodec('libx264');
+      setCrf(20);
+      setPreset('medium');
+      setTune('none');
+    } else if (qualityPreset === 'hevc_size') {
+      setUseHardwareAccel(false);
+      setVideoCodec('libx265');
+      setCrf(21);
+      setPreset('slow');
+      setTune('grain');
+    }
+  }, [qualityPreset]);
+
   const addLocalLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
     const formattedLog = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
@@ -92,19 +127,67 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
     }
   };
 
+  // 从文件名提取语言代码
+  const extractLanguageCode = (filename: string): string => {
+    // 匹配格式：xxx.en.srt, xxx.zh-Hans.srt 等
+    const match = filename.match(/\.([a-z]{2}(-[A-Za-z]+)?)\.(?:srt|ass|ssa|vtt)$/i);
+    return match ? match[1] : 'und'; // und = undefined/unknown
+  };
+
+  // 语言代码映射到可读名称
+  const getLanguageName = (code: string): string => {
+    const languageMap: Record<string, string> = {
+      'zh-Hans': '简体中文',
+      'zh-Hant': '繁体中文',
+      'en': 'English',
+      'ja': '日本語',
+      'ko': '한국어',
+      'es': 'Español',
+      'fr': 'Français',
+      'de': 'Deutsch',
+      'ru': 'Русский',
+      'pt': 'Português',
+      'it': 'Italiano',
+      'ar': 'العربية',
+      'hi': 'हिन्दी',
+      'th': 'ภาษาไทย',
+      'vi': 'Tiếng Việt',
+      'id': 'Bahasa Indonesia',
+      'und': '未知'
+    };
+    return languageMap[code] || code;
+  };
+
   const handleSelectSubtitle = async () => {
     try {
-      const filePath = await ipcRenderer.invoke('select-subtitle-file');
-      if (filePath) {
-        setSubtitleFile(filePath);
-        setResult(null);
-        addLocalLog(`选择字幕: ${filePath}`, 'info');
+      if (subtitleType === 'soft') {
+        // 软字幕：支持多选
+        const filePaths = await ipcRenderer.invoke('select-subtitle-files-multiple');
+        if (filePaths && filePaths.length > 0) {
+          setSubtitleFiles(filePaths);
+          setResult(null);
+          addLocalLog(`选择 ${filePaths.length} 个字幕文件`, 'info');
+          filePaths.forEach((path: string, index: number) => {
+            const filename = path.split(/[\\/]/).pop() || '';
+            const langCode = extractLanguageCode(filename);
+            const langName = getLanguageName(langCode);
+            addLocalLog(`字幕 ${index + 1}: ${filename} [${langName}]`, 'info');
+          });
+        }
+      } else {
+        // 硬字幕：单选
+        const filePath = await ipcRenderer.invoke('select-subtitle-file');
+        if (filePath) {
+          setSubtitleFile(filePath);
+          setResult(null);
+          addLocalLog(`选择字幕: ${filePath}`, 'info');
 
-        // 获取字幕信息
-        const info = await ipcRenderer.invoke('get-subtitle-info', filePath);
-        if (info) {
-          setSubtitleInfo(info);
-          addLocalLog(`字幕格式: ${info.format.toUpperCase()}, 大小: ${(info.size / 1024).toFixed(2)} KB`, 'info');
+          // 获取字幕信息
+          const info = await ipcRenderer.invoke('get-subtitle-info', filePath);
+          if (info) {
+            setSubtitleInfo(info);
+            addLocalLog(`字幕格式: ${info.format.toUpperCase()}, 大小: ${(info.size / 1024).toFixed(2)} KB`, 'info');
+          }
         }
       }
     } catch (error) {
@@ -113,8 +196,19 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
   };
 
   const handleBurn = async () => {
-    if (!videoFile || !subtitleFile) {
-      addLocalLog('请先选择视频和字幕文件', 'error');
+    // 验证文件选择
+    if (!videoFile) {
+      addLocalLog('请先选择视频文件', 'error');
+      return;
+    }
+    
+    if (subtitleType === 'soft' && subtitleFiles.length === 0) {
+      addLocalLog('请先选择至少一个字幕文件', 'error');
+      return;
+    }
+    
+    if (subtitleType === 'hard' && !subtitleFile) {
+      addLocalLog('请先选择字幕文件', 'error');
       return;
     }
 
@@ -130,10 +224,11 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
     try {
       addLocalLog('开始字幕烧录', 'info');
 
-      // 选择输出路径
+      // 选择输出路径（软字幕建议 MKV，硬字幕 MP4）
       const videoFileName = videoFile.split(/[\\/]/).pop() || 'output.mp4';
-      const defaultFileName = videoFileName.replace(/\.[^.]+$/, '_字幕.mp4');
-      const outputPath = await ipcRenderer.invoke('select-output-path', defaultFileName);
+      const ext = subtitleType === 'soft' ? '.mkv' : '.mp4';
+      const defaultFileName = videoFileName.replace(/\.[^.]+$/, `_字幕${ext}`);
+      let outputPath = await ipcRenderer.invoke('select-output-path', defaultFileName);
 
       if (!outputPath) {
         addLocalLog('用户取消保存', 'warning');
@@ -146,23 +241,38 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
         return;
       }
 
+      // 强制使用正确的扩展名（防止用户修改）
+      if (subtitleType === 'soft' && !outputPath.toLowerCase().endsWith('.mkv')) {
+        outputPath = outputPath.replace(/\.[^.]+$/, '') + '.mkv';
+        addLocalLog('⚠️ 软字幕已自动修正为 .mkv 格式（支持多轨道和样式）', 'warning');
+      } else if (subtitleType === 'hard' && !outputPath.toLowerCase().endsWith('.mp4')) {
+        outputPath = outputPath.replace(/\.[^.]+$/, '') + '.mp4';
+      }
+
       addLocalLog(`输出路径: ${outputPath}`, 'info');
-      addLocalLog(`编码参数: ${videoCodec}, CRF=${crf}, Preset=${preset}`, 'info');
-      if (useHardwareAccel) {
-        addLocalLog(`✨ 硬件加速: ${hwaccel.toUpperCase()}`, 'info');
+      addLocalLog(`字幕类型: ${subtitleType === 'soft' ? '软字幕（封装）' : '硬字幕（烧录）'}`, 'info');
+      if (subtitleType === 'hard') {
+        addLocalLog(`编码参数: ${videoCodec}, CRF=${crf}, Preset=${preset}, Tune=${tune}${useHardwareAccel ? ', HW=' + hwaccel : ''}`, 'info');
+        if (useHardwareAccel) {
+          addLocalLog(`✨ 硬件加速: ${hwaccel.toUpperCase()}`, 'info');
+        }
+      } else {
+        addLocalLog(`✨ 软字幕模式：视频/音频直接复制，无需重新编码`, 'info');
       }
 
       // 调用烧录
       const result = await ipcRenderer.invoke('burn-subtitles', {
         videoPath: videoFile,
-        subtitlePath: subtitleFile,
+        subtitlePath: subtitleType === 'soft' ? subtitleFiles : subtitleFile,
         outputPath,
         videoCodec,
         audioCodec,
         crf,
         preset,
+        tune,
         useHardwareAccel,
         hwaccel: useHardwareAccel ? hwaccel : 'none',
+        subtitleType,
       });
 
       if (result.success) {
@@ -241,145 +351,323 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
             </Alert>
           )}
 
-          {/* 视频文件选择 */}
-          <Card className="mb-3">
-            <Card.Header>
-              <FaFileVideo className="me-2" />
-              选择视频文件
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex align-items-center gap-3">
+          {/* 文件选择 */}
+          <div className="mb-4" style={{ 
+            padding: '16px', 
+            background: '#f8f9fa', 
+            borderRadius: '8px',
+            border: '1px solid #e9ecef'
+          }}>
+            <h6 className="mb-3" style={{ fontSize: '14px', fontWeight: 600, color: '#495057' }}>
+              📁 选择文件
+            </h6>
+            {/* 视频文件选择 */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ 
+                  fontSize: '12px', 
+                  fontWeight: 500, 
+                  color: '#000',
+                  minWidth: '42px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '22px'
+                }}>
+                  视频:
+                </div>
                 <Button 
                   onClick={handleSelectVideo}
-                  variant="secondary"
+                  variant="outline-secondary"
+                  size="sm"
+                  style={{
+                    minWidth: '50px',
+                    height: '22px',
+                    padding: '0 8px',
+                    fontSize: '10px',
+                    color: '#666',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    backgroundColor: '#fff',
+                    lineHeight: '20px',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
+                  }}
                 >
                   浏览
                 </Button>
-                <div className="flex-grow-1">
+                <div className="flex-grow-1 text-truncate">
                   {videoFile ? (
-                    <div>
-                      <div className="text-truncate">
-                        <strong>{videoFile.split(/[\\/]/).pop()}</strong>
-                      </div>
-                      {videoInfo && (
-                        <div className="text-muted small mt-1">
-                          {videoInfo.width}×{videoInfo.height} | {videoInfo.codec} | 
-                          {' '}{videoInfo.fps.toFixed(2)}fps | 
-                          {' '}{formatDuration(videoInfo.duration)} | 
-                          {' '}{formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}
-                        </div>
-                      )}
-                    </div>
+                    <span>
+                      <strong>{videoFile.split(/[\\/]/).pop()}</strong>
+                    </span>
                   ) : (
                     <span className="text-muted">未选择视频文件</span>
                   )}
                 </div>
               </div>
-            </Card.Body>
-          </Card>
+              {videoFile && videoInfo && (
+                <div 
+                  className="text-muted small mt-1" 
+                  style={{ 
+                    marginLeft: '56px',
+                    padding: '6px 10px',
+                    background: '#fff',
+                    borderRadius: '4px',
+                    border: '1px solid #e9ecef',
+                    display: 'inline-block'
+                  }}
+                >
+                  <span style={{ marginRight: '12px' }}>
+                    分辨率: {videoInfo.width}×{videoInfo.height}
+                  </span>
+                  <span style={{ marginRight: '12px' }}>
+                    编码: {videoInfo.codec.toUpperCase()}
+                  </span>
+                  <span style={{ marginRight: '12px' }}>
+                    时长: {formatDuration(videoInfo.duration)}
+                  </span>
+                  <span style={{ marginRight: '12px' }}>
+                    帧率: {videoInfo.fps.toFixed(2)}fps
+                  </span>
+                  <span>
+                    大小: {formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}
+                  </span>
+                </div>
+              )}
+            </div>
 
-          {/* 字幕文件选择 */}
-          <Card className="mb-3">
-            <Card.Header>
-              <FaClosedCaptioning className="me-2" />
-              选择字幕文件
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex align-items-center gap-3">
+            {/* 字幕文件选择 */}
+            <div style={{ marginTop: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ 
+                  fontSize: '12px', 
+                  fontWeight: 500, 
+                  color: '#000',
+                  minWidth: '42px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '22px'
+                }}>
+                  字幕:
+                </div>
                 <Button 
                   onClick={handleSelectSubtitle}
-                  variant="secondary"
+                  variant="outline-secondary"
+                  size="sm"
+                  style={{
+                    minWidth: '50px',
+                    height: '22px',
+                    padding: '0 8px',
+                    fontSize: '10px',
+                    color: '#666',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    backgroundColor: '#fff',
+                    lineHeight: '20px',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
+                  }}
                 >
                   浏览
                 </Button>
                 <div className="flex-grow-1">
-                  {subtitleFile ? (
-                    <div>
-                      <div className="text-truncate">
-                        <strong>{subtitleFile.split(/[\\/]/).pop()}</strong>
+                  {subtitleType === 'soft' ? (
+                    // 软字幕：显示多个文件
+                    subtitleFiles.length > 0 ? (
+                      <div style={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: '6px', 
+                        alignItems: 'center',
+                        maxHeight: '80px',
+                        overflowY: 'auto',
+                        padding: '4px'
+                      }}>
+                        {subtitleFiles.map((file, index) => {
+                          const filename = file.split(/[\\/]/).pop() || '';
+                          const langCode = extractLanguageCode(filename);
+                          const langName = getLanguageName(langCode);
+                          return (
+                            <div 
+                              key={index}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '3px 8px',
+                                background: '#f0f0f0',
+                                borderRadius: '4px',
+                                fontSize: '10px'
+                              }}
+                            >
+                              <Badge 
+                                bg="info"
+                                style={{ 
+                                  fontSize: '9px',
+                                  fontWeight: 'normal',
+                                  padding: '2px 6px'
+                                }}
+                              >
+                                {langCode}
+                              </Badge>
+                              <span style={{ color: '#666' }}>{langName}</span>
+                            </div>
+                          );
+                        })}
                       </div>
-                      {subtitleInfo && (
-                        <div className="text-muted small mt-1">
-                          格式: {subtitleInfo.format.toUpperCase()} | 
-                          {' '}大小: {formatFileSize(subtitleInfo.size)}
-                        </div>
-                      )}
-                    </div>
+                    ) : (
+                      <span className="text-muted">未选择字幕文件（可多选）</span>
+                    )
                   ) : (
-                    <span className="text-muted">未选择字幕文件</span>
+                    // 硬字幕：显示单个文件
+                    subtitleFile ? (
+                      <span>
+                        <strong>{subtitleFile.split(/[\\/]/).pop()}</strong>
+                      </span>
+                    ) : (
+                      <span className="text-muted">未选择字幕文件</span>
+                    )
                   )}
                 </div>
               </div>
-            </Card.Body>
-          </Card>
+              {/* 硬字幕：显示详细信息 */}
+              {subtitleType === 'hard' && subtitleFile && subtitleInfo && (
+                <div 
+                  className="text-muted small mt-1" 
+                  style={{ 
+                    marginLeft: '56px',
+                    padding: '6px 10px',
+                    background: '#fff',
+                    borderRadius: '4px',
+                    border: '1px solid #e9ecef',
+                    display: 'inline-block'
+                  }}
+                >
+                  <span style={{ marginRight: '12px' }}>
+                    格式: {subtitleInfo.format.toUpperCase()}
+                  </span>
+                  <span>
+                    大小: {formatFileSize(subtitleInfo.size)}
+                  </span>
+                </div>
+              )}
+              {/* 软字幕：显示文件数量提示 */}
+              {subtitleType === 'soft' && subtitleFiles.length > 0 && (
+                <div 
+                  className="text-muted small mt-1" 
+                  style={{ 
+                    marginLeft: '56px',
+                    fontSize: '11px'
+                  }}
+                >
+                  已选择 {subtitleFiles.length} 个字幕文件
+                </div>
+              )}
+            </div>
+          </div>
 
-          {/* 烧录设置 */}
-          <Card className="mb-3">
-            <Card.Header>
-              <FaCog className="me-2" />
-              烧录设置
-            </Card.Header>
-            <Card.Body>
-              {/* 硬件加速开关 */}
-              <Form.Group className="mb-3">
-                <Form.Check
-                  type="switch"
-                  id="hardware-accel-switch"
-                  label={
-                    <span>
-                      ⚡ 启用硬件加速 
-                      <Badge bg="success" className="ms-2">5-10x 更快</Badge>
-                    </span>
-                  }
-                    checked={useHardwareAccel}
-                    onChange={(e) => setUseHardwareAccel(e.target.checked)}
-                    disabled={taskProgress.isRunning}
-                />
-                <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                  使用 GPU 加速视频编码，大幅提升处理速度
-                </Form.Text>
-              </Form.Group>
+          {/* 字幕设置 */}
+          <div className="mb-4" style={{ 
+            padding: '16px', 
+            background: '#fff', 
+            borderRadius: '8px',
+            border: '1px solid #e9ecef'
+          }}>
+            <h6 className="mb-3" style={{ fontSize: '14px', fontWeight: 600, color: '#495057' }}>
+              ⚙️ 字幕配置
+            </h6>
+            {/* 字幕类型选择 */}
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="switch"
+                id="subtitle-type-switch"
+                label={
+                  <span>
+                    {subtitleType === 'soft' ? '🎬 软字幕（无需编码）' : '🔥 硬字幕（烧录画面）'}
+                    <Badge bg={subtitleType === 'soft' ? 'success' : 'primary'} className="ms-2">
+                      {subtitleType === 'soft' ? '秒级完成' : '兼容性强'}
+                    </Badge>
+                  </span>
+                }
+                checked={subtitleType === 'soft'}
+                onChange={(e) => setSubtitleType(e.target.checked ? 'soft' : 'hard')}
+                disabled={taskProgress.isRunning}
+              />
+              <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
+                {subtitleType === 'hard' 
+                  ? '硬字幕：烧录到画面，兼容性强，需重新编码。'
+                  : '软字幕：可开关，MKV 保留样式，MP4 丢样式，画质 100% 保留。'
+                }
+              </Form.Text>
+            </Form.Group>
 
-              <Row>
-                {useHardwareAccel && (
-                  <Col md={12}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>硬件加速类型</Form.Label>
-                      <Form.Select
-                        value={hwaccel}
-                        onChange={(e) => setHwaccel(e.target.value as any)}
+            {/* 质量预设（仅硬字幕） */}
+            {subtitleType === 'hard' && (
+              <Form.Group className="mb-0">
+                <div className={formStyles.fieldWrap}>
+                  <div className={formStyles.label}>质量预设:</div>
+                  <div>
+                    <Form.Select
+                      className={formStyles.select}
+                      value={qualityPreset}
+                      onChange={(e) => setQualityPreset(e.target.value as any)}
                       disabled={taskProgress.isRunning}
                     >
-                      <option value="videotoolbox">VideoToolbox (macOS 推荐)</option>
-                        <option value="nvenc">NVENC (NVIDIA GPU)</option>
-                        <option value="qsv">Quick Sync Video (Intel GPU)</option>
-                      </Form.Select>
-                      <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                        根据您的系统和硬件选择合适的加速方式
-                      </Form.Text>
-                    </Form.Group>
-                  </Col>
-                )}
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>视频编码器</Form.Label>
+                      <option value="h264_quality">高质量（H.264，CRF 18，slow，film）</option>
+                      <option value="h264_balanced">均衡（H.264，CRF 19，medium，film）</option>
+                      <option value="h264_hw">硬件加速（H.264，VideoToolbox）</option>
+                      <option value="hevc_size">高压缩（HEVC，CRF 21，slow，grain）</option>
+                    </Form.Select>
+                    <div className={formStyles.help}>
+                      {qualityPreset === 'h264_quality' && '画质最佳，速度较慢'}
+                      {qualityPreset === 'h264_balanced' && '画质与速度平衡'}
+                      {qualityPreset === 'h264_hw' && '速度最快，画质略低'}
+                      {qualityPreset === 'hevc_size' && '体积最小，编码慢'}
+                    </div>
+                  </div>
+                </div>
+              </Form.Group>
+            )}
+          </div>
+
+          {/* 高级设置（仅硬字幕显示且软件编码时显示详细参数） */}
+          {subtitleType === 'hard' && qualityPreset !== 'h264_hw' && (
+            <div className="mb-4" style={{ 
+              padding: '16px', 
+              background: '#fff', 
+              borderRadius: '8px',
+              border: '1px solid #dee2e6'
+            }}>
+              <h6 className="mb-3" style={{ fontSize: '14px', fontWeight: 600, color: '#495057' }}>
+                🔧 高级设置
+              </h6>
+
+              {/* 视频编码器 */}
+              <Form.Group className="mb-2">
+                <div className={formStyles.fieldWrap}>
+                  <div className={formStyles.label}>视频编码器:</div>
+                  <div>
                     <Form.Select
+                      className={formStyles.select}
                       value={videoCodec}
                       onChange={(e) => setVideoCodec(e.target.value as any)}
-                      disabled={taskProgress.isRunning || useHardwareAccel}
+                      disabled={taskProgress.isRunning}
                     >
                       <option value="libx264">H.264 (推荐)</option>
                       <option value="libx265">H.265 (更小体积)</option>
                     </Form.Select>
-                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                      {useHardwareAccel ? '硬件加速时自动选择编码器' : 'H.264 兼容性好，H.265 压缩率高'}
-                    </Form.Text>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>音频编码</Form.Label>
+                    <div className={formStyles.help}>H.265 更小，H.264 兼容好</div>
+                  </div>
+                </div>
+              </Form.Group>
+
+              {/* 音频编码 */}
+              <Form.Group className="mb-2">
+                <div className={formStyles.fieldWrap}>
+                  <div className={formStyles.label}>音频编码:</div>
+                  <div>
                     <Form.Select
+                      className={formStyles.select}
                       value={audioCodec}
                       onChange={(e) => setAudioCodec(e.target.value as any)}
                       disabled={taskProgress.isRunning}
@@ -387,33 +675,56 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                       <option value="copy">直接复制（推荐）</option>
                       <option value="aac">AAC 重新编码</option>
                     </Form.Select>
-                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                      直接复制音频最快且无损
-                    </Form.Text>
-                  </Form.Group>
-                </Col>
-              </Row>
+                    <div className={formStyles.help}>复制最快且无损</div>
+                  </div>
+                </div>
+              </Form.Group>
 
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>质量控制 (CRF): {crf}</Form.Label>
+              {/* 调优 */}
+              <Form.Group className="mb-2">
+                <div className={formStyles.fieldWrap}>
+                  <div className={formStyles.label}>调优(tune):</div>
+                  <div>
+                    <Form.Select
+                      className={formStyles.select}
+                      value={tune}
+                      onChange={(e) => setTune(e.target.value as any)}
+                      disabled={taskProgress.isRunning}
+                    >
+                      <option value="film">film（自然画面）</option>
+                      <option value="grain">grain（颗粒保留）</option>
+                      <option value="none">无</option>
+                    </Form.Select>
+                    <div className={formStyles.help}>H.264 推荐 film，颗粒明显时用 grain</div>
+                  </div>
+                </div>
+              </Form.Group>
+
+              {/* 质量控制 CRF */}
+              <Form.Group className="mb-2">
+                <div className={formStyles.fieldWrap}>
+                  <div className={formStyles.label}>质量控制 (CRF): {crf}</div>
+                  <div>
                     <Form.Range
                       min={18}
                       max={28}
                       value={crf}
                       onChange={(e) => setCrf(parseInt(e.target.value))}
                       disabled={taskProgress.isRunning}
+                      style={{ width: '100%' }}
                     />
-                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                      18=极高质量（大文件） | 23=标准 | 28=低质量（小文件）
-                    </Form.Text>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>编码速度</Form.Label>
+                    <div className={formStyles.help}>18≈高质量 | 20≈均衡 | 23≈标准压缩</div>
+                  </div>
+                </div>
+              </Form.Group>
+
+              {/* 编码速度 */}
+              <Form.Group className="mb-3">
+                <div className={formStyles.fieldWrap}>
+                  <div className={formStyles.label}>编码速度:</div>
+                  <div>
                     <Form.Select
+                      className={formStyles.select}
                       value={preset}
                       onChange={(e) => setPreset(e.target.value as any)}
                       disabled={taskProgress.isRunning}
@@ -428,47 +739,46 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                       <option value="slower">很慢</option>
                       <option value="veryslow">极慢（质量极好）</option>
                     </Form.Select>
-                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                      速度越慢质量越好，文件越小
-                    </Form.Text>
-                  </Form.Group>
-                </Col>
-              </Row>
+                    <div className={formStyles.help}>越慢越清晰，体积更小</div>
+                  </div>
+                </div>
+              </Form.Group>
 
-              <Alert variant={useHardwareAccel ? 'success' : 'info'} className="mb-3">
+              <Alert variant="info" className="mb-0">
                 <small>
-                  {useHardwareAccel ? (
-                    <>
-                      <strong>⚡ 硬件加速已启用：</strong>
-                      处理速度将大幅提升（通常 5-10 倍）！VideoToolbox 适用于 macOS 系统。
-                    </>
-                  ) : (
-                    <>
-                      <strong>💡 提示：</strong>
-                      字幕烧录需要重新编码视频，建议启用硬件加速以提升速度。
-                      软件编码推荐 CRF=23 和 medium preset。
-                    </>
-                  )}
+                  <strong>💡 提示：</strong>
+                  字幕烧录需要重新编码视频。当前使用软件编码（高质量），如需更快速度可在上方切换硬件加速预设。
                 </small>
               </Alert>
+            </div>
+          )}
 
-              <div className="d-grid">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={handleBurn}
-                  disabled={!videoFile || !subtitleFile || taskProgress.isRunning || ffmpegAvailable === false}
-                >
-                  {taskProgress.isRunning && taskProgress.taskType === 'burn' ? '烧录中...' : '开始烧录'}
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+          {/* 开始烧录/封装按钮 */}
+          <div className="mb-3">
+            <div className="d-grid">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleBurn}
+                disabled={
+                  !videoFile || 
+                  (subtitleType === 'soft' ? subtitleFiles.length === 0 : !subtitleFile) || 
+                  taskProgress.isRunning || 
+                  ffmpegAvailable === false
+                }
+              >
+                {taskProgress.isRunning && taskProgress.taskType === 'burn' 
+                  ? (subtitleType === 'soft' ? '封装中...' : '烧录中...') 
+                  : (subtitleType === 'soft' ? '开始封装' : '开始烧录')
+                }
+              </Button>
+            </div>
+          </div>
 
           {/* 烧录进度 */}
           {taskProgress.isRunning && taskProgress.taskType === 'burn' && (
-            <Card className="mb-3">
-              <Card.Body>
+            <div className="mb-3">
+              <div>
                 <h6>烧录进度</h6>
                 <ProgressBar
                   now={taskProgress.progress}
@@ -482,8 +792,8 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                 <Alert variant="warning" className="mt-3 mb-0">
                   <small>⏱️ 烧录过程需要重新编码，请耐心等待...</small>
                 </Alert>
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* 烧录结果 */}
@@ -504,56 +814,52 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
 
         <div className="info-area">
           {/* 功能说明 */}
-          <Card className="mb-3">
-            <Card.Header>
+          <div className="mb-3">
+            <div >
               <FaInfoCircle className="me-2" />
               功能说明
-            </Card.Header>
-            <Card.Body>
-              <h6>使用步骤：</h6>
-              <ol className="small">
-                <li>选择视频文件</li>
-                <li>选择字幕文件 (SRT/ASS)</li>
-                <li>配置编码参数</li>
-                <li>点击"开始烧录"</li>
-                <li>选择保存位置</li>
-                <li>等待烧录完成</li>
-              </ol>
-
-              <hr />
-
-              <h6>支持格式：</h6>
+            </div>
+            <div>
+              <h6>字幕类型：</h6>
               <ul className="small mb-2">
-                <li><strong>SRT：</strong>最常用的字幕格式</li>
-                <li><strong>ASS/SSA：</strong>支持高级样式</li>
-                <li><strong>VTT：</strong>Web 字幕格式</li>
+                <li><strong>硬字幕：</strong>烧录到画面，需重新编码，兼容性强</li>
+                <li><strong>软字幕：</strong>可开关，秒级完成，画质 100% 保留</li>
               </ul>
 
               <hr />
 
-              <h6>参数说明：</h6>
-              <ul className="small mb-0">
-                <li><strong>CRF：</strong>控制质量，推荐 23</li>
-                <li><strong>Preset：</strong>编码速度，推荐 medium</li>
-                <li><strong>H.264：</strong>兼容性最好</li>
-                <li><strong>H.265：</strong>文件更小，但编码慢</li>
+              <h6>软字幕说明：</h6>
+              <ul className="small mb-2">
+                <li><strong>MKV + ASS：</strong>完整保留字幕样式（推荐）</li>
+                <li><strong>MP4 + mov_text：</strong>样式丢失，但兼容性好</li>
+                <li><strong>优势：</strong>视频/音频直接复制，无画质损失</li>
               </ul>
-            </Card.Body>
-          </Card>
+
+              <hr />
+
+              <h6>硬字幕质量预设：</h6>
+              <ul className="small mb-0">
+                <li><strong>高质量：</strong>CRF 18, slow, film（推荐）</li>
+                <li><strong>均衡：</strong>CRF 19, medium, film</li>
+                <li><strong>硬件加速：</strong>VideoToolbox（5-10x 更快）</li>
+                <li><strong>高压缩：</strong>HEVC, CRF 21（体积小）</li>
+              </ul>
+            </div>
+          </div>
 
           {/* 日志提示 */}
           {logs.length > 0 && (
-            <Card className="mb-3">
-              <Card.Header>📋 处理日志</Card.Header>
-              <Card.Body className="text-center" style={{ padding: '20px' }}>
+            <div className="mb-3">
+              <div >📋 处理日志</div>
+              <div className="text-center" style={{ padding: '20px' }}>
                 <p className="mb-2" style={{ fontSize: '13px', color: '#6c757d' }}>
                   共 {logs.length} 条日志记录
                 </p>
                 <p className="mb-0" style={{ fontSize: '11px', color: '#adb5bd' }}>
                   详细日志请查看专门的日志页面
                 </p>
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </div>

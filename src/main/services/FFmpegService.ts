@@ -2,6 +2,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import path from 'path';
 import fs from 'fs-extra';
 import log from 'electron-log';
+import { app } from 'electron';
 import type { MergeOptions, MergeProgress, VideoInfo, AudioInfo } from '../../shared/types/merge.types';
 import type { SubtitleBurnOptions, SubtitleBurnProgress } from '../../shared/types/subtitle-burn.types';
 import { FFmpegManager } from './FFmpegManager';
@@ -268,6 +269,77 @@ export class FFmpegService {
   }
 
   /**
+   * 提取视频缩略图
+   * @param videoPath 视频文件路径
+   * @param timestamp 提取时间点（秒），默认为 1 秒
+   * @returns 缩略图的 base64 编码
+   */
+  static async extractVideoThumbnail(videoPath: string, timestamp: number = 1): Promise<string | null> {
+    return new Promise((resolve) => {
+      try {
+        // 创建临时目录
+        const tempDir = path.join(app.getPath('temp'), 'videotool-thumbnails');
+        fs.ensureDirSync(tempDir);
+
+        // 生成唯一的临时文件名
+        const tempFilename = `thumb_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+        const tempPath = path.join(tempDir, tempFilename);
+
+        log.info(`📸 开始提取缩略图: ${videoPath}`);
+        log.info(`   时间点: ${timestamp}秒, 输出: ${tempPath}`);
+
+        ffmpeg(videoPath)
+          .seekInput(timestamp) // 跳转到指定时间点
+          .outputOptions([
+            '-vframes 1', // 只提取一帧
+            '-q:v 2' // JPEG 质量 (2-31, 越小质量越好)
+          ])
+          .size('640x360') // 设置输出尺寸
+          .output(tempPath)
+          .on('start', (cmd) => {
+            log.info(`   FFmpeg 命令: ${cmd}`);
+          })
+          .on('end', async () => {
+            try {
+              log.info('   FFmpeg 执行完成，检查文件...');
+              
+              // 等待文件系统同步
+              await new Promise(r => setTimeout(r, 100));
+              
+              if (fs.existsSync(tempPath)) {
+                const stats = fs.statSync(tempPath);
+                log.info(`   ✅ 缩略图文件已生成 (${stats.size} bytes)`);
+                
+                const imageBuffer = await fs.readFile(tempPath);
+                const base64 = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
+                
+                // 清理临时文件
+                fs.removeSync(tempPath);
+                log.info('   🗑️ 临时文件已清理');
+                
+                resolve(base64);
+              } else {
+                log.error('   ❌ 缩略图文件不存在:', tempPath);
+                resolve(null);
+              }
+            } catch (error) {
+              log.error('   ❌ 读取缩略图失败:', error);
+              resolve(null);
+            }
+          })
+          .on('error', (err) => {
+            log.error('   ❌ FFmpeg 提取缩略图失败:', err.message);
+            resolve(null);
+          })
+          .run();
+      } catch (error) {
+        log.error('❌ 提取缩略图异常:', error);
+        resolve(null);
+      }
+    });
+  }
+
+  /**
    * 获取音频信息
    */
   static async getAudioInfo(audioPath: string): Promise<AudioInfo | null> {
@@ -310,6 +382,31 @@ export class FFmpegService {
       return hours * 3600 + minutes * 60 + seconds;
     }
     return 0;
+  }
+
+  /**
+   * 获取语言名称
+   */
+  private static getLanguageName(langCode: string): string {
+    const languageMap: Record<string, string> = {
+      'zh-Hans': '简体中文',
+      'zh-Hant': '繁体中文',
+      'en': 'English',
+      'de': 'Deutsch',
+      'es': 'Español',
+      'fr': 'Français',
+      'hi': 'हिन्दी',
+      'id': 'Bahasa Indonesia',
+      'pt': 'Português',
+      'th': 'ภาษาไทย',
+      'vi': 'Tiếng Việt',
+      'ja': '日本語',
+      'ko': '한국어',
+      'ru': 'Русский',
+      'ar': 'العربية',
+      'und': 'Unknown'
+    };
+    return languageMap[langCode] || langCode;
   }
 
   /**
@@ -419,7 +516,7 @@ export class FFmpegService {
   }
 
   /**
-   * 烧录字幕到视频
+   * 烧录字幕到视频（支持硬字幕烧录和软字幕封装）
    */
   static async burnSubtitles(
     options: SubtitleBurnOptions,
@@ -433,11 +530,33 @@ export class FFmpegService {
       audioCodec = 'copy',
       crf = 23,
       preset = 'medium',
+      tune = 'none',
       useHardwareAccel = false,
       hwaccel = 'none',
+      subtitleType = 'hard',
     } = options;
 
-    log.info('开始字幕烧录', { videoPath, subtitlePath, outputPath, useHardwareAccel, hwaccel });
+    log.info('开始字幕处理', { 
+      videoPath, 
+      subtitlePath, 
+      outputPath, 
+      subtitleType,
+      useHardwareAccel, 
+      hwaccel 
+    });
+
+    // 软字幕封装
+    if (subtitleType === 'soft') {
+      return FFmpegService.embedSoftSubtitles(
+        videoPath,
+        subtitlePath,
+        outputPath,
+        onProgress
+      );
+    }
+
+    // 硬字幕烧录（原有逻辑）
+    log.info('使用硬字幕烧录模式');
 
     return new Promise((resolve, reject) => {
       try {
@@ -540,6 +659,15 @@ export class FFmpegService {
               '-movflags +faststart', // 流媒体优化
               '-x264opts keyint=240:min-keyint=24:scenecut=40', // x264 优化参数
             ];
+
+            // 画面调优
+            if (tune && tune !== 'none') {
+              if (videoCodec === 'libx264') {
+                outputOptions.push(`-tune ${tune}`);
+              } else if (videoCodec === 'libx265' && tune === 'grain') {
+                outputOptions.push('-tune grain');
+              }
+            }
             
             // 针对 H.265 的特殊配置
             if (videoCodec === 'libx265') {
@@ -565,6 +693,7 @@ export class FFmpegService {
             .outputOptions([
               `-crf ${crf}`,
               `-preset ${preset}`,
+              ...(tune && tune !== 'none' ? [`-tune ${tune}`] : []),
               '-g 240',
               '-bf 2',
               '-pix_fmt yuv420p',
@@ -636,6 +765,169 @@ export class FFmpegService {
         reject({
           success: false,
           message: `烧录异常: ${errorMessage}`,
+        });
+      }
+    });
+  }
+
+  /**
+   * 软字幕封装（无需重新编码）
+   */
+  private static async embedSoftSubtitles(
+    videoPath: string,
+    subtitlePath: string | string[],
+    outputPath: string,
+    onProgress?: (progress: SubtitleBurnProgress) => void
+  ): Promise<{ success: boolean; message: string; outputPath?: string }> {
+    log.info('开始软字幕封装（无需编码）');
+
+    return new Promise((resolve, reject) => {
+      try {
+        const outputDir = path.dirname(outputPath);
+        fs.ensureDirSync(outputDir);
+
+        // 判断输出容器格式
+        const outputExt = path.extname(outputPath).toLowerCase();
+        const isMKV = outputExt === '.mkv';
+        const isMP4 = outputExt === '.mp4';
+
+        if (!isMKV && !isMP4) {
+          reject({
+            success: false,
+            message: '软字幕仅支持 MP4 或 MKV 容器格式',
+          });
+          return;
+        }
+
+        // 转换为数组处理
+        const subtitlePaths = Array.isArray(subtitlePath) ? subtitlePath : [subtitlePath];
+        log.info(`封装 ${subtitlePaths.length} 个字幕轨道`);
+
+        // 判断字幕格式和编码器
+        const firstSubtitleExt = path.extname(subtitlePaths[0]).toLowerCase();
+        let subtitleCodec: string;
+
+        if (isMKV) {
+          // MKV 容器支持 ASS/SSA，保留样式
+          if (firstSubtitleExt === '.ass' || firstSubtitleExt === '.ssa') {
+            subtitleCodec = 'ass';
+            log.info('✅ MKV + ASS：完整保留字幕样式');
+          } else if (firstSubtitleExt === '.srt') {
+            subtitleCodec = 'srt';
+            log.info('✅ MKV + SRT：无样式字幕');
+          } else {
+            subtitleCodec = 'srt';
+            log.warn('⚠️ 字幕格式不常见，尝试按 SRT 处理');
+          }
+        } else {
+          // MP4 容器只支持 mov_text，样式会丢失
+          subtitleCodec = 'mov_text';
+          if (firstSubtitleExt === '.ass' || firstSubtitleExt === '.ssa') {
+            log.warn('⚠️ MP4 + ASS：样式将丢失（mov_text 不支持样式）');
+          } else {
+            log.info('✅ MP4 + mov_text：基础字幕封装');
+          }
+        }
+
+        let totalDuration = 0;
+
+        const command = ffmpeg()
+          .input(videoPath);
+
+        // 添加所有字幕输入
+        subtitlePaths.forEach((subPath) => {
+          command.input(subPath);
+        });
+
+        // 构建输出选项
+        const outputOptions = [
+          '-map 0:v',    // 映射视频流
+          '-map 0:a?',   // 映射音频流（如果存在）
+        ];
+
+        // 映射所有字幕流
+        subtitlePaths.forEach((_, index) => {
+          outputOptions.push(`-map ${index + 1}:0`);  // 字幕从输入1开始
+        });
+
+        outputOptions.push(
+          '-c:v copy',               // 视频直接复制
+          '-c:a copy',               // 音频直接复制
+          `-c:s ${subtitleCodec}`    // 字幕编码器
+        );
+
+        command.outputOptions(outputOptions);
+
+        // 为每个字幕轨道单独设置元数据（使用 outputOption 而不是 outputOptions）
+        subtitlePaths.forEach((subPath, index) => {
+          const filename = path.basename(subPath, path.extname(subPath));
+          // 提取语言代码（例如：video.zh-Hans.ass -> zh-Hans）
+          const langMatch = filename.match(/\.([a-z]{2}(-[A-Za-z]+)?)$/i);
+          const langCode = langMatch ? langMatch[1] : 'und';
+          const langName = FFmpegService.getLanguageName(langCode);
+          
+          // 使用 outputOption 单独添加每个元数据参数
+          command
+            .outputOption(`-metadata:s:s:${index}`, `language=${langCode}`)
+            .outputOption(`-metadata:s:s:${index}`, `title=${langName}`);
+          
+          // 第一个字幕设为默认
+          if (index === 0) {
+            command.outputOption(`-disposition:s:${index}`, 'default');
+          }
+        });
+
+        command
+          .on('start', (commandLine) => {
+            log.info('FFmpeg 命令:', commandLine);
+          })
+          .on('codecData', (data) => {
+            const duration = data.duration || '00:00:00';
+            totalDuration = FFmpegService.parseTimemark(duration);
+            log.info('视频总时长:', totalDuration, '秒');
+          })
+          .on('progress', (progress) => {
+            if (onProgress) {
+              let percent = 0;
+              if (totalDuration > 0 && progress.timemark) {
+                const currentTime = FFmpegService.parseTimemark(progress.timemark);
+                percent = Math.min((currentTime / totalDuration) * 100, 100);
+              }
+
+              onProgress({
+                percent: Math.round(percent),
+                timemark: progress.timemark,
+                currentFps: progress.currentFps,
+                targetSize: progress.targetSize,
+              });
+            }
+          })
+          .on('end', () => {
+            log.info('✅ 软字幕封装完成:', outputPath);
+            resolve({
+              success: true,
+              message: '软字幕封装成功',
+              outputPath,
+            });
+          })
+          .on('error', (err, _stdout, stderr) => {
+            log.error('❌ 软字幕封装失败:', err.message);
+            log.error('FFmpeg stderr:', stderr);
+
+            const errorDetail = FFmpegService.parseFFmpegError(stderr, err.message);
+
+            reject({
+              success: false,
+              message: `封装失败: ${errorDetail}`,
+            });
+          })
+          .save(outputPath);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '未知错误';
+        log.error('软字幕封装异常:', errorMessage);
+        reject({
+          success: false,
+          message: `封装异常: ${errorMessage}`,
         });
       }
     });

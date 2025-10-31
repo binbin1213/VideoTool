@@ -1,0 +1,42 @@
+@use './tokens' as t;
+
+@mixin control-select($mini: false) {
+  font-size: t.$font-size-base;
+  color: t.$color-text;
+  @if $mini == true {
+    height: t.$control-height-mini;
+    line-height: t.$control-height-mini;
+  } @else {
+    height: t.$control-height-sm;
+    line-height: t.$control-height-sm;
+  }
+  padding: 0 t.$spacing-lg 0 t.$spacing-md;
+  border-radius: t.$radius-sm;
+}
+
+@mixin label {
+  font-size: t.$font-size-base !important;
+  color: t.$color-text !important;
+  line-height: t.$control-height-sm; // 与 22px 控件对齐
+  height: t.$control-height-sm;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+@mixin help-text {
+  font-size: t.$font-size-base;
+  color: t.$color-text-secondary;
+  white-space: nowrap;
+  margin-left: t.$spacing-md;
+}
+
+@mixin compact-row {
+  :global(.row) {
+    --bs-gutter-x: t.$spacing-sm;
+    --bs-gutter-y: t.$spacing-sm;
+  }
+}
+
+

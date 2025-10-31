@@ -10,8 +10,12 @@ export interface SubtitleBurnOptions {
   audioCodec?: 'copy' | 'aac';
   crf?: number; // 质量控制 (18-28, 越小质量越好)
   preset?: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow' | 'slower' | 'veryslow';
+  // 画面调优
+  tune?: 'film' | 'grain' | 'none';
   useHardwareAccel?: boolean; // 是否使用硬件加速
   hwaccel?: 'videotoolbox' | 'nvenc' | 'qsv' | 'none'; // 硬件加速类型
+  // 字幕类型
+  subtitleType?: 'hard' | 'soft'; // 硬字幕（烧录）或软字幕（封装）
 }
 
 export interface SubtitleBurnProgress {

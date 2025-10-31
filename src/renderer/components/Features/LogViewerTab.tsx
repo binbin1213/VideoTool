@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Container, Card, Button, Form, Badge, Alert } from 'react-bootstrap';
-import { FaTrash, FaDownload, FaSearch, FaFolder, FaInfoCircle } from 'react-icons/fa';
+import { useState, useEffect, useRef } from 'react';
+import { Button, Form, Badge, Alert } from 'react-bootstrap';
+import formStyles from '../../styles/components/FormControls.module.scss';
+import { FaTrash, FaDownload, FaSearch, FaFolder, FaInfoCircle, FaSyncAlt } from 'react-icons/fa';
 import { LogEntry } from '../../App';
 
 interface LogViewerTabProps {
@@ -12,12 +13,15 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [searchText, setSearchText] = useState('');
   const [systemLogPath, setSystemLogPath] = useState<string>('');
+  const [systemLogs, setSystemLogs] = useState<LogEntry[]>([]); // 从文件读取的日志
+  const [loading, setLoading] = useState<boolean>(false);
+  const logListRef = useRef<HTMLDivElement>(null); // 日志列表容器引用
 
   // 获取系统日志文件路径
   useEffect(() => {
     const fetchLogPath = async () => {
       try {
-        const path = await window.electron.ipcRenderer.invoke('get-log-path');
+        const path = await (window as any).electron.ipcRenderer.invoke('get-log-path');
         setSystemLogPath(path);
       } catch (error) {
         console.error('获取日志路径失败:', error);
@@ -26,24 +30,73 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
     fetchLogPath();
   }, []);
 
+  // 滚动到日志底部（最新日志）
+  const scrollToBottom = () => {
+    if (logListRef.current) {
+      logListRef.current.scrollTop = logListRef.current.scrollHeight;
+    }
+  };
+
+  // 读取完整日志文件
+  const loadSystemLogs = async () => {
+    setLoading(true);
+    try {
+      const logs = await (window as any).electron.ipcRenderer.invoke('read-log-file', 1000);
+      setSystemLogs(logs);
+      // 延迟滚动到底部，确保 DOM 已更新
+      setTimeout(scrollToBottom, 100);
+    } catch (error) {
+      console.error('读取日志文件失败:', error);
+      alert('读取日志文件失败！');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 组件加载时自动读取日志
+  useEffect(() => {
+    loadSystemLogs();
+  }, []);
+
   const getLevelClass = (level: string) => {
     return `level-${level}`;
   };
 
-  const filteredLogs = logs.filter(log => {
+  // 使用系统日志代替传入的 logs
+  const allLogs = systemLogs.length > 0 ? systemLogs : logs;
+  
+  const filteredLogs = allLogs.filter(log => {
     const matchLevel = filterLevel === 'all' || log.level === filterLevel;
     const matchSearch = !searchText || log.message.toLowerCase().includes(searchText.toLowerCase());
     return matchLevel && matchSearch;
   });
 
-  const handleClearLogs = () => {
-    if (confirm('确定要清空所有日志吗？')) {
-      onClearLogs();
+  // 当日志更新或过滤条件变化时自动滚动到底部
+  useEffect(() => {
+    scrollToBottom();
+  }, [systemLogs, filterLevel, searchText]);
+
+  const handleClearLogs = async () => {
+    if (confirm('⚠️ 确定要清空 main.log 文件吗？此操作不可恢复！')) {
+      try {
+        const result = await (window as any).electron.ipcRenderer.invoke('clear-log-file');
+        if (result.success) {
+          // 清空前端显示
+          setSystemLogs([]);
+          onClearLogs();
+          alert('✅ 日志已清空！');
+        } else {
+          alert('❌ 清空日志失败：' + result.message);
+        }
+      } catch (error) {
+        console.error('清空日志失败:', error);
+        alert('❌ 清空日志失败！');
+      }
     }
   };
 
   const handleExportLogs = () => {
-    const content = logs.map(log => 
+    const content = allLogs.map(log => 
       `[${log.timestamp}] [${log.level.toUpperCase()}] ${log.message}`
     ).join('\n');
     
@@ -58,7 +111,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
 
   const handleOpenLogFolder = async () => {
     try {
-      await window.electron.ipcRenderer.invoke('open-log-folder');
+      await (window as any).electron.ipcRenderer.invoke('open-log-folder');
     } catch (error) {
       console.error('打开日志文件夹失败:', error);
       alert('打开日志文件夹失败，请手动打开:\n' + systemLogPath);
@@ -72,10 +125,9 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
       </div>
 
       <div className="log-viewer-content">
-        <Card>
-          <Card.Body>
-            {/* 系统日志路径提示 */}
-            {systemLogPath && (
+        <div>
+          {/* 系统日志路径提示 */}
+          {systemLogPath && (
               <Alert variant="info" className="mb-3 d-flex align-items-center justify-content-between">
                 <div className="d-flex align-items-center">
                   <FaInfoCircle className="me-2" />
@@ -99,8 +151,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div className="d-flex gap-2 align-items-center">
                 <Form.Select 
-                  size="sm" 
-                  style={{ width: 'auto' }}
+                  className={formStyles.select}
                   value={filterLevel}
                   onChange={(e) => setFilterLevel(e.target.value)}
                 >
@@ -117,7 +168,6 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                   </span>
                   <Form.Control
                     type="text"
-                    size="sm"
                     placeholder="搜索日志..."
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -125,11 +175,20 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                 </div>
 
                 <Badge bg="secondary" className="ms-2">
-                  {filteredLogs.length} / {logs.length}
+                  {filteredLogs.length} / {allLogs.length}
                 </Badge>
               </div>
 
               <div className="d-flex gap-2">
+                <Button 
+                  variant="outline-success" 
+                  size="sm"
+                  onClick={loadSystemLogs}
+                  disabled={loading}
+                >
+                  <FaSyncAlt className="me-1" />
+                  {loading ? '加载中...' : '刷新日志'}
+                </Button>
                 <Button 
                   variant="outline-primary" 
                   size="sm"
@@ -150,7 +209,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
             </div>
 
             {/* 日志列表 */}
-            <div className="log-list">
+            <div className="log-list" ref={logListRef}>
               {filteredLogs.length === 0 ? (
                 <div className="text-center" style={{ color: '#858585', paddingTop: '40px' }}>
                   <p>暂无日志记录</p>
@@ -167,8 +226,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                 ))
               )}
             </div>
-          </Card.Body>
-        </Card>
+        </div>
       </div>
     </div>
   );

@@ -22,6 +22,33 @@ interface SRTSubtitle {
   text: string;
 }
 
+interface ASSStyleParams {
+  name: string;
+  fontname: string;
+  fontsize: number;
+  primaryColour: string;      // &H00BBGGRR 格式
+  secondaryColour: string;
+  outlineColour: string;
+  backColour: string;
+  bold: 0 | 1;
+  italic: 0 | 1;
+  underline: 0 | 1;
+  strikeOut: 0 | 1;
+  scaleX: number;
+  scaleY: number;
+  spacing: number;
+  angle: number;
+  borderStyle: 1 | 3;
+  outline: number;
+  shadow: number;
+  alignment: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+  marginL: number;
+  marginR: number;
+  marginV: number;
+  encoding: number;
+  lineSpacing: number;
+}
+
 /**
  * 应用正则替换规则
  */
@@ -78,9 +105,14 @@ export function parseSRT(content: string): SRTSubtitle[] {
 }
 
 /**
- * 生成ASS字幕
+ * 生成ASS字幕（支持自定义样式参数）
  */
-export function generateASS(subtitles: SRTSubtitle[], styleName: string = '译文字幕 底部'): string {
+export function generateASS(
+  subtitles: SRTSubtitle[], 
+  styleName: string = '译文字幕 底部',
+  watermark?: { text: string; position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' },
+  customStyleParams?: ASSStyleParams
+): string {
   let content = '';
   
   // Script Info
@@ -99,10 +131,25 @@ Synch Point: 1
   // V4+ Styles
   content += `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding, LineSpacing
-Style: 译文字幕 底部,Microsoft YaHei,18,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,18,1,1
-Style: 双语 原文,微软雅黑,14,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0.5,0,2,5,5,18,1,0
-Style: 双语 译文,Microsoft YaHei,18,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,5,5,18,1,0
+`;
 
+  // 添加使用的样式（优先使用自定义参数）
+  if (customStyleParams) {
+    content += styleParamsToString(customStyleParams) + '\n';
+  } else {
+    // 使用预设样式
+    const style = getStyleParams(styleName);
+    if (style) {
+      content += styleParamsToString(style) + '\n';
+    } else {
+      // 降级：使用默认样式
+      const defaultStyle = PRESET_STYLES['译文字幕 底部'];
+      content += styleParamsToString(defaultStyle) + '\n';
+    }
+  }
+  
+  // 添加水印样式
+  content += `Style: 水印,Microsoft YaHei,10,&H32FFFFFF,&H00000000,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,5,5,5,1,0
 `;
 
   // Events
@@ -110,6 +157,46 @@ Style: 双语 译文,Microsoft YaHei,18,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 `;
 
+  // 添加水印（如果启用）
+  if (watermark && watermark.text && subtitles.length > 0) {
+    const firstStart = convertTimeFormat(subtitles[0].startTime);
+    const lastEnd = convertTimeFormat(subtitles[subtitles.length - 1].endTime);
+    
+    // 根据位置设置对齐方式和边距
+    let alignment = 7; // 默认顶部居中
+    let marginL = 5;
+    let marginR = 5;
+    let marginV = 5;
+    
+    switch (watermark.position) {
+      case 'top-left':
+        alignment = 7; // 顶部左对齐
+        marginL = 10;
+        marginV = 10;
+        break;
+      case 'top-right':
+        alignment = 9; // 顶部右对齐
+        marginR = 10;
+        marginV = 10;
+        break;
+      case 'bottom-left':
+        alignment = 1; // 底部左对齐
+        marginL = 10;
+        marginV = 30;
+        break;
+      case 'bottom-right':
+        alignment = 3; // 底部右对齐
+        marginR = 10;
+        marginV = 30;
+        break;
+    }
+    
+    // 使用特殊的样式覆盖标签来设置水印样式（半透明、小字体）
+    const watermarkText = `{\\an${alignment}\\fs10\\alpha&H80&}${watermark.text}`;
+    content += `Comment: 0,${firstStart},${lastEnd},水印,,${marginL},${marginR},${marginV},,${watermarkText}\n`;
+  }
+
+  // 添加字幕内容
   for (const subtitle of subtitles) {
     const start = convertTimeFormat(subtitle.startTime);
     const end = convertTimeFormat(subtitle.endTime);
@@ -145,14 +232,168 @@ export function getDefaultRegexRules(): RegexRule[] {
   return (defaultRules as any).rules || [];
 }
 
+// 预设样式定义
+const PRESET_STYLES: Record<string, ASSStyleParams> = {
+  '译文字幕 底部': {
+    name: '译文字幕 底部',
+    fontname: 'Microsoft YaHei',
+    fontsize: 18,
+    primaryColour: '&H00FFFFFF',
+    secondaryColour: '&H00535353',
+    outlineColour: '&H00000000',
+    backColour: '&H00000000',
+    bold: 1,
+    italic: 0,
+    underline: 0,
+    strikeOut: 0,
+    scaleX: 100,
+    scaleY: 100,
+    spacing: 1,
+    angle: 0,
+    borderStyle: 1,
+    outline: 0.5,
+    shadow: 0,
+    alignment: 2,
+    marginL: 5,
+    marginR: 5,
+    marginV: 18,
+    encoding: 1,
+    lineSpacing: 1
+  },
+  '双语 原文': {
+    name: '双语 原文',
+    fontname: '微软雅黑',
+    fontsize: 14,
+    primaryColour: '&H00FFFFFF',
+    secondaryColour: '&H004E4E4E',
+    outlineColour: '&H00000000',
+    backColour: '&H00000000',
+    bold: 0,
+    italic: 0,
+    underline: 0,
+    strikeOut: 0,
+    scaleX: 100,
+    scaleY: 100,
+    spacing: 0,
+    angle: 0,
+    borderStyle: 1,
+    outline: 0.5,
+    shadow: 0,
+    alignment: 2,
+    marginL: 5,
+    marginR: 5,
+    marginV: 18,
+    encoding: 1,
+    lineSpacing: 0
+  },
+  '双语 译文': {
+    name: '双语 译文',
+    fontname: 'Microsoft YaHei',
+    fontsize: 18,
+    primaryColour: '&H00FFFFFF',
+    secondaryColour: '&H004E4E4E',
+    outlineColour: '&H00000000',
+    backColour: '&H00000000',
+    bold: 1,
+    italic: 0,
+    underline: 0,
+    strikeOut: 0,
+    scaleX: 100,
+    scaleY: 100,
+    spacing: 1,
+    angle: 0,
+    borderStyle: 1,
+    outline: 0.5,
+    shadow: 0,
+    alignment: 2,
+    marginL: 5,
+    marginR: 5,
+    marginV: 18,
+    encoding: 1,
+    lineSpacing: 0
+  }
+};
+
 /**
- * 获取可用样式列表
+ * 导出类型
+ */
+export type { ASSStyleParams };
+
+/**
+ * 获取预设样式
+ */
+export function getPresetStyle(name: string): ASSStyleParams | undefined {
+  return PRESET_STYLES[name];
+}
+
+/**
+ * 获取所有预设样式名称
+ */
+export function getPresetStyleNames(): string[] {
+  return Object.keys(PRESET_STYLES);
+}
+
+/**
+ * 获取可用样式列表（包含自定义样式）
  */
 export function getAvailableStyles(): string[] {
-  return [
-    '译文字幕 底部',
-    '双语 原文',
-    '双语 译文',
-  ];
+  const customStyles = getCustomStyles();
+  return [...Object.keys(PRESET_STYLES), ...customStyles.map(s => s.name)];
+}
+
+/**
+ * 保存自定义样式到localStorage
+ */
+export function saveCustomStyle(style: ASSStyleParams): void {
+  const customStyles = getCustomStyles();
+  const existingIndex = customStyles.findIndex(s => s.name === style.name);
+  
+  if (existingIndex >= 0) {
+    customStyles[existingIndex] = style;
+  } else {
+    customStyles.push(style);
+  }
+  
+  localStorage.setItem('custom_ass_styles', JSON.stringify(customStyles));
+}
+
+/**
+ * 获取自定义样式列表
+ */
+export function getCustomStyles(): ASSStyleParams[] {
+  try {
+    const saved = localStorage.getItem('custom_ass_styles');
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * 删除自定义样式
+ */
+export function deleteCustomStyle(name: string): void {
+  const customStyles = getCustomStyles().filter(s => s.name !== name);
+  localStorage.setItem('custom_ass_styles', JSON.stringify(customStyles));
+}
+
+/**
+ * 获取样式参数（预设或自定义）
+ */
+export function getStyleParams(name: string): ASSStyleParams | undefined {
+  // 先查预设
+  const preset = PRESET_STYLES[name];
+  if (preset) return preset;
+  
+  // 再查自定义
+  const customStyles = getCustomStyles();
+  return customStyles.find(s => s.name === name);
+}
+
+/**
+ * 样式参数转换为ASS格式字符串
+ */
+export function styleParamsToString(style: ASSStyleParams): string {
+  return `Style: ${style.name},${style.fontname},${style.fontsize},${style.primaryColour},${style.secondaryColour},${style.outlineColour},${style.backColour},${style.bold},${style.italic},${style.underline},${style.strikeOut},${style.scaleX},${style.scaleY},${style.spacing},${style.angle},${style.borderStyle},${style.outline},${style.shadow},${style.alignment},${style.marginL},${style.marginR},${style.marginV},${style.encoding},${style.lineSpacing}`;
 }
 

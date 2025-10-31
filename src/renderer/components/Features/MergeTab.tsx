@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Row, Col, Card, Button, Form, Alert, ProgressBar, Badge } from 'react-bootstrap';
-import { FaFileVideo, FaFileAudio, FaPlay, FaCog, FaInfoCircle } from 'react-icons/fa';
+import { Row, Col, Button, Form, Alert, ProgressBar, Badge } from 'react-bootstrap';
+import formStyles from '../../styles/components/FormControls.module.scss';
+import { FaPlay, FaCog, FaInfoCircle } from 'react-icons/fa';
 import type { VideoInfo, AudioInfo, MergeProgress } from '../../../shared/types/merge.types';
 import type { TaskProgress } from '../../App';
 
@@ -237,88 +238,71 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             </Alert>
           )}
 
-          {/* 视频文件选择 */}
-          <Card className="mb-3">
-            <Card.Header>
-              <FaFileVideo className="me-2" />
-              选择视频文件
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex align-items-center gap-3">
+          {/* 视频文件选择（统一样式：标签 + 按钮 + 文本） */}
+          <div className="mb-2">
+            <div className={formStyles.fieldWrap}>
+              <div className={formStyles.label}>视频:</div>
+              <div className="d-flex align-items-center gap-2 flex-grow-1">
                 <Button 
                   onClick={handleSelectVideo}
                   variant="secondary"
+                  size="sm"
+                  className={formStyles.buttonMini}
                 >
                   浏览
                 </Button>
-                <div className="flex-grow-1">
+                <div className="flex-grow-1 text-truncate">
                   {videoFile ? (
-                    <div>
-                      <div className="text-truncate">
-                        <strong>{videoFile.split(/[\\/]/).pop()}</strong>
-                      </div>
-                      {videoInfo && (
-                        <div className="text-muted small mt-1">
-                          {videoInfo.width}×{videoInfo.height} | {videoInfo.codec} | 
-                          {' '}{videoInfo.fps.toFixed(2)}fps | 
-                          {' '}{formatDuration(videoInfo.duration)} | 
-                          {' '}{formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}
-                        </div>
-                      )}
-                    </div>
+                    <strong>{videoFile.split(/[\\/]/).pop()}</strong>
                   ) : (
                     <span className="text-muted">未选择视频文件</span>
                   )}
                 </div>
               </div>
-            </Card.Body>
-          </Card>
+            </div>
+            {videoInfo && (
+              <div className={formStyles.help}>
+                {videoInfo.width}×{videoInfo.height} · {videoInfo.codec} · {videoInfo.fps.toFixed(2)}fps · {formatDuration(videoInfo.duration)} · {formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}
+              </div>
+            )}
+          </div>
 
-          {/* 音频文件选择 */}
-          <Card className="mb-3">
-            <Card.Header>
-              <FaFileAudio className="me-2" />
-              选择音频文件
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex align-items-center gap-3">
+          {/* 音频文件选择（统一样式：标签 + 按钮 + 文本） */}
+          <div className="mb-2">
+            <div className={formStyles.fieldWrap}>
+              <div className={formStyles.label}>音频:</div>
+              <div className="d-flex align-items-center gap-2 flex-grow-1">
                 <Button 
                   onClick={handleSelectAudio}
                   variant="secondary"
+                  size="sm"
+                  className={formStyles.buttonMini}
                 >
                   浏览
                 </Button>
-                <div className="flex-grow-1">
+                <div className="flex-grow-1 text-truncate">
                   {audioFile ? (
-                    <div>
-                      <div className="text-truncate">
-                        <strong>{audioFile.split(/[\\/]/).pop()}</strong>
-                      </div>
-                      {audioInfo && (
-                        <div className="text-muted small mt-1">
-                          {audioInfo.codec} | 
-                          {' '}{Math.round(audioInfo.bitrate / 1000)}kbps | 
-                          {' '}{audioInfo.sampleRate}Hz | 
-                          {' '}{audioInfo.channels}声道 | 
-                          {' '}{formatDuration(audioInfo.duration)}
-                        </div>
-                      )}
-                    </div>
+                    <strong>{audioFile.split(/[\\/]/).pop()}</strong>
                   ) : (
                     <span className="text-muted">未选择音频文件</span>
                   )}
                 </div>
               </div>
-            </Card.Body>
-          </Card>
+            </div>
+            {audioInfo && (
+              <div className={formStyles.help}>
+                {audioInfo.codec} · {Math.round(audioInfo.bitrate / 1000)}kbps · {audioInfo.sampleRate}Hz · {audioInfo.channels}声道 · {formatDuration(audioInfo.duration)}
+              </div>
+            )}
+          </div>
 
           {/* 合并设置 */}
-          <Card className="mb-3">
-            <Card.Header>
+          <div className="mb-3">
+            <div >
               <FaCog className="me-2" />
               合并设置
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div>
               {/* 硬件加速开关 */}
               <Form.Group className="mb-3">
                 <Form.Check
@@ -365,57 +349,67 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
 
               <Row>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>视频编码</Form.Label>
-                    <Form.Select
-                      value={videoCodec}
-                      onChange={(e) => setVideoCodec(e.target.value as any)}
-                      disabled={taskProgress.isRunning}
-                    >
-                      <option value="copy">直接复制（最快，推荐）</option>
-                      <option value="libx264">H.264 重新编码</option>
-                      <option value="libx265">H.265 重新编码</option>
-                    </Form.Select>
-                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                      {videoCodec === 'copy' 
-                        ? '推荐使用"直接复制"以获得最快速度且无损质量'
-                        : '重新编码可启用硬件加速，大幅提升处理速度'
-                      }
-                    </Form.Text>
+                  <Form.Group className="mb-2">
+                    <div className={formStyles.fieldWrap}>
+                      <div className={formStyles.label}>视频编码:</div>
+                      <div>
+                        <Form.Select
+                          className={formStyles.select}
+                          value={videoCodec}
+                          onChange={(e) => setVideoCodec(e.target.value as any)}
+                          disabled={taskProgress.isRunning}
+                        >
+                          <option value="copy">直接复制（最快，推荐）</option>
+                          <option value="libx264">H.264 重新编码</option>
+                          <option value="libx265">H.265 重新编码</option>
+                        </Form.Select>
+                        <span className={formStyles.help}>
+                          {videoCodec === 'copy' ? '最快且无损' : '可启用硬件加速'}
+                        </span>
+                      </div>
+                    </div>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>音频编码</Form.Label>
-                    <Form.Select
-                      value={audioCodec}
-                      onChange={(e) => setAudioCodec(e.target.value as any)}
-                      disabled={taskProgress.isRunning}
-                    >
-                      <option value="aac">AAC（推荐）</option>
-                      <option value="mp3">MP3</option>
-                      <option value="copy">直接复制</option>
-                    </Form.Select>
-                    <Form.Text style={{ fontSize: '13px', color: '#495057' }}>
-                      AAC 是最通用的音频格式
-                    </Form.Text>
+                  <Form.Group className="mb-2">
+                    <div className={formStyles.fieldWrap}>
+                      <div className={formStyles.label}>音频编码:</div>
+                      <div>
+                        <Form.Select
+                          className={formStyles.select}
+                          value={audioCodec}
+                          onChange={(e) => setAudioCodec(e.target.value as any)}
+                          disabled={taskProgress.isRunning}
+                        >
+                          <option value="aac">AAC（推荐）</option>
+                          <option value="mp3">MP3</option>
+                          <option value="copy">直接复制</option>
+                        </Form.Select>
+                        <span className={formStyles.help}>AAC 通用性最好</span>
+                      </div>
+                    </div>
                   </Form.Group>
                 </Col>
               </Row>
 
               {audioCodec !== 'copy' && (
-                <Form.Group className="mb-3">
-                  <Form.Label>音频比特率</Form.Label>
-                  <Form.Select
-                      value={audioBitrate}
-                      onChange={(e) => setAudioBitrate(e.target.value)}
-                      disabled={taskProgress.isRunning}
-                  >
-                    <option value="128k">128 kbps（普通质量）</option>
-                    <option value="192k">192 kbps（较好质量）</option>
-                    <option value="256k">256 kbps（高质量）</option>
-                    <option value="320k">320 kbps（极高质量）</option>
-                  </Form.Select>
+                <Form.Group className="mb-2">
+                  <div className={formStyles.fieldWrap}>
+                    <div className={formStyles.label}>音频比特率:</div>
+                    <div>
+                      <Form.Select
+                        className={formStyles.select}
+                        value={audioBitrate}
+                        onChange={(e) => setAudioBitrate(e.target.value)}
+                        disabled={taskProgress.isRunning}
+                      >
+                        <option value="128k">128 kbps（普通）</option>
+                        <option value="192k">192 kbps（较好）</option>
+                        <option value="256k">256 kbps（高）</option>
+                        <option value="320k">320 kbps（极高）</option>
+                      </Form.Select>
+                    </div>
+                  </div>
                 </Form.Group>
               )}
 
@@ -429,13 +423,13 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                   {taskProgress.isRunning && taskProgress.taskType === 'merge' ? '合并中...' : '开始合并'}
                 </Button>
               </div>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* 合并进度 */}
           {taskProgress.isRunning && taskProgress.taskType === 'merge' && (
-            <Card className="mb-3">
-              <Card.Body>
+            <div className="mb-3">
+              <div>
                 <h6>合并进度</h6>
                 <ProgressBar
                   now={taskProgress.progress}
@@ -446,8 +440,8 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                 {taskProgress.progressText && (
                   <div className="text-muted small mt-2">{taskProgress.progressText}</div>
                 )}
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* 合并结果 */}
@@ -468,12 +462,12 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
 
         <div className="info-area">
           {/* 功能说明 */}
-          <Card className="mb-3">
-            <Card.Header>
+          <div className="mb-3">
+            <div >
               <FaInfoCircle className="me-2" />
               功能说明
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div>
               <h6>使用步骤：</h6>
               <ol className="small">
                 <li>选择视频文件</li>
@@ -506,22 +500,22 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                 <strong>视频：</strong>MP4, AVI, MKV, MOV, FLV, WMV, WebM<br />
                 <strong>音频：</strong>MP3, AAC, WAV, FLAC, M4A, WMA, OGG
               </p>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* 日志提示 */}
           {logs.length > 0 && (
-            <Card className="mb-3">
-              <Card.Header>📋 处理日志</Card.Header>
-              <Card.Body className="text-center" style={{ padding: '20px' }}>
+            <div className="mb-3">
+              <div >📋 处理日志</div>
+              <div className="text-center" style={{ padding: '20px' }}>
                 <p className="mb-2" style={{ fontSize: '13px', color: '#6c757d' }}>
                   共 {logs.length} 条日志记录
                 </p>
                 <p className="mb-0" style={{ fontSize: '11px', color: '#adb5bd' }}>
                   详细日志请查看专门的日志页面
                 </p>
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </div>

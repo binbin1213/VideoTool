@@ -42,6 +42,7 @@ export interface VideoInfo {
   audioBitrate?: number;
   size?: number;
   formatName?: string;
+  thumbnail?: string; // 视频缩略图（base64 编码）
 
   // ===== 视频详细参数（AI 分析用） =====
   pixelFormat?: string;

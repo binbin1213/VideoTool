@@ -35,7 +35,7 @@ export function registerSubtitleBurnHandlers() {
   });
 
   /**
-   * 选择字幕文件
+   * 选择字幕文件（单选）
    */
   ipcMain.handle('select-subtitle-file', async () => {
     const result = await dialog.showOpenDialog({
@@ -51,6 +51,27 @@ export function registerSubtitleBurnHandlers() {
 
     if (!result.canceled && result.filePaths.length > 0) {
       return result.filePaths[0];
+    }
+    return null;
+  });
+
+  /**
+   * 选择字幕文件（多选，用于软字幕多语言）
+   */
+  ipcMain.handle('select-subtitle-files-multiple', async () => {
+    const result = await dialog.showOpenDialog({
+      title: '选择字幕文件（可多选，用于多语言）',
+      filters: [
+        { name: '字幕文件', extensions: ['srt', 'ass', 'ssa', 'vtt'] },
+        { name: 'SRT 字幕', extensions: ['srt'] },
+        { name: 'ASS 字幕', extensions: ['ass', 'ssa'] },
+        { name: '所有文件', extensions: ['*'] },
+      ],
+      properties: ['openFile', 'multiSelections'],
+    });
+
+    if (!result.canceled && result.filePaths.length > 0) {
+      return result.filePaths;
     }
     return null;
   });

@@ -80,7 +80,9 @@ export function registerMergeHandlers() {
       title: '保存合并后的视频',
       defaultPath: path.join(app.getPath('videos'), defaultFileName),
       filters: [
-        { name: '视频文件', extensions: ['mp4'] },
+        { name: '视频文件', extensions: ['mp4', 'mkv', 'avi', 'mov'] },
+        { name: 'MP4 视频', extensions: ['mp4'] },
+        { name: 'MKV 视频', extensions: ['mkv'] },
         { name: '所有文件', extensions: ['*'] },
       ],
     });
@@ -92,11 +94,26 @@ export function registerMergeHandlers() {
   });
 
   /**
-   * 获取视频信息
+   * 获取视频信息（包含缩略图）
    */
   ipcMain.handle('get-video-info', async (_event, videoPath: string) => {
     try {
       const info = await FFmpegService.getVideoInfo(videoPath);
+      if (!info) {
+        return null;
+      }
+
+      // 提取视频缩略图（从第 1 秒提取）
+      log.info('开始提取视频缩略图...');
+      const thumbnail = await FFmpegService.extractVideoThumbnail(videoPath, 1);
+      
+      if (thumbnail) {
+        info.thumbnail = thumbnail;
+        log.info('✅ 缩略图已添加到视频信息');
+      } else {
+        log.warn('⚠️ 缩略图提取失败，继续返回视频信息');
+      }
+
       return info;
     } catch (error) {
       log.error('获取视频信息失败:', error);
