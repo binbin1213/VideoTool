@@ -293,8 +293,8 @@
   background-color: #d3d3d3;
   border-top-left-radius: t.$radius-sm;
   border-top-right-radius: t.$radius-sm;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: t.$font-size-base; // 使用规范的基础字号 11px
+  font-weight: 600; // 通过字重区分标题和内容
   color: #333;
 }
 
