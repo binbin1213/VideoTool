@@ -48,14 +48,22 @@ code {
 }
 
 /* 全局覆盖 Bootstrap 的 form-select 样式 */
+select,
 .form-select,
 .form-select-sm,
 .form-select-lg {
   --bs-body-bg: #fff !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
   background-color: #fff !important;
   background-image: var(--bs-form-select-bg-img), var(--bs-form-select-bg-icon, none) !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
 }
 
+select:focus,
 .form-select:focus,
 .form-select-sm:focus,
 .form-select-lg:focus {
