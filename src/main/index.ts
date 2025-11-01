@@ -153,6 +153,20 @@ function createWindow() {
       ],
     },
     {
+      label: '查看',
+      submenu: [
+        { label: '重新加载', role: 'reload' },
+        { label: '强制重新加载', role: 'forceReload' },
+        { label: '开发者工具', role: 'toggleDevTools' },
+        { type: 'separator' },
+        { label: '实际大小', role: 'resetZoom' },
+        { label: '放大', role: 'zoomIn' },
+        { label: '缩小', role: 'zoomOut' },
+        { type: 'separator' },
+        { label: '全屏', role: 'togglefullscreen' },
+      ],
+    },
+    {
       label: '窗口',
       submenu: [
         { label: '最小化', role: 'minimize' },
