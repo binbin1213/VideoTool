@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, Form, ProgressBar, Row, Col, Nav } from 'react-bootstrap';
 import styles from './TranscodeTab.module.scss';
-import tabs from '../../styles/components/Tabs.module.scss';
 import type { TranscodeConfig, VideoInfo, AIConfig } from '../../../types/transcode.types';
 
 const { ipcRenderer } = (window as any).electron;
@@ -251,11 +250,7 @@ function TranscodeTab() {
           variant="tabs" 
           activeKey={activeTab} 
           onSelect={(k) => setActiveTab(k || 'basic')} 
-          style={{ 
-            borderBottom: '1px solid #ddd',
-            flexShrink: 0
-          }}
-          className={tabs.tabsBar}
+          className={styles.tabsBar}
         >
           <Nav.Item>
             <Nav.Link eventKey="basic" className={styles.navLink}>摘要</Nav.Link>

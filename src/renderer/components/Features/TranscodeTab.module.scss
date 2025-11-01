@@ -153,6 +153,8 @@
 .tabsBar {
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
 
   :global(.nav-link) {
     display: inline-flex;
