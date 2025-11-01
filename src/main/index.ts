@@ -104,9 +104,8 @@ function createWindow() {
   // 窗口准备好后再显示
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
-    if (isDev) {
-      mainWindow?.webContents.openDevTools();
-    }
+    // 强制打开开发者工具用于调试
+    mainWindow?.webContents.openDevTools();
   });
 
   // 加载应用
