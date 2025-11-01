@@ -774,7 +774,7 @@ function TranscodeTab() {
                     <div><strong>存储大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
                     <div><strong>显示大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
                     <div><strong>宽高比:</strong> {(videoInfo.width / videoInfo.height).toFixed(2)}</div>
-                    <div style={{ borderTop: '1px solid #ddd', marginTop: '6px', paddingTop: '6px' }}>
+                    <div className={styles.divider}>
                       {transcodeConfig.resolution && transcodeConfig.resolution !== 'original' ? (
                         <>
                           <div><strong>输出尺寸:</strong> {(transcodeConfig.resolution as any).width}×{(transcodeConfig.resolution as any).height}</div>
@@ -786,7 +786,7 @@ function TranscodeTab() {
                     </div>
                   </div>
                 ) : (
-                  <div className={styles.textSecondary} style={{ color: '#999' }}>请先选择视频文件</div>
+                  <div className={styles.textMuted}>请先选择视频文件</div>
                 )}
               </fieldset>
             </div>
@@ -1106,18 +1106,18 @@ function TranscodeTab() {
                           <option value="192">192 kbps</option>
                           <option value="256">256 kbps</option>
                         </Form.Select>
-                        <div style={{ textAlign: 'center' }}>0 dB</div>
+                        <div className={styles.textCenter}>0 dB</div>
                       </div>
                     ))}
                   </div>
                 ) : videoInfo ? (
-                  <div style={{ fontSize: '10px', color: '#999', padding: '10px' }}>无音频轨道</div>
+                  <div className={styles.textMuted}>无音频轨道</div>
                 ) : (
-                  <div style={{ fontSize: '10px', color: '#999', padding: '10px' }}>请先选择视频文件</div>
+                  <div className={styles.textMuted}>请先选择视频文件</div>
                 )}
               </fieldset>
 
-              <fieldset style={{ border: 'none', backgroundColor: '#fff' }}>
+              <fieldset className={styles.fieldsetSimple} style={{ backgroundColor: '#fff' }}>
                 <legend className={styles.legendHidden}>音频设置</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
