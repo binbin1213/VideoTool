@@ -421,6 +421,11 @@
   margin-left: t.$spacing-md;
 }
 
+// 全局强制：确保所有 form-select 显示白色背景
+.root :global(.form-select) {
+  background-color: #fff;
+}
+
 // 全局覆盖：移除所有 form-select 的焦点蓝色边框效果
 .root :global(.form-select:focus) {
   outline: none;
