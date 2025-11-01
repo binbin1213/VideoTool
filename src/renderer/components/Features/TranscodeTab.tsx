@@ -420,7 +420,7 @@ function TranscodeTab() {
                 <legend style={{ display: 'none' }}>输出格式</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={2} className={styles.label}>
                     格式:
                   </Form.Label>
                   <Col sm={4}>
@@ -430,14 +430,14 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, format: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="mp4">MP4</option>
                       <option value="mkv">MKV</option>
                       <option value="webm">WebM</option>
                     </Form.Select>
                   </Col>
-                  <Form.Label column sm={2} style={{ fontSize: '10px', textAlign: 'right' }}>
+                  <Form.Label column sm={2} className={styles.labelRight}>
                     视频编码:
                   </Form.Label>
                   <Col sm={4}>
@@ -447,7 +447,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, videoCodec: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="copy">流式复制 (无损)</option>
                       <option value="libx264">H.264</option>
@@ -462,7 +462,7 @@ function TranscodeTab() {
                 <legend style={{ display: 'none' }}>质量</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={2} className={styles.label}>
                     质量 (CRF):
                   </Form.Label>
                   <Col sm={6}>
@@ -492,7 +492,7 @@ function TranscodeTab() {
                 <legend style={{ display: 'none' }}>帧率 (FPS)</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={2} className={styles.label}>
                     帧率:
                   </Form.Label>
                   <Col sm={4}>
@@ -505,7 +505,7 @@ function TranscodeTab() {
                           framerate: e.target.value === 'original' ? 'original' : parseInt(e.target.value)
                         })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="original">保持原始帧率</option>
                       <option value="24">24 FPS (电影)</option>
@@ -515,7 +515,7 @@ function TranscodeTab() {
                       <option value="60">60 FPS (高帧率)</option>
                     </Form.Select>
                   </Col>
-                  <Form.Label column sm={2} style={{ fontSize: '10px', textAlign: 'right' }}>
+                  <Form.Label column sm={2} className={styles.labelRight}>
                     帧率模式:
                   </Form.Label>
                   <Col sm={4}>
@@ -525,7 +525,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, framerateMode: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="cfr">恒定帧率 (CFR)</option>
                       <option value="vfr">可变帧率 (VFR)</option>
@@ -540,7 +540,7 @@ function TranscodeTab() {
                 <legend style={{ display: 'none' }}>编码器设置</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={2} className={styles.label}>
                     编码速度:
                   </Form.Label>
                   <Col sm={4}>
@@ -550,7 +550,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, preset: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="ultrafast">超快</option>
                       <option value="veryfast">极快</option>
@@ -561,7 +561,7 @@ function TranscodeTab() {
                       <option value="veryslow">极慢 (最高质量)</option>
                     </Form.Select>
                   </Col>
-                  <Form.Label column sm={2} style={{ fontSize: '10px', textAlign: 'right' }}>
+                  <Form.Label column sm={2} className={styles.labelRight}>
                     调优:
                   </Form.Label>
                   <Col sm={4}>
@@ -571,7 +571,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, tune: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="none">无</option>
                       <option value="film">电影</option>
@@ -583,7 +583,7 @@ function TranscodeTab() {
                 </Form.Group>
 
                 <Form.Group as={Row} className="mb-1 align-items-center">
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={2} className={styles.label}>
                     Profile:
                   </Form.Label>
                   <Col sm={4}>
@@ -593,7 +593,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, profile: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="auto">自动</option>
                       <option value="baseline">Baseline</option>
@@ -601,7 +601,7 @@ function TranscodeTab() {
                       <option value="high">High</option>
                     </Form.Select>
                   </Col>
-                  <Form.Label column sm={2} style={{ fontSize: '10px', textAlign: 'right' }}>
+                  <Form.Label column sm={2} className={styles.labelRight}>
                     Level:
                   </Form.Label>
                   <Col sm={4}>
@@ -611,7 +611,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, level: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="auto">自动</option>
                       <option value="3.0">3.0</option>
@@ -659,13 +659,13 @@ function TranscodeTab() {
           {/* Tab 2: 尺寸 */}
           {activeTab === 'dimensions' && (
             <div>
-              {/* 尺寸设置区域 - 紧凑布局 */}
+              {/* 尺寸设置区域 - 紧凑布局（上下排列） */}
               <fieldset style={{ border: 'none', backgroundColor: '#fff', padding: '6px' }}>
                 <legend style={{ display: 'none' }}>尺寸设置</legend>
                 
-                {/* 翻转 & 旋转 */}
+                {/* 翻转 */}
                 <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={1} className={styles.label}>
                     翻转:
                   </Form.Label>
                   <Col sm={4}>
@@ -675,14 +675,18 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, flip: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="none">无</option>
                       <option value="horizontal">水平</option>
                       <option value="vertical">垂直</option>
                     </Form.Select>
                   </Col>
-                  <Form.Label column sm={2} style={{ fontSize: '10px', textAlign: 'right' }}>
+                </Form.Group>
+
+                {/* 旋转 */}
+                <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
+                  <Form.Label column sm={1} className={styles.label}>
                     旋转:
                   </Form.Label>
                   <Col sm={4}>
@@ -692,7 +696,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, rotate: parseInt(e.target.value) as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value={0}>0°</option>
                       <option value={90}>90°</option>
@@ -704,8 +708,8 @@ function TranscodeTab() {
 
                 {/* 自动裁剪黑边 */}
                 <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
-                  <Col sm={2}></Col>
-                  <Col sm={10}>
+                  <Col sm={1}></Col>
+                  <Col sm={4}>
                     <Form.Check
                       type="checkbox"
                       label="自动裁剪黑边"
@@ -718,9 +722,9 @@ function TranscodeTab() {
                   </Col>
                 </Form.Group>
 
-                {/* 分辨率 & 缩放模式 */}
+                {/* 分辨率 */}
                 <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={1} className={styles.label}>
                     分辨率:
                   </Form.Label>
                   <Col sm={4}>
@@ -741,7 +745,7 @@ function TranscodeTab() {
                           setTranscodeConfig({ ...transcodeConfig, resolution: presets[e.target.value] || 'original' });
                         }
                       }}
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="original">原始分辨率</option>
                       <option value="4K">3840×2160 (4K)</option>
@@ -751,7 +755,11 @@ function TranscodeTab() {
                       <option value="480p">854×480 (SD)</option>
                     </Form.Select>
                   </Col>
-                  <Form.Label column sm={2} style={{ fontSize: '10px', textAlign: 'right' }}>
+                </Form.Group>
+
+                {/* 缩放模式 */}
+                <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
+                  <Form.Label column sm={1} className={styles.label}>
                     缩放模式:
                   </Form.Label>
                   <Col sm={4}>
@@ -761,7 +769,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, scaleMode: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="fit">适应 (保持比例)</option>
                       <option value="fill">填充</option>
@@ -772,8 +780,8 @@ function TranscodeTab() {
 
                 {/* 保持宽高比 */}
                 <Form.Group as={Row} className="align-items-center" style={{ marginBottom: '0' }}>
-                  <Col sm={2}></Col>
-                  <Col sm={10}>
+                  <Col sm={1}></Col>
+                  <Col sm={4}>
                     <Form.Check
                       type="checkbox"
                       label="保持宽高比"
@@ -1142,7 +1150,7 @@ function TranscodeTab() {
                 <legend style={{ display: 'none' }}>音频设置</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
-                  <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                  <Form.Label column sm={2} className={styles.label}>
                     编码器:
                   </Form.Label>
                   <Col sm={4}>
@@ -1152,7 +1160,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, audioCodec: e.target.value as any })
                       }
-                      style={{ fontSize: '10px', height: '20px' }}
+                      className={styles.select}
                     >
                       <option value="copy">流式复制 (无损)</option>
                       <option value="aac">AAC (推荐)</option>
@@ -1256,7 +1264,7 @@ function TranscodeTab() {
               {aiEnabled && (
                 <>
                   <Form.Group as={Row} className="mb-1 align-items-center">
-                    <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                    <Form.Label column sm={2} className={styles.label}>
                       AI 平台:
                     </Form.Label>
                     <Col sm={4}>
@@ -1264,7 +1272,7 @@ function TranscodeTab() {
                         size="sm"
                         value={aiPlatform || 'deepseek'}
                         onChange={(e) => setAiPlatform(e.target.value as any)}
-                        style={{ fontSize: '10px', height: '20px' }}
+                        className={styles.select}
                       >
                         <option value="deepseek">DeepSeek</option>
                         <option value="openai">OpenAI</option>
@@ -1273,7 +1281,7 @@ function TranscodeTab() {
                   </Form.Group>
 
                   <Form.Group as={Row} className="mb-1 align-items-center">
-                    <Form.Label column sm={2} style={{ fontSize: '10px' }}>
+                    <Form.Label column sm={2} className={styles.label}>
                       API Key:
                     </Form.Label>
                     <Col sm={6}>
