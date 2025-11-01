@@ -6,8 +6,8 @@ import type { TranscodeConfig, VideoInfo, AIConfig } from '../../../types/transc
 
 const { ipcRenderer } = (window as any).electron;
 
-// 状态持久化 key
-const STORAGE_KEY = 'transcode_tab_state';
+// 用户设置持久化 key（仅保存设置，不保存文件路径）
+const SETTINGS_KEY = 'transcode_tab_settings';
 
 // 检测操作系统
 const getPlatform = (): 'darwin' | 'win32' | 'linux' => {
@@ -46,34 +46,35 @@ const getHardwareAccelOptions = () => {
 };
 
 function TranscodeTab() {
-  // 从 localStorage 恢复状态
-  const loadState = () => {
+  // 从 localStorage 恢复用户设置（不包括文件路径）
+  const loadSettings = () => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(SETTINGS_KEY);
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
     }
   };
 
-  const savedState = loadState();
+  const savedSettings = loadSettings();
 
-  const [videoFile, setVideoFile] = useState<string>(savedState.videoFile || '');
-  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(savedState.videoInfo || null);
-  const [outputPath, setOutputPath] = useState<string>(savedState.outputPath || '');
+  // 临时状态（不持久化）
+  const [videoFile, setVideoFile] = useState<string>('');
+  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const [outputPath, setOutputPath] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<Array<{ message: string; type: string }>>([]);
-  const [activeTab, setActiveTab] = useState<string>(savedState.activeTab || 'basic');
+  const [activeTab, setActiveTab] = useState<string>('basic');
   
-  // AI 配置
-  const [aiEnabled, setAiEnabled] = useState(savedState.aiEnabled || false);
-  const [aiPlatform, setAiPlatform] = useState<'deepseek' | 'openai'>(savedState.aiPlatform || 'deepseek');
-  const [aiApiKey, setAiApiKey] = useState(savedState.aiApiKey || '');
-  const [aiSuggestion, setAiSuggestion] = useState<any>(savedState.aiSuggestion || null);
+  // AI 配置（持久化）
+  const [aiEnabled, setAiEnabled] = useState(savedSettings.aiEnabled || false);
+  const [aiPlatform, setAiPlatform] = useState<'deepseek' | 'openai'>(savedSettings.aiPlatform || 'deepseek');
+  const [aiApiKey, setAiApiKey] = useState(savedSettings.aiApiKey || '');
+  const [aiSuggestion, setAiSuggestion] = useState<any>(null);
 
-  // 转码参数
-  const [transcodeConfig, setTranscodeConfig] = useState<Partial<TranscodeConfig>>(savedState.transcodeConfig || {
+  // 转码参数（持久化用户偏好设置）
+  const [transcodeConfig, setTranscodeConfig] = useState<Partial<TranscodeConfig>>(savedSettings.transcodeConfig || {
     format: 'mp4',
     videoCodec: 'libx264',
     audioCodec: 'aac',
@@ -92,21 +93,16 @@ function TranscodeTab() {
     filters: {},
   });
 
-  // 保存状态到 localStorage
+  // 仅保存用户设置到 localStorage（不包括临时文件路径）
   useEffect(() => {
-    const stateToSave = {
-      videoFile,
-      videoInfo,
-      outputPath,
+    const settingsToSave = {
       aiEnabled,
       aiPlatform,
       aiApiKey,
-      aiSuggestion,
       transcodeConfig,
-      activeTab,
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [videoFile, videoInfo, outputPath, aiEnabled, aiPlatform, aiApiKey, aiSuggestion, transcodeConfig, activeTab]);
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsToSave));
+  }, [aiEnabled, aiPlatform, aiApiKey, transcodeConfig]);
 
   const addLog = (message: string, type: string = 'info') => {
     setLogs((prev) => [...prev, { message, type }].slice(-10));
@@ -225,6 +221,16 @@ function TranscodeTab() {
       setIsProcessing(false);
       ipcRenderer.removeAllListeners('transcode-progress');
     }
+  };
+
+  const handleClearAll = () => {
+    setVideoFile('');
+    setVideoInfo(null);
+    setOutputPath('');
+    setProgress(0);
+    setLogs([]);
+    setAiSuggestion(null);
+    addLog('已清空所有文件选择', 'info');
   };
 
   
@@ -1351,6 +1357,14 @@ function TranscodeTab() {
             disabled={!isProcessing}
           >
             取消
+          </Button>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={handleClearAll}
+            disabled={isProcessing || (!videoFile && !outputPath)}
+          >
+            清空
           </Button>
         </div>
 

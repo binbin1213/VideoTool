@@ -195,6 +195,16 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
     }
   };
 
+  const handleClearAll = () => {
+    setVideoFile(null);
+    setSubtitleFile(null);
+    setSubtitleFiles([]);
+    setVideoInfo(null);
+    setSubtitleInfo(null);
+    setResult(null);
+    addLocalLog('已清空所有文件选择', 'info');
+  };
+
   const handleBurn = async () => {
     // 验证文件选择
     if (!videoFile) {
@@ -755,7 +765,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
 
           {/* 开始烧录/封装按钮 */}
           <div className="mb-3">
-            <div className="d-grid">
+            <div className="d-grid gap-2">
               <Button
                 variant="primary"
                 size="lg"
@@ -771,6 +781,17 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress }: SubtitleBurn
                   ? (subtitleType === 'soft' ? '封装中...' : '烧录中...') 
                   : (subtitleType === 'soft' ? '开始封装' : '开始烧录')
                 }
+              </Button>
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={handleClearAll}
+                disabled={
+                  taskProgress.isRunning || 
+                  (!videoFile && !subtitleFile && subtitleFiles.length === 0)
+                }
+              >
+                清空重新开始
               </Button>
             </div>
           </div>

@@ -101,6 +101,15 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
     event.preventDefault();
   };
 
+  const handleClearAll = () => {
+    setSelectedFile(null);
+    setSelectedFiles([]);
+    setResult(null);
+    setProgress(0);
+    setCurrentFileIndex(0);
+    addLocalLog('已清空所有文件选择', 'info');
+  };
+
   // ASS颜色转CSS颜色
   const assColorToCss = (assColor: string): string => {
     const colorMap: Record<string, string> = {
@@ -555,7 +564,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                 </Col>
               </Form.Group>
 
-              <div className="d-grid">
+              <div className="d-grid gap-2">
                 <Button
                   variant="primary"
                   size="lg"
@@ -566,6 +575,14 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                     ? (batchMode ? `转换中... (${currentFileIndex + 1}/${selectedFiles.length})` : '转换中...') 
                     : (batchMode ? `开始批量转换 (${selectedFiles.length}个文件)` : '开始转换')
                   }
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={handleClearAll}
+                  disabled={converting || (batchMode ? selectedFiles.length === 0 : !selectedFile)}
+                >
+                  清空重新开始
                 </Button>
               </div>
           </fieldset>

@@ -219,6 +219,15 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
+  const handleClearAll = () => {
+    setVideoFile(null);
+    setAudioFile(null);
+    setVideoInfo(null);
+    setAudioInfo(null);
+    setResult(null);
+    addLocalLog('已清空所有文件选择', 'info');
+  };
+
   return (
     <div className="merge-container">
       <div className="merge-header">
@@ -413,7 +422,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                 </Form.Group>
               )}
 
-              <div className="d-grid">
+              <div className="d-grid gap-2">
                 <Button
                   variant="primary"
                   size="lg"
@@ -421,6 +430,14 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                   disabled={!videoFile || !audioFile || taskProgress.isRunning || ffmpegAvailable === false}
                 >
                   {taskProgress.isRunning && taskProgress.taskType === 'merge' ? '合并中...' : '开始合并'}
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={handleClearAll}
+                  disabled={taskProgress.isRunning || (!videoFile && !audioFile)}
+                >
+                  清空重新开始
                 </Button>
               </div>
             </div>
