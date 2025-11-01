@@ -203,12 +203,107 @@
   padding: 0 6px 6px 6px;
 }
 
+.fieldsetWhite {
+  border: none;
+  background-color: #fff;
+  padding: 6px;
+}
+
+.fieldsetGray {
+  border: none;
+  background-color: #f8f9fa;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
+
+.fieldsetSimple {
+  border: none;
+}
+
+// legend 隐藏
+.legendHidden {
+  display: none;
+}
+
+// 布局辅助类
+.flexContainer {
+  display: flex;
+  gap: 12px;
+}
+
+.rightPanel {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.sectionMargin {
+  margin-bottom: 8px;
+}
+
+.textSecondary {
+  font-size: t.$font-size-base;
+  color: t.$color-text-secondary;
+  line-height: 1.8;
+}
+
 .infoBox {
-  font-size: 10px;
-  color: #666;
-  padding: 8px;
-  background-color: t.$color-surface;
-  border-radius: 4px;
+  font-size: t.$font-size-base;
+  color: t.$color-text-secondary;
+  padding: t.$spacing-sm;
+  background-color: #f8f9fa;
+  border-radius: t.$radius-sm;
+}
+
+// 复选框样式
+.checkbox {
+  font-size: t.$font-size-base;
+}
+
+// 输入框样式
+.input {
+  font-size: t.$font-size-base;
+  height: 22px;
+}
+
+// 范围滑块容器
+.rangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.rangeValue {
+  font-size: t.$font-size-base;
+  min-width: 30px;
+}
+
+// 信息展示区域
+.infoSection {
+  border: 1px solid #ddd;
+  border-radius: t.$radius-sm;
+}
+
+.infoHeader {
+  padding: 6px 12px;
+  background-color: #d3d3d3;
+  border-top-left-radius: t.$radius-sm;
+  border-top-right-radius: t.$radius-sm;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.infoContent {
+  padding: 10px 12px;
+  font-size: t.$font-size-base;
+  line-height: 1.7;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
 .footerBar {

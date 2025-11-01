@@ -341,21 +341,13 @@ function TranscodeTab() {
                   </div>
 
                   {/* 右侧：详细信息 */}
-                  <div style={{ width: '300px', flexShrink: 0 }}>
+                  <div className={styles.rightPanel}>
                     {/* 视频信息 */}
-                    <div style={{ border: '1px solid #ddd', marginBottom: '8px', borderRadius: '4px' }}>
-                      <div style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#d3d3d3', 
-                        borderTopLeftRadius: '4px', 
-                        borderTopRightRadius: '4px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#333'
-                      }}>
+                    <div className={`${styles.infoSection} ${styles.sectionMargin}`}>
+                      <div className={styles.infoHeader}>
                         视频
                       </div>
-                      <div style={{ padding: '10px 12px', fontSize: '10px', lineHeight: '1.7' }}>
+                      <div className={styles.infoContent}>
                         <div><strong>编码:</strong> {videoInfo.videoCodec?.toUpperCase()}</div>
                         <div><strong>Profile:</strong> {videoInfo.profile}, Level: {videoInfo.level}</div>
                         <div><strong>分辨率:</strong> {videoInfo.width} × {videoInfo.height}</div>
@@ -367,19 +359,11 @@ function TranscodeTab() {
                     </div>
 
                     {/* 音频信息 */}
-                    <div style={{ border: '1px solid #ddd', marginBottom: '8px', borderRadius: '4px' }}>
-                      <div style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#d3d3d3', 
-                        borderTopLeftRadius: '4px', 
-                        borderTopRightRadius: '4px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#333'
-                      }}>
+                    <div className={`${styles.infoSection} ${styles.sectionMargin}`}>
+                      <div className={styles.infoHeader}>
                         音频
                       </div>
-                      <div style={{ padding: '10px 12px', fontSize: '10px', lineHeight: '1.7' }}>
+                      <div className={styles.infoContent}>
                         <div><strong>编码:</strong> {videoInfo.audioCodec?.toUpperCase()}</div>
                         <div><strong>比特率:</strong> {((videoInfo.audioBitrate || 0) / 1000).toFixed(0)} kbps</div>
                         <div><strong>采样率:</strong> {videoInfo.sampleRate} Hz</div>
@@ -388,19 +372,11 @@ function TranscodeTab() {
                     </div>
 
                     {/* 文件信息 */}
-                    <div style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
-                      <div style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#d3d3d3', 
-                        borderTopLeftRadius: '4px', 
-                        borderTopRightRadius: '4px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#333'
-                      }}>
+                    <div className={styles.infoSection}>
+                      <div className={styles.infoHeader}>
                         文件
                       </div>
-                      <div style={{ padding: '10px 12px', fontSize: '10px', lineHeight: '1.7' }}>
+                      <div className={styles.infoContent}>
                         <div><strong>格式:</strong> {videoInfo.formatName}</div>
                         <div><strong>时长:</strong> {Math.floor(videoInfo.duration / 60)}:{String(Math.round(videoInfo.duration % 60)).padStart(2, '0')}</div>
                         <div><strong>大小:</strong> {(videoInfo.size / 1024 / 1024).toFixed(2)} MB</div>
@@ -417,7 +393,7 @@ function TranscodeTab() {
             <div>
               {/* 基础设置 */}
               <fieldset className={styles.fieldset}>
-                <legend style={{ display: 'none' }}>输出格式</legend>
+                <legend className={styles.legendHidden}>输出格式</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
                   <Form.Label column sm={2} className={styles.label}>
@@ -459,14 +435,14 @@ function TranscodeTab() {
 
               {/* 质量设置 */}
               <fieldset className={styles.fieldset}>
-                <legend style={{ display: 'none' }}>质量</legend>
+                <legend className={styles.legendHidden}>质量</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
                   <Form.Label column sm={2} className={styles.label}>
                     质量 (CRF):
                   </Form.Label>
                   <Col sm={6}>
-                    <div className="d-flex align-items-center gap-2">
+                    <div className={styles.rangeContainer}>
                       <Form.Range
                         min={18}
                         max={28}
@@ -476,11 +452,11 @@ function TranscodeTab() {
                         }
                         style={{ flex: 1 }}
                       />
-                      <span style={{ fontSize: '10px', minWidth: '30px' }}>{transcodeConfig.crf}</span>
+                      <span className={styles.rangeValue}>{transcodeConfig.crf}</span>
                     </div>
                   </Col>
                   <Col sm={4}>
-                    <div style={{ fontSize: '10px', color: '#666' }}>
+                    <div className={styles.help}>
                       (18=高质量, 23=默认, 28=小文件)
                     </div>
                   </Col>
@@ -489,7 +465,7 @@ function TranscodeTab() {
 
               {/* 帧率设置 */}
               <fieldset className={styles.fieldset}>
-                <legend style={{ display: 'none' }}>帧率 (FPS)</legend>
+                <legend className={styles.legendHidden}>帧率 (FPS)</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
                   <Form.Label column sm={2} className={styles.label}>
@@ -537,7 +513,7 @@ function TranscodeTab() {
 
               {/* 编码器设置 */}
               <fieldset className={styles.fieldset}>
-                <legend style={{ display: 'none' }}>编码器设置</legend>
+                <legend className={styles.legendHidden}>编码器设置</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
                   <Form.Label column sm={2} className={styles.label}>
@@ -641,7 +617,7 @@ function TranscodeTab() {
                               hwaccel: e.target.checked ? (hwOptions.value as any) : 'none',
                             })
                           }
-                          style={{ fontSize: '10px' }}
+                          className={styles.checkbox}
                         />
                       );
                     })()}
@@ -660,8 +636,8 @@ function TranscodeTab() {
           {activeTab === 'dimensions' && (
             <div>
               {/* 尺寸设置区域 - 紧凑布局（上下排列） */}
-              <fieldset style={{ border: 'none', backgroundColor: '#fff', padding: '6px' }}>
-                <legend style={{ display: 'none' }}>尺寸设置</legend>
+              <fieldset className={styles.fieldsetWhite}>
+                <legend className={styles.legendHidden}>尺寸设置</legend>
                 
                 {/* 翻转 */}
                 <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
@@ -717,7 +693,7 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, autoCrop: e.target.checked })
                       }
-                      style={{ fontSize: '10px' }}
+                      className={styles.checkbox}
                     />
                   </Col>
                 </Form.Group>
@@ -789,17 +765,17 @@ function TranscodeTab() {
                       onChange={(e) =>
                         setTranscodeConfig({ ...transcodeConfig, keepAspectRatio: e.target.checked })
                       }
-                      style={{ fontSize: '10px' }}
+                      className={styles.checkbox}
                     />
                   </Col>
                 </Form.Group>
               </fieldset>
 
               {/* 尺寸信息汇总 */}
-              <fieldset style={{ border: 'none', backgroundColor: '#f8f9fa', padding: '8px 12px', marginTop: '8px' }}>
-                <legend style={{ display: 'none' }}>尺寸信息</legend>
+              <fieldset className={styles.fieldsetGray}>
+                <legend className={styles.legendHidden}>尺寸信息</legend>
                 {videoInfo ? (
-                  <div style={{ fontSize: '10px', color: '#666', lineHeight: '1.8' }}>
+                  <div className={styles.textSecondary}>
                     <div><strong>存储大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
                     <div><strong>显示大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
                     <div><strong>宽高比:</strong> {(videoInfo.width / videoInfo.height).toFixed(2)}</div>
@@ -815,7 +791,7 @@ function TranscodeTab() {
                     </div>
                   </div>
                 ) : (
-                  <div style={{ fontSize: '10px', color: '#999' }}>请先选择视频文件</div>
+                  <div className={styles.textSecondary} style={{ color: '#999' }}>请先选择视频文件</div>
                 )}
               </fieldset>
             </div>
@@ -825,8 +801,8 @@ function TranscodeTab() {
           {activeTab === 'filters' && (
             <div className={styles.filtersPane}>
               {/* 预设 */}
-              <fieldset style={{ border: 'none', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>预设</legend>
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legendHidden}>预设</legend>
                 <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
                   <Form.Label column sm={1} className={styles.label}>
                     预设：
@@ -839,8 +815,8 @@ function TranscodeTab() {
                 </Form.Group>
               </fieldset>
               {/* 反交错 */}
-              <fieldset style={{ border: 'none', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>反交错滤镜</legend>
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legendHidden}>反交错滤镜</legend>
                 
                 <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
                   <Form.Label column sm={1} className={styles.label}>
@@ -870,8 +846,8 @@ function TranscodeTab() {
               </fieldset>
 
               {/* 降噪 */}
-              <fieldset style={{ border: 'none', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>降噪</legend>
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legendHidden}>降噪</legend>
                 
                 <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
                   <Form.Label column sm={1} className={styles.label}>
@@ -927,8 +903,8 @@ function TranscodeTab() {
               </fieldset>
 
               {/* 锐化 */}
-              <fieldset style={{ border: 'none', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>锐化</legend>
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legendHidden}>锐化</legend>
                 
                 <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
                   <Form.Label column sm={1} className={styles.label}>
@@ -984,8 +960,8 @@ function TranscodeTab() {
               </fieldset>
 
               {/* 去块效应 */}
-              <fieldset style={{ border: 'none', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>去块效应</legend>
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legendHidden}>去块效应</legend>
                 
                 <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
                   <Form.Label column sm={1} className={styles.label}>
@@ -1040,8 +1016,8 @@ function TranscodeTab() {
               </fieldset>
 
               {/* 色彩空间 */}
-              <fieldset style={{ border: 'none' }}>
-                <legend style={{ display: 'none' }}>色彩空间</legend>
+              <fieldset className={styles.fieldsetSimple}>
+                <legend className={styles.legendHidden}>色彩空间</legend>
                 
                 <Form.Group as={Row} className={`mb-0 align-items-center ${styles.rowTight}`}>
                   <Form.Label column sm={1} className={styles.label}>
@@ -1076,8 +1052,8 @@ function TranscodeTab() {
           {/* Tab 5: 音频 */}
           {activeTab === 'audio' && (
             <div>
-              <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>音频轨道</legend>
+              <fieldset className={styles.fieldset} style={{ backgroundColor: '#fff' }}>
+                <legend className={styles.legendHidden}>音频轨道</legend>
                 
                 {videoInfo && videoInfo.audioTracks && videoInfo.audioTracks.length > 0 ? (
                   <div style={{ fontSize: '10px' }}>
@@ -1114,7 +1090,7 @@ function TranscodeTab() {
                         <div>{track.codec?.toUpperCase() || 'Unknown'}</div>
                         <Form.Select 
                           size="sm" 
-                          style={{ fontSize: '10px', height: '22px' }}
+                          className={styles.input}
                           defaultValue="stereo"
                         >
                           <option value="mono">Mono</option>
@@ -1125,7 +1101,7 @@ function TranscodeTab() {
                         <div>{track.sampleRate ? `${(track.sampleRate / 1000).toFixed(0)} kHz` : 'N/A'}</div>
                         <Form.Select 
                           size="sm" 
-                          style={{ fontSize: '10px', height: '22px' }}
+                          className={styles.input}
                           defaultValue="160"
                         >
                           <option value="64">64 kbps</option>
@@ -1147,7 +1123,7 @@ function TranscodeTab() {
               </fieldset>
 
               <fieldset style={{ border: 'none', backgroundColor: '#fff' }}>
-                <legend style={{ display: 'none' }}>音频设置</legend>
+                <legend className={styles.legendHidden}>音频设置</legend>
                 
                 <Form.Group as={Row} className="mb-1 align-items-center">
                   <Form.Label column sm={2} className={styles.label}>
@@ -1171,7 +1147,7 @@ function TranscodeTab() {
                   </Col>
                 </Form.Group>
 
-                <div style={{ fontSize: '10px', color: '#666', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', marginTop: '8px' }}>
+                <div className={styles.infoBox} style={{ marginTop: '8px' }}>
                   <strong>提示：</strong> AAC 编码器提供最佳的兼容性和质量平衡。
                 </div>
               </fieldset>
@@ -1181,8 +1157,8 @@ function TranscodeTab() {
           {/* Tab 6: 字幕 */}
           {activeTab === 'subtitle' && (
             <div>
-              <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>字幕轨道</legend>
+              <fieldset className={styles.fieldset} style={{ backgroundColor: '#fff' }}>
+                <legend className={styles.legendHidden}>字幕轨道</legend>
                 
                 {videoInfo && videoInfo.subtitleTracks && videoInfo.subtitleTracks.length > 0 ? (
                   <div style={{ fontSize: '10px' }}>
@@ -1239,7 +1215,7 @@ function TranscodeTab() {
                 )}
               </fieldset>
 
-              <div style={{ fontSize: '10px', color: '#666', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+              <div className={styles.infoBox}>
                 <strong>提示：</strong> 烧录字幕会将字幕永久嵌入视频，无法关闭。不烧录则作为单独的字幕轨道保存。
               </div>
             </div>
@@ -1291,7 +1267,7 @@ function TranscodeTab() {
                         value={aiApiKey || ''}
                         onChange={(e) => setAiApiKey(e.target.value)}
                         placeholder="输入 API Key"
-                        style={{ fontSize: '10px', height: '22px' }}
+                        className={styles.input}
                       />
                     </Col>
                   </Form.Group>
