@@ -162,15 +162,17 @@
     justify-content: center; // 水平居中
     text-align: center;
     color: #000 !important;
-    min-width: 72px; // 更紧凑
-    height: 36px; // 降低高度
-    padding: 0 12px; // 四周等距
+    min-width: 60px; // 更紧凑
+    height: 28px; // 降低高度
+    padding: 0 8px; // 减小左右间距
     line-height: 1; // 避免额外垂直空隙
+    font-size: t.$font-size-base; // 使用规范字体大小
     -webkit-app-region: no-drag; // 标签可点击，不参与拖拽
     background-color: transparent;
-    border-radius: 6px;
+    border-radius: 4px;
     border: 1px solid transparent; // 为 hover/active 预留
     transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    margin: 0 2px; // 标签之间的间距
 
     &:hover {
       background-color: rgba(0,0,0,0.04);
@@ -185,10 +187,10 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.06);
   }
 
-  /* 标签分隔线，让它们像可点击按钮的分段控制 */
+  /* 移除标签分隔线，改用间距 */
   :global(.nav-item + .nav-item .nav-link) {
-    margin-left: 0;
-    border-left: 1px solid #e6e6e6;
+    margin-left: 2px;
+    border-left: none;
   }
 }
 
