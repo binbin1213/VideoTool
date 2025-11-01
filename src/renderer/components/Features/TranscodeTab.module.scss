@@ -49,9 +49,9 @@
     </svg>") !important;
 
   &:focus {
-    outline: none;
-    border-color: t.$color-border;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    outline: none !important;
+    border-color: t.$color-border !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
   }
 }
 
@@ -79,9 +79,9 @@
     </svg>") !important;
 
   &:focus {
-    outline: none;
-    border-color: t.$color-border;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    outline: none !important;
+    border-color: t.$color-border !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
   }
 }
 
@@ -294,5 +294,12 @@
 
 .filtersPane .help {
   margin-left: t.$spacing-md;
+}
+
+// 全局覆盖：移除所有 form-select 的焦点蓝色边框效果
+:global(.form-select:focus) {
+  outline: none !important;
+  border-color: #dee2e6 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
 }
 
