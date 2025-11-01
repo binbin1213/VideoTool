@@ -43,12 +43,15 @@ code {
 
 /* 全局覆盖 Bootstrap 的 form-select 样式 */
 .form-select {
+  --bs-body-bg: #fff !important;
   background-color: #fff !important;
+  background-image: var(--bs-form-select-bg-img), var(--bs-form-select-bg-icon, none) !important;
 }
 
 .form-select:focus {
   outline: none !important;
   border-color: #dee2e6 !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+  background-color: #fff !important;
 }
 
