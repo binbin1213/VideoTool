@@ -110,7 +110,9 @@
 }
 
 .compactRow {
-  margin-bottom: 6px !important;
+  margin-bottom: 4px !important;
+  --bs-gutter-x: 8px !important;
+  --bs-gutter-y: 0 !important;
 }
 
 .root {
