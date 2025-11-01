@@ -659,11 +659,12 @@ function TranscodeTab() {
           {/* Tab 2: 尺寸 */}
           {activeTab === 'dimensions' && (
             <div>
-              {/* 方向 & 裁剪 */}
-              <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>方向 & 裁剪</legend>
+              {/* 尺寸设置区域 - 紧凑布局 */}
+              <fieldset style={{ border: 'none', backgroundColor: '#fff', padding: '6px' }}>
+                <legend style={{ display: 'none' }}>尺寸设置</legend>
                 
-                <Form.Group as={Row} className="mb-1 align-items-center">
+                {/* 翻转 & 旋转 */}
+                <Form.Group as={Row} className="mb-1 align-items-center" style={{ marginBottom: '6px' }}>
                   <Form.Label column sm={2} style={{ fontSize: '10px' }}>
                     翻转:
                   </Form.Label>
@@ -701,7 +702,8 @@ function TranscodeTab() {
                   </Col>
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-0 align-items-center">
+                {/* 自动裁剪黑边 */}
+                <Form.Group as={Row} className="align-items-center" style={{ marginBottom: '6px' }}>
                   <Col sm={2}></Col>
                   <Col sm={10}>
                     <Form.Check
@@ -715,13 +717,9 @@ function TranscodeTab() {
                     />
                   </Col>
                 </Form.Group>
-              </fieldset>
 
-              {/* 分辨率 & 缩放 */}
-              <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-                <legend style={{ display: 'none' }}>分辨率 & 缩放</legend>
-                
-                <Form.Group as={Row} className="mb-1 align-items-center">
+                {/* 分辨率 & 缩放模式 */}
+                <Form.Group as={Row} className="mb-1 align-items-center" style={{ marginBottom: '6px' }}>
                   <Form.Label column sm={2} style={{ fontSize: '10px' }}>
                     分辨率:
                   </Form.Label>
@@ -772,7 +770,8 @@ function TranscodeTab() {
                   </Col>
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-0 align-items-center">
+                {/* 保持宽高比 */}
+                <Form.Group as={Row} className="align-items-center" style={{ marginBottom: '0' }}>
                   <Col sm={2}></Col>
                   <Col sm={10}>
                     <Form.Check
