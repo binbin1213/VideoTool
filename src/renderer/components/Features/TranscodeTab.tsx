@@ -664,7 +664,7 @@ function TranscodeTab() {
                 <legend style={{ display: 'none' }}>尺寸设置</legend>
                 
                 {/* 翻转 & 旋转 */}
-                <Form.Group as={Row} className="align-items-center" style={{ marginBottom: '6px' }}>
+                <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
                   <Form.Label column sm={2} style={{ fontSize: '10px' }}>
                     翻转:
                   </Form.Label>
@@ -703,7 +703,7 @@ function TranscodeTab() {
                 </Form.Group>
 
                 {/* 自动裁剪黑边 */}
-                <Form.Group as={Row} className="align-items-center" style={{ marginBottom: '6px' }}>
+                <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
                   <Col sm={2}></Col>
                   <Col sm={10}>
                     <Form.Check
@@ -719,7 +719,7 @@ function TranscodeTab() {
                 </Form.Group>
 
                 {/* 分辨率 & 缩放模式 */}
-                <Form.Group as={Row} className="align-items-center" style={{ marginBottom: '6px' }}>
+                <Form.Group as={Row} className={`align-items-center ${styles.compactRow}`}>
                   <Form.Label column sm={2} style={{ fontSize: '10px' }}>
                     分辨率:
                   </Form.Label>
