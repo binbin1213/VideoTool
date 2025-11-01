@@ -659,20 +659,6 @@ function TranscodeTab() {
           {/* Tab 2: 尺寸 */}
           {activeTab === 'dimensions' && (
             <div>
-              {/* 源尺寸信息 */}
-              <fieldset className={styles.fieldset}>
-                <legend style={{ display: 'none' }}>源尺寸</legend>
-                {videoInfo ? (
-                  <div style={{ fontSize: '10px', color: '#666' }}>
-                    <div><strong>存储大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
-                    <div><strong>显示大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
-                    <div><strong>宽高比:</strong> {(videoInfo.width / videoInfo.height).toFixed(2)}</div>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: '10px', color: '#999' }}>请先选择视频文件</div>
-                )}
-              </fieldset>
-
               {/* 方向 & 裁剪 */}
               <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
                 <legend style={{ display: 'none' }}>方向 & 裁剪</legend>
@@ -802,17 +788,24 @@ function TranscodeTab() {
                 </Form.Group>
               </fieldset>
 
-              {/* 最终尺寸 */}
-              <fieldset style={{ border: 'none', backgroundColor: '#fff' }}>
-                <legend style={{ display: 'none' }}>最终尺寸</legend>
-                {videoInfo && transcodeConfig.resolution && transcodeConfig.resolution !== 'original' ? (
-                  <div style={{ fontSize: '10px', color: '#666' }}>
-                    <div><strong>输出尺寸:</strong> {(transcodeConfig.resolution as any).width}×{(transcodeConfig.resolution as any).height}</div>
-                    <div><strong>宽高比:</strong> {((transcodeConfig.resolution as any).width / (transcodeConfig.resolution as any).height).toFixed(2)}</div>
-                  </div>
-                ) : videoInfo ? (
-                  <div style={{ fontSize: '10px', color: '#666' }}>
-                    <div><strong>输出尺寸:</strong> {videoInfo.width}×{videoInfo.height} (保持原始)</div>
+              {/* 尺寸信息汇总 */}
+              <fieldset style={{ border: 'none', backgroundColor: '#f8f9fa', padding: '8px 12px', marginTop: '8px' }}>
+                <legend style={{ display: 'none' }}>尺寸信息</legend>
+                {videoInfo ? (
+                  <div style={{ fontSize: '10px', color: '#666', lineHeight: '1.8' }}>
+                    <div><strong>存储大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
+                    <div><strong>显示大小:</strong> {videoInfo.width}×{videoInfo.height}</div>
+                    <div><strong>宽高比:</strong> {(videoInfo.width / videoInfo.height).toFixed(2)}</div>
+                    <div style={{ borderTop: '1px solid #ddd', marginTop: '6px', paddingTop: '6px' }}>
+                      {transcodeConfig.resolution && transcodeConfig.resolution !== 'original' ? (
+                        <>
+                          <div><strong>输出尺寸:</strong> {(transcodeConfig.resolution as any).width}×{(transcodeConfig.resolution as any).height}</div>
+                          <div><strong>输出宽高比:</strong> {((transcodeConfig.resolution as any).width / (transcodeConfig.resolution as any).height).toFixed(2)}</div>
+                        </>
+                      ) : (
+                        <div><strong>输出尺寸:</strong> {videoInfo.width}×{videoInfo.height} (保持原始)</div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div style={{ fontSize: '10px', color: '#999' }}>请先选择视频文件</div>
