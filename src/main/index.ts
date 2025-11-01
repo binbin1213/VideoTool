@@ -71,7 +71,7 @@ if (isDev) {
 /**
  * 创建主窗口
  */
-function createWindow() {
+async function createWindow() {
   // 加载Logo图标
   const iconPath = isDev 
     ? path.join(__dirname, '../../public/logo.png')
@@ -111,7 +111,26 @@ function createWindow() {
   // 加载应用
   if (isDev) {
     // 开发环境：加载 Vite 开发服务器
-    mainWindow.loadURL('http://localhost:5173');
+    // 尝试多个端口，因为 Vite 可能会自动切换端口
+    const tryPorts = [5173, 5174, 5175, 5176, 5177, 5178];
+    let loaded = false;
+    
+    for (const port of tryPorts) {
+      try {
+        const url = `http://localhost:${port}`;
+        log.info(`尝试加载 Vite 开发服务器: ${url}`);
+        await mainWindow.loadURL(url);
+        log.info(`✅ 成功加载: ${url}`);
+        loaded = true;
+        break;
+      } catch (error) {
+        log.warn(`端口 ${port} 不可用，尝试下一个...`);
+      }
+    }
+    
+    if (!loaded) {
+      log.error('无法连接到 Vite 开发服务器，请确保 Vite 正在运行');
+    }
   } else {
     // 生产环境：加载构建后的文件
     const rendererPath = path.join(__dirname, '../../renderer/index.html');
