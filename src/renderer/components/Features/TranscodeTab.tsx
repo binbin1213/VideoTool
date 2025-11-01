@@ -71,10 +71,11 @@ function TranscodeTab() {
   const [aiEnabled, setAiEnabled] = useState(savedSettings.aiEnabled || false);
   const [aiPlatform, setAiPlatform] = useState<'deepseek' | 'openai'>(savedSettings.aiPlatform || 'deepseek');
   const [aiApiKey, setAiApiKey] = useState(savedSettings.aiApiKey || '');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [aiSuggestion, setAiSuggestion] = useState<any>(null);
 
-  // 转码参数（持久化用户偏好设置）
-  const [transcodeConfig, setTranscodeConfig] = useState<Partial<TranscodeConfig>>(savedSettings.transcodeConfig || {
+  // 转码参数（不持久化，每次使用默认值）
+  const [transcodeConfig, setTranscodeConfig] = useState<Partial<TranscodeConfig>>({
     format: 'mp4',
     videoCodec: 'libx264',
     audioCodec: 'aac',
@@ -93,16 +94,15 @@ function TranscodeTab() {
     filters: {},
   });
 
-  // 仅保存用户设置到 localStorage（不包括临时文件路径）
+  // 仅保存用户设置到 localStorage（不包括临时文件路径和转码参数）
   useEffect(() => {
     const settingsToSave = {
       aiEnabled,
       aiPlatform,
       aiApiKey,
-      transcodeConfig,
     };
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsToSave));
-  }, [aiEnabled, aiPlatform, aiApiKey, transcodeConfig]);
+  }, [aiEnabled, aiPlatform, aiApiKey]);
 
   const addLog = (message: string, type: string = 'info') => {
     setLogs((prev) => [...prev, { message, type }].slice(-10));
@@ -897,31 +897,33 @@ function TranscodeTab() {
                       <span className={styles.help}>去除噪点，提升压缩效率</span>
                     </div>
                   </Col>
-                  {transcodeConfig.filters?.denoiseMode && transcodeConfig.filters.denoiseMode !== 'none' && (
-                    <>
-                      <Form.Label column sm={1} className={styles.labelRight}>
-                        强度：
-                      </Form.Label>
-                      <Col sm={4}>
-                        <Form.Select
-                          size="sm"
-                          value={transcodeConfig.filters?.denoiseStrength || 'medium'}
-                          onChange={(e) =>
-                            setTranscodeConfig({
-                              ...transcodeConfig,
-                              filters: { ...transcodeConfig.filters, denoiseStrength: e.target.value as any }
-                            })
-                          }
-                          className={styles.select}
-                        >
-                          <option value="light">轻度</option>
-                          <option value="medium">中度</option>
-                          <option value="strong">强力</option>
-                        </Form.Select>
-                      </Col>
-                    </>
-                  )}
                 </Form.Group>
+                
+                {/* 降噪强度（条件显示） */}
+                {transcodeConfig.filters?.denoiseMode && transcodeConfig.filters.denoiseMode !== 'none' && (
+                  <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
+                    <Form.Label column sm={1} className={styles.label}>
+                      强度：
+                    </Form.Label>
+                    <Col sm={4}>
+                      <Form.Select
+                        size="sm"
+                        value={transcodeConfig.filters?.denoiseStrength || 'medium'}
+                        onChange={(e) =>
+                          setTranscodeConfig({
+                            ...transcodeConfig,
+                            filters: { ...transcodeConfig.filters, denoiseStrength: e.target.value as any }
+                          })
+                        }
+                        className={styles.select}
+                      >
+                        <option value="light">轻度</option>
+                        <option value="medium">中度</option>
+                        <option value="strong">强力</option>
+                      </Form.Select>
+                    </Col>
+                  </Form.Group>
+                )}
               </fieldset>
 
               {/* 锐化 */}
@@ -952,31 +954,33 @@ function TranscodeTab() {
                       <span className={styles.help}>增强边缘细节</span>
                     </div>
                   </Col>
-                  {transcodeConfig.filters?.sharpenMode && transcodeConfig.filters.sharpenMode !== 'none' && (
-                    <>
-                      <Form.Label column sm={1} className={styles.labelRight}>
-                        强度：
-                      </Form.Label>
-                      <Col sm={4}>
-                        <Form.Range
-                          min={0}
-                          max={2}
-                          step={0.1}
-                          value={transcodeConfig.filters?.sharpenStrength || 1}
-                          onChange={(e) =>
-                            setTranscodeConfig({
-                              ...transcodeConfig,
-                              filters: { ...transcodeConfig.filters, sharpenStrength: parseFloat(e.target.value) }
-                            })
-                          }
-                        />
-                        <div className={styles.help} style={{ textAlign: 'center' }}>
-                          {(transcodeConfig.filters?.sharpenStrength || 1).toFixed(1)}
-                        </div>
-                      </Col>
-                    </>
-                  )}
                 </Form.Group>
+                
+                {/* 锐化强度（条件显示） */}
+                {transcodeConfig.filters?.sharpenMode && transcodeConfig.filters.sharpenMode !== 'none' && (
+                  <Form.Group as={Row} className={`mb-1 align-items-center ${styles.rowTight}`}>
+                    <Form.Label column sm={1} className={styles.label}>
+                      强度：
+                    </Form.Label>
+                    <Col sm={4}>
+                      <Form.Range
+                        min={0}
+                        max={2}
+                        step={0.1}
+                        value={transcodeConfig.filters?.sharpenStrength || 1}
+                        onChange={(e) =>
+                          setTranscodeConfig({
+                            ...transcodeConfig,
+                            filters: { ...transcodeConfig.filters, sharpenStrength: parseFloat(e.target.value) }
+                          })
+                        }
+                      />
+                      <div className={styles.help} style={{ textAlign: 'center' }}>
+                        {(transcodeConfig.filters?.sharpenStrength || 1).toFixed(1)}
+                      </div>
+                    </Col>
+                  </Form.Group>
+                )}
               </fieldset>
 
               {/* 去块效应 */}
