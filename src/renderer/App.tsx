@@ -1,18 +1,20 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Container, Row, Col, Alert, Button, Spinner } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import Sidebar from './components/Layout/Sidebar';
 import SubtitleConvertTab from './components/Features/SubtitleConvertTab';
 import MergeTab from './components/Features/MergeTab';
 import TranscodeTab from './components/Features/TranscodeTab';
 import SubtitleBurnTab from './components/Features/SubtitleBurnTab';
-import BatchTab from './components/Features/BatchTab';
+// import BatchTab from './components/Features/BatchTab'; // ✨ 初期暂不开发，已隐藏
 import LogViewerTab from './components/Features/LogViewerTab';
 import AboutTab from './components/Features/AboutTab';
+import { useStore } from './store';
 import './styles/App.scss';
 
 const { ipcRenderer } = (window as any).electron;
 
-type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | 'batch' | 'logs' | 'about';
+type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | /* 'batch' | */ 'logs' | 'about'; // ✨ batch 已隐藏
 
 export interface LogEntry {
   timestamp: string;
@@ -28,12 +30,13 @@ export interface TaskProgress {
 }
 
 function App() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('subtitle-convert');
   const [globalLogs, setGlobalLogs] = useState<LogEntry[]>([
     {
       timestamp: new Date().toLocaleString(),
       level: 'info',
-      message: '应用启动成功'
+      message: t('app.startup_success')
     }
   ]);
   
@@ -60,6 +63,11 @@ function App() {
     downloadMessage: ''
   });
 
+  // 初始化主题（只在挂载时执行一次）
+  useEffect(() => {
+    useStore.getState().initTheme();
+  }, []);
+
   // 检查 FFmpeg 状态
   useEffect(() => {
     const checkFFmpeg = async () => {
@@ -72,9 +80,9 @@ function App() {
         }));
         
         if (!status.installed) {
-          addLog('FFmpeg 未安装，某些功能可能无法使用', 'warning');
+          addLog(t('ffmpeg.not_installed') + '，某些功能可能无法使用', 'warning');
         } else {
-          addLog(`FFmpeg 已就绪 (${status.version})`, 'success');
+          addLog(t('ffmpeg.ready', { version: status.version }), 'success');
         }
       } catch (error) {
         console.error('检查 FFmpeg 状态失败:', error);
@@ -107,7 +115,7 @@ function App() {
   // 安装 FFmpeg
   const handleInstallFFmpeg = async () => {
     setFfmpegStatus(prev => ({ ...prev, installing: true, downloadProgress: 0 }));
-    addLog('开始下载 FFmpeg...', 'info');
+    addLog(t('ffmpeg.downloading'), 'info');
 
     try {
       const result = await ipcRenderer.invoke('download-ffmpeg');
@@ -120,15 +128,15 @@ function App() {
           downloadProgress: 100,
           downloadMessage: '安装完成'
         });
-        addLog('FFmpeg 安装成功！', 'success');
+        addLog(t('ffmpeg.install_success'), 'success');
       } else {
         setFfmpegStatus(prev => ({ ...prev, installing: false }));
-        addLog(`FFmpeg 安装失败: ${result.message}`, 'error');
+        addLog(t('ffmpeg.install_failed', { message: result.message }), 'error');
       }
     } catch (error) {
       setFfmpegStatus(prev => ({ ...prev, installing: false }));
       const errorMessage = error instanceof Error ? error.message : '未知错误';
-      addLog(`FFmpeg 安装失败: ${errorMessage}`, 'error');
+      addLog(t('ffmpeg.install_failed', { message: errorMessage }), 'error');
     }
   };
 
@@ -146,10 +154,10 @@ function App() {
       {
         timestamp: new Date().toLocaleString(),
         level: 'info',
-        message: '日志已清空'
+        message: t('logs.cleared')
       }
     ]);
-  }, []);
+  }, [t]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -165,8 +173,8 @@ function App() {
         return <AboutTab />;
       case 'transcode':
         return <TranscodeTab />;
-      case 'batch':
-        return <BatchTab />;
+      // case 'batch':
+      //   return <BatchTab />; // ✨ 初期暂不开发，已隐藏
       default:
         return <div className="p-4"><h3>欢迎使用 VideoTool</h3></div>;
     }
@@ -179,15 +187,15 @@ function App() {
           <Col className="sidebar-col p-0" style={{ flex: '0 0 180px', maxWidth: '180px' }}>
             <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
           </Col>
-          <Col className="content-col p-0">
+          <Col className="content-col p-0" style={{ display: 'flex', flexDirection: 'column' }}>
             {/* FFmpeg 状态提示横幅 */}
             {!ffmpegStatus.checking && !ffmpegStatus.installed && (
               <Alert variant="warning" className="m-3 mb-0" dismissible={false}>
                 <div className="d-flex align-items-center justify-content-between">
                   <div>
-                    <strong>⚠️ FFmpeg 未安装</strong>
+                    <strong>{t('ffmpeg.not_installed')}</strong>
                     <p className="mb-0 mt-1 small">
-                      VideoTool 需要 FFmpeg 才能处理视频文件。某些功能（音视频合并、字幕烧录等）将无法使用。
+                      {t('ffmpeg.not_installed_detail')}
                     </p>
                   </div>
                   <div className="ms-3">
@@ -206,7 +214,7 @@ function App() {
                         size="sm"
                         onClick={handleInstallFFmpeg}
                       >
-                        立即安装
+                        {t('ffmpeg.install_now')}
                       </Button>
                     )}
                   </div>
@@ -214,7 +222,9 @@ function App() {
               </Alert>
             )}
             
-            {renderContent()}
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              {renderContent()}
+            </div>
           </Col>
         </Row>
       </Container>

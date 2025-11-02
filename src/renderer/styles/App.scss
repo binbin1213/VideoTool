@@ -1,6 +1,8 @@
+@use './tokens' as t;
+
 // 全局字体大小设置
 html, body {
-  font-size: 16px; // 增加基础字号（默认是 14px）
+  font-size: t.$font-size-base; // 使用设计令牌
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -14,9 +16,10 @@ html, body {
 .app {
   height: 100vh;
   width: 100vw;
-  background-color: #ffffff;
+  background-color: var(--vt-color-bg); // 使用CSS变量支持主题
+  color: var(--vt-color-text-primary);
   overflow: hidden;
-  font-size: 1rem; // 继承 html 的字号
+  font-size: 1rem;
   margin: 0;
   padding: 0;
   position: fixed;
@@ -24,6 +27,8 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
+  transition: background-color var(--vt-motion-duration-normal), 
+              color var(--vt-motion-duration-normal);
 }
 
 .main-content {
@@ -40,7 +45,7 @@ html, body {
 .sidebar-col {
   width: 180px;
   background-color: transparent;
-  border-right: 1px solid #dee2e6;
+  border-right: 1px solid var(--vt-color-border);
   overflow: hidden;
   height: 100vh;
   padding: 0 !important;
@@ -49,7 +54,7 @@ html, body {
 
 .content-col {
   flex: 1;
-  background-color: #ffffff;
+  background-color: var(--vt-color-bg);
   overflow: hidden;
   height: 100vh;
   padding: 0 !important;
@@ -63,15 +68,15 @@ html, body {
   margin: 0;
   
   .sidebar-logo {
-    padding: 46px 8px 16px 20px; // 顶部46px（向下），左侧20px（向右），右侧8px，底部16px
+    padding: 46px 8px t.$spacing-4 20px; // 使用设计令牌
     display: flex;
     align-items: center;
     gap: 10px;
-    border-bottom: 1px solid #dee2e6;
-    margin: 0; // 移除所有margin
-    margin-bottom: 8px; // 只保留底部margin
-    -webkit-app-region: drag; // 允许拖动窗口
-    user-select: none; // 禁止文本选择
+    border-bottom: 1px solid var(--vt-color-border);
+    margin: 0;
+    margin-bottom: t.$spacing-2;
+    -webkit-app-region: drag;
+    user-select: none;
     
     img {
       width: 32px;
@@ -360,6 +365,13 @@ select option {
 .badge {
   font-size: 11px;
   padding: 3px 6px;
+}
+
+// 关于页面布局
+.about-container {
+  min-height: 100%;
+  background-color: var(--vt-color-bg);
+  padding: 20px 30px;
 }
 
 // 日志查看器布局

@@ -15,6 +15,9 @@
   @include m.label();
   text-align: left !important;
   padding-right: 4px;
+  font-size: 11px; // HandBrake 使用 11px controlContent
+  font-weight: 400; // 正常字重
+  // color 使用 mixin 中的 t.$color-text (macOS labelColor)
 }
 
 .select {

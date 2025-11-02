@@ -12,9 +12,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"pnpm:dev:renderer\" \"pnpm:dev:main\" -k",
+    "dev": "node scripts/dev-safe.js",
+    "dev:concurrent": "concurrently \"pnpm:dev:renderer\" \"pnpm:dev:main\" -k -r --kill-others",
     "dev:renderer": "vite",
     "dev:main": "cross-env NODE_ENV=development electron .",
+    "kill-dev": "node scripts/kill-dev.js",
     "build": "pnpm run build:renderer && pnpm run build:main",
     "build:renderer": "vite build",
     "build:main": "tsc --build tsconfig.main.json",

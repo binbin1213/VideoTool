@@ -1,0 +1,960 @@
+// SubtitleConvertTab.module.scss
+// 字幕转换Tab的样式文件，严格遵循UI规范（黑白灰配色）
+
+@use '../../styles/tokens.scss' as t;
+
+// ========================================
+// 1. 容器和布局
+// ========================================
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #F5F5F5; // 浅灰色背景
+  user-select: none; // 禁止选中文字
+  -webkit-user-select: none; // Safari
+}
+
+.header {
+  padding: t.$spacing-4 t.$spacing-6;
+  border-bottom: 1px solid var(--vt-color-border);
+  background-color: transparent; // 透明背景
+  -webkit-app-region: drag;
+  user-select: none;
+  
+  h2 {
+    margin: 0;
+    font-size: t.$font-size-lg;
+    font-weight: t.$font-weight-semibold;
+    color: var(--vt-color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: t.$spacing-2;
+    
+    svg {
+      color: var(--vt-color-brand-primary);
+      font-size: t.$font-size-base;
+      opacity: 0.8;
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  gap: t.$spacing-4;
+  padding: t.$spacing-4;
+  min-width: 0; // 允许内容压缩
+  overflow: hidden; // 不显示滚动条
+  min-height: 0; // 防止flex子元素溢出
+}
+
+.mainArea {
+  flex: 1;
+  min-width: 420px; // 主内容区最小宽度（降低以适应更小的窗口）
+  min-height: 0; // 防止溢出
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; // 主内容区可以滚动
+  overflow-x: hidden;
+}
+
+.infoArea {
+  flex: 0 0 200px;
+  width: 200px;
+  min-height: 0; // 防止溢出
+  font-size: t.$font-size-xs;
+  padding: t.$spacing-3;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-md;
+  border: 1px solid var(--vt-color-border);
+  overflow-y: auto; // 侧边栏可以滚动，内容太多时
+  overflow-x: hidden;
+  align-self: stretch; // 拉伸以填充父容器高度
+  
+  h6 {
+    font-size: t.$font-size-sm;
+    font-weight: t.$font-weight-bold;
+    color: var(--vt-color-text-primary);
+    margin-bottom: t.$spacing-2;
+    margin-top: 0;
+  }
+  
+  ol, ul {
+    font-size: t.$font-size-xs;
+    padding-left: 18px;
+    margin-bottom: t.$spacing-3;
+    color: var(--vt-color-text-secondary);
+    line-height: 1.6;
+    
+    li {
+      margin-bottom: t.$spacing-1;
+    }
+  }
+  
+  hr {
+    margin: t.$spacing-2 0;
+    border: none;
+    border-top: 1px solid var(--vt-color-border);
+  }
+  
+  p {
+    font-size: t.$font-size-xs;
+    margin-bottom: t.$spacing-2;
+    line-height: 1.5;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ========================================
+// 2. 批量模式开关
+// ========================================
+
+.modeSwitch {
+  margin-bottom: t.$spacing-3;
+  padding: t.$spacing-3;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--vt-color-brand-primary) 8%, var(--vt-color-bg)) 0%, 
+    var(--vt-color-bg-secondary) 100%);
+  border: none; // 无边框
+  border-radius: t.$radius-md;
+  box-shadow: none; // 无阴影
+  flex-shrink: 0; // 不压缩开关区域
+}
+
+.switchLabel {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-3;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  
+  span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: t.$spacing-2;
+    
+    svg {
+      font-size: t.$font-size-sm;
+      color: var(--vt-color-brand-primary);
+      flex-shrink: 0;
+    }
+  }
+}
+
+.switchInput {
+  appearance: none;
+  width: 44px;
+  height: 24px;
+  background-color: #9CA3AF;
+  border: 2px solid #9CA3AF;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+  
+  &:before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all t.$motion-duration-normal t.$motion-easing-standard;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:hover:not(:disabled) {
+    background-color: #6B7280;
+    border-color: #6B7280;
+  }
+  
+  &:checked {
+    background-color: var(--vt-color-brand-primary);
+    border-color: var(--vt-color-brand-primary);
+    
+    &:before {
+      transform: translateX(20px);
+      background-color: #fff;
+    }
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--vt-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+// ========================================
+// 3. 区块和标题
+// ========================================
+
+.section {
+  margin-bottom: t.$spacing-3;
+  background-color: transparent; // 透明背景，与页面统一
+  border-radius: t.$radius-md;
+  overflow: hidden;
+  flex-shrink: 0; // 保持区块完整显示
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-bold;
+  color: var(--vt-color-text-primary);
+  margin-bottom: t.$spacing-3;
+  padding: 0 t.$spacing-1;
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  
+  svg {
+    font-size: t.$font-size-base;
+    color: var(--vt-color-brand-primary);
+  }
+}
+
+// ========================================
+// 4. 文件选择器
+// ========================================
+
+.fileSelector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: t.$spacing-6 t.$spacing-4;
+  border: 2px dashed var(--vt-color-border);
+  border-radius: t.$radius-md;
+  background-color: #FFFFFF; // 白色背景
+  cursor: pointer;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  flex-shrink: 0; // 不压缩文件选择器
+  
+  &:hover {
+    border-color: var(--vt-color-brand-primary);
+    background-color: var(--vt-color-bg-secondary);
+  }
+  
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.fileIcon {
+  color: var(--vt-color-brand-primary);
+  margin-bottom: t.$spacing-3;
+  opacity: 0.8;
+}
+
+.fileText {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0 0 t.$spacing-2;
+  text-align: center;
+}
+
+.fileHint {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  margin: 0;
+  text-align: center;
+}
+
+// ========================================
+// 5. 文件列表
+// ========================================
+
+.fileList {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: t.$spacing-3;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-sm;
+  flex-shrink: 1; // 允许压缩
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  padding: t.$spacing-2 t.$spacing-3;
+  margin-bottom: t.$spacing-2;
+  background-color: transparent; // 透明背景
+  border: 1px solid transparent;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-xs;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  &.processing {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-info) 10%, var(--vt-color-bg));
+    border-color: var(--vt-color-semantic-info);
+  }
+}
+
+.fileIndex {
+  margin-right: t.$spacing-2;
+  color: var(--vt-color-text-tertiary);
+  font-weight: t.$font-weight-medium;
+  min-width: 20px;
+}
+
+.fileName {
+  flex: 1;
+  color: var(--vt-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileStatus {
+  margin-left: t.$spacing-2;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+}
+
+// ========================================
+// 6. 表单元素
+// ========================================
+
+.formRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: t.$spacing-3;
+  gap: t.$spacing-3;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formLabel {
+  flex: 0 0 140px;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0;
+}
+
+// Modal 表单组（垂直布局）
+.modalFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-2;
+  margin-bottom: t.$spacing-4;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.modalLabel {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0;
+}
+
+.fieldHint {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.formControl {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+}
+
+// Input 输入框
+.input {
+  width: 100%;
+  height: t.$button-height-md;
+  padding: 0 t.$spacing-3;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-family-sans;
+  color: var(--vt-color-text-primary);
+  background-color: var(--vt-color-control-bg);
+  border: 1.5px solid var(--vt-color-border);
+  border-radius: t.$radius-sm;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  
+  &::placeholder {
+    color: var(--vt-color-text-tertiary);
+  }
+  
+  &:hover:not(:disabled) {
+    border-color: var(--vt-color-border-hover);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--vt-color-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Select 下拉框
+.select {
+  height: t.$button-height-md;
+  padding: 0 32px 0 t.$spacing-3;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-family-sans;
+  color: var(--vt-color-text-primary);
+  background-color: #F5F5F5 !important;
+  border: 1px solid #D1D1D6;
+  border-radius: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
+      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
+      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+    </svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 18px 18px !important;
+  
+  &:hover:not(:disabled) {
+    border-color: #B8B8BD;
+    background-color: #EBEBEB !important;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--vt-color-focus);
+    background-color: #F5F5F5 !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent), 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Checkbox 复选框
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-primary);
+  cursor: pointer;
+  user-select: none;
+  
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--vt-color-brand-primary);
+    
+    &:focus-visible {
+      outline: 2px solid var(--vt-color-focus);
+      outline-offset: 2px;
+    }
+  }
+  
+  span {
+    font-weight: t.$font-weight-medium;
+  }
+  
+  &:hover {
+    color: var(--vt-color-text-secondary);
+  }
+}
+
+// ========================================
+// 7. 按钮
+// ========================================
+
+// 基础按钮样式
+%button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-2;
+  height: t.$button-height-md;
+  padding: 0 t.$spacing-4;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  font-family: t.$font-family-sans;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 6px; // 统一圆角 6px
+  cursor: pointer;
+  user-select: none;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--vt-color-focus);
+    outline-offset: 2px;
+  }
+  
+  svg {
+    font-size: t.$font-size-base;
+  }
+}
+
+// 主要按钮（中灰色）
+.buttonPrimary {
+  @extend %button-base;
+  color: var(--vt-color-bg);
+  background-color: var(--vt-color-brand-primary);
+  border-color: var(--vt-color-brand-primary);
+  
+  &:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-brand-primary) 90%, black);
+    border-color: color-mix(in srgb, var(--vt-color-brand-primary) 90%, black);
+  }
+  
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-brand-primary) 80%, black);
+    transform: scale(0.98);
+  }
+}
+
+// 次要按钮（深灰色，与 MergeTab 一致）
+.buttonSecondary {
+  @extend %button-base;
+  color: #FFFFFF !important; // 白色文字
+  background: #6B7280 !important; // neutral-500 - 深灰色
+  border: none !important; // 去掉边框
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12); // 明显的阴影
+  
+  &:hover:not(:disabled) {
+    background: #4B5563 !important; // neutral-600 - 悬停时更深
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active:not(:disabled) {
+    background: #374151 !important; // neutral-700 - 点击时最深
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+  }
+}
+
+// 危险按钮（红色）
+.buttonDanger {
+  @extend %button-base;
+  color: #fff;
+  background-color: var(--vt-color-semantic-error);
+  border-color: var(--vt-color-semantic-error);
+  
+  &:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-error) 90%, black);
+    border-color: color-mix(in srgb, var(--vt-color-semantic-error) 90%, black);
+  }
+  
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-error) 80%, black);
+    transform: scale(0.98);
+  }
+}
+
+// 小按钮
+.buttonSmall {
+  @extend %button-base;
+  height: t.$button-height-sm;
+  padding: 0 t.$spacing-3;
+  font-size: t.$font-size-xs;
+}
+
+// 大按钮
+.buttonLarge {
+  @extend %button-base;
+  height: t.$button-height-lg;
+  padding: 0 t.$spacing-6;
+  font-size: t.$font-size-base;
+}
+
+// ========================================
+// 8. 进度条
+// ========================================
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-pill;
+  overflow: hidden;
+  margin-bottom: t.$spacing-2;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--vt-color-brand-primary);
+  border-radius: t.$radius-pill;
+  transition: width t.$motion-duration-normal t.$motion-easing-standard;
+}
+
+.progressText {
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-secondary);
+  text-align: center;
+}
+
+// ========================================
+// 9. Alert 提示框
+// ========================================
+
+.alert {
+  padding: t.$spacing-2 t.$spacing-3; // 缩小内边距
+  margin-bottom: t.$spacing-3;
+  border-radius: t.$radius-sm;
+  border: 1px solid;
+}
+
+.alertHeading {
+  font-size: t.$font-size-xs; // 缩小字体
+  font-weight: t.$font-weight-semibold;
+  margin-bottom: t.$spacing-1;
+}
+
+.alertText {
+  font-size: t.$font-size-xs; // 缩小字体
+  line-height: 1.4;
+  margin-bottom: t.$spacing-1;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  strong {
+    font-weight: t.$font-weight-semibold;
+  }
+}
+
+// 成功提示
+.alertSuccess {
+  background-color: color-mix(in srgb, var(--vt-color-semantic-success) 10%, var(--vt-color-bg));
+  border-color: var(--vt-color-semantic-success);
+  color: var(--vt-color-semantic-success);
+  
+  .alertHeading {
+    color: var(--vt-color-semantic-success);
+  }
+  
+  .alertText {
+    color: var(--vt-color-text-primary);
+  }
+}
+
+// 错误提示
+.alertError {
+  background-color: color-mix(in srgb, var(--vt-color-semantic-error) 10%, var(--vt-color-bg));
+  border-color: var(--vt-color-semantic-error);
+  color: var(--vt-color-semantic-error);
+  
+  .alertHeading {
+    color: var(--vt-color-semantic-error);
+  }
+  
+  .alertText {
+    color: var(--vt-color-text-primary);
+  }
+}
+
+// 警告提示
+.alertWarning {
+  background-color: color-mix(in srgb, var(--vt-color-semantic-warning) 10%, var(--vt-color-bg));
+  border-color: var(--vt-color-semantic-warning);
+  color: var(--vt-color-semantic-warning);
+  
+  .alertHeading {
+    color: var(--vt-color-semantic-warning);
+  }
+  
+  .alertText {
+    color: var(--vt-color-text-primary);
+  }
+}
+
+// 信息提示（黑白灰配色）
+.alertInfo {
+  background-color: #E5E7EB; // 浅灰色背景
+  border-color: #9CA3AF; // 灰色边框
+  color: var(--vt-color-text-primary); // 主要文字颜色
+  
+  .alertHeading {
+    color: var(--vt-color-text-primary); // 主要文字颜色
+  }
+  
+  .alertText {
+    color: var(--vt-color-text-secondary); // 次要文字颜色
+  }
+}
+
+// ========================================
+// 10. Badge 标签
+// ========================================
+
+.badge {
+  display: inline-block;
+  padding: 2px t.$spacing-2;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  line-height: 1;
+  color: var(--vt-color-text-primary);
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-sm;
+  vertical-align: middle;
+}
+
+.badgePreset {
+  background-color: var(--vt-color-bg-secondary);
+  color: var(--vt-color-text-secondary);
+}
+
+.badgeCustom {
+  background-color: color-mix(in srgb, var(--vt-color-semantic-info) 20%, var(--vt-color-bg));
+  color: var(--vt-color-semantic-info);
+}
+
+// ========================================
+// 11. 样式预览
+// ========================================
+
+.stylePreview {
+  padding: t.$spacing-3;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-md;
+  margin-bottom: t.$spacing-3;
+  flex-shrink: 0; // 不压缩预览区域
+}
+
+.previewBox {
+  position: relative;
+  width: 100%;
+  min-height: 80px;
+  height: 100px;
+  background: #FFFFFF !important; // 白色背景
+  border: 1px solid var(--vt-color-border);
+  border-radius: t.$radius-sm;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: t.$spacing-2;
+}
+
+// Modal中的预览容器
+.modalPreviewWrapper {
+  margin-top: t.$spacing-4;
+  padding: t.$spacing-3;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-md;
+  border: 1px solid var(--vt-color-border);
+}
+
+.modalPreviewTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin-bottom: t.$spacing-2;
+}
+
+.modalPreviewBox {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: #FFFFFF !important; // 白色背景
+  border: 1px solid var(--vt-color-border);
+  border-radius: t.$radius-sm;
+  overflow: hidden;
+  display: flex;
+  padding: t.$spacing-3;
+}
+
+.modalPreviewNote {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  margin-top: t.$spacing-2;
+  text-align: center;
+}
+
+// ========================================
+// 12. Modal 样式优化
+// ========================================
+
+.modalTitle {
+  margin: 0;
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  
+  svg {
+    color: var(--vt-color-brand-primary);
+    font-size: t.$font-size-base;
+    opacity: 0.8;
+  }
+}
+
+// Modal 弹窗整体样式
+:global(.modal-content) {
+  user-select: none !important; // 禁止选中文字
+  -webkit-user-select: none !important; // Safari
+}
+
+:global(.modal-body) {
+  background-color: #F5F5F5 !important; // 灰色背景
+}
+
+:global(.modal-header) {
+  background-color: #F5F5F5 !important; // 灰色背景
+  border-bottom: 1px solid var(--vt-color-border) !important;
+  padding: t.$spacing-4 t.$spacing-6 !important;
+}
+
+:global(.modal-footer) {
+  background-color: #F5F5F5 !important; // 灰色背景
+  border-top: 1px solid var(--vt-color-border) !important;
+}
+
+// 覆盖 Bootstrap Modal.Title 的默认样式
+:global(.modal-title) {
+  margin: 0 !important;
+  font-size: t.$font-size-lg !important;
+  font-weight: t.$font-weight-semibold !important;
+  color: var(--vt-color-text-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: t.$spacing-2 !important;
+  
+  svg {
+    color: var(--vt-color-brand-primary) !important;
+    font-size: t.$font-size-base !important;
+    opacity: 0.8 !important;
+  }
+}
+
+// 确保 Modal 内的 select 也有箭头图标，并且背景是白色
+:global(.modal) .select {
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
+      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
+      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+    </svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 18px 18px !important;
+  background-color: #FFFFFF !important; // 白色背景
+}
+
+.previewText {
+  font-size: 18px;
+  font-weight: t.$font-weight-bold;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  user-select: none;
+}
+
+// ========================================
+// 12. 按钮组
+// ========================================
+
+.buttonGroup {
+  display: flex;
+  gap: t.$spacing-2;
+  align-items: center;
+  margin-top: t.$spacing-4;
+}
+
+// ========================================
+// 13. 响应式调整
+// ========================================
+
+// 当窗口宽度小于 660px 时，侧边栏才折叠到下方
+// 计算：420px (主内容最小宽度) + 200px (侧边栏) + 16px (gap) + 32px (左右padding) = 668px
+@media (max-width: 660px) {
+  .content {
+    flex-direction: column;
+    overflow-y: auto; // 在窄屏时允许垂直滚动
+  }
+  
+  .infoArea {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    overflow-y: visible; // 窄屏时不需要单独滚动
+    max-height: none;
+  }
+  
+  .mainArea {
+    min-width: 0; // 移除最小宽度限制，允许完全收缩
+  }
+}
+
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .formLabel {
+    flex: none;
+    margin-bottom: t.$spacing-2;
+  }
+  
+  .buttonGroup {
+    flex-direction: column;
+    width: 100%;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+

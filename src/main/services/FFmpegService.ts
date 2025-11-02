@@ -49,6 +49,9 @@ export function initializeFFmpegPath(): void {
 // 在 main/index.ts 中会正确调用
 
 export class FFmpegService {
+  private static lastCheckTime: number = 0;
+  private static checkCooldown: number = 5000; // 5秒冷却时间
+
   /**
    * 合并音视频文件
    */
@@ -937,13 +940,24 @@ export class FFmpegService {
    * 检查 FFmpeg 是否可用
    */
   static checkFFmpeg(): Promise<boolean> {
+    const now = Date.now();
+    const shouldLog = (now - this.lastCheckTime) > this.checkCooldown;
+    
+    // 立即更新时间戳，防止竞态条件
+    if (shouldLog) {
+      this.lastCheckTime = now;
+    }
+
     return new Promise((resolve) => {
       ffmpeg.getAvailableFormats((err) => {
         if (err) {
           log.error('FFmpeg 不可用:', err.message);
           resolve(false);
         } else {
-          log.info('FFmpeg 可用');
+          // 只在冷却时间后记录日志，避免频繁记录
+          if (shouldLog) {
+            log.info('FFmpeg 可用');
+          }
           resolve(true);
         }
       });

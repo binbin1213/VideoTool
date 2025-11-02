@@ -1,10 +1,11 @@
 import { Nav } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { 
   FaExchangeAlt, 
   FaFileVideo, 
   FaClosedCaptioning, 
   FaLanguage,
-  FaLayerGroup,
+  // FaLayerGroup, // ✨ BatchTab 已隐藏，不需要此图标
   FaClipboardList,
   FaInfoCircle
 } from 'react-icons/fa';
@@ -16,14 +17,16 @@ interface SidebarProps {
 }
 
 function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+  const { t } = useTranslation();
+  
   const menuItems = [
-    { id: 'subtitle-convert', icon: FaLanguage, label: '字幕转换' },
-    { id: 'merge', icon: FaExchangeAlt, label: '音视频合并' },
-    { id: 'transcode', icon: FaFileVideo, label: '视频转码' },
-    { id: 'subtitle-burn', icon: FaClosedCaptioning, label: '字幕烧录' },
-    { id: 'batch', icon: FaLayerGroup, label: '批量处理' },
-    { id: 'logs', icon: FaClipboardList, label: '日志查看', divider: true },
-    { id: 'about', icon: FaInfoCircle, label: '关于' },
+    { id: 'subtitle-convert', icon: FaLanguage, label: t('sidebar.subtitle_convert') },
+    { id: 'merge', icon: FaExchangeAlt, label: t('sidebar.merge') },
+    { id: 'transcode', icon: FaFileVideo, label: t('sidebar.transcode') },
+    { id: 'subtitle-burn', icon: FaClosedCaptioning, label: t('sidebar.subtitle_burn') },
+    // { id: 'batch', icon: FaLayerGroup, label: t('sidebar.batch') }, // ✨ 初期暂不开发，已隐藏
+    { id: 'logs', icon: FaClipboardList, label: t('sidebar.logs'), divider: true },
+    { id: 'about', icon: FaInfoCircle, label: t('sidebar.about') },
   ];
 
   return (

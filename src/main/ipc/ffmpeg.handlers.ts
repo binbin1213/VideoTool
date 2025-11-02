@@ -106,7 +106,7 @@ export function registerFFmpegHandlers(): void {
         };
       });
 
-      log.info(`✅ 读取日志成功，共 ${parsedLogs.length} 条`);
+      // 不记录日志，避免循环记录
       return parsedLogs;
     } catch (error) {
       log.error('读取日志文件失败:', error);

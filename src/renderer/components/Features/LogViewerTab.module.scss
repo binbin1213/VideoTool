@@ -1,0 +1,314 @@
+// 日志查看Tab的样式文件，严格遵循UI规范（黑白灰配色）
+
+@use '../../styles/tokens.scss' as t;
+
+// ========================================
+// 1. 容器和布局
+// ========================================
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #F5F5F5; // 浅灰色背景
+  user-select: none; // 禁止选中文字
+  -webkit-user-select: none; // Safari
+}
+
+.header {
+  padding: t.$spacing-4 t.$spacing-6;
+  border-bottom: 1px solid var(--vt-color-border);
+  background-color: transparent; // 透明背景
+  -webkit-app-region: drag;
+  user-select: none;
+  
+  h2 {
+    margin: 0;
+    font-size: t.$font-size-lg;
+    font-weight: t.$font-weight-semibold;
+    color: var(--vt-color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: t.$spacing-2;
+    
+    svg {
+      color: var(--vt-color-brand-primary);
+      font-size: t.$font-size-base;
+      opacity: 0.8;
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: t.$spacing-4 t.$spacing-6;
+  gap: t.$spacing-4;
+}
+
+// ========================================
+// 2. 工具栏
+// ========================================
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: t.$spacing-3;
+}
+
+.toolbarLeft {
+  display: flex;
+  gap: t.$spacing-2;
+  align-items: center;
+}
+
+.toolbarRight {
+  display: flex;
+  gap: t.$spacing-2;
+}
+
+// ========================================
+// 3. 表单控件
+// ========================================
+
+.select {
+  height: t.$button-height-md;
+  padding: 0 32px 0 t.$spacing-3;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-family-sans;
+  color: var(--vt-color-text-primary);
+  background-color: #F5F5F5 !important;
+  border: 1px solid #D1D1D6;
+  border-radius: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
+      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
+      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+    </svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 18px 18px !important;
+  
+  &:hover:not(:disabled) {
+    border-color: #B8B8BD;
+    background-color: #EBEBEB !important;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--vt-color-focus);
+    background-color: #F5F5F5 !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent), 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.searchGroup {
+  display: flex;
+  align-items: center;
+  width: 250px;
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 t.$spacing-3;
+  height: t.$button-height-md;
+  background-color: #FFFFFF;
+  border: 1px solid #D1D1D6;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  color: var(--vt-color-text-tertiary);
+}
+
+.searchInput {
+  flex: 1;
+  height: t.$button-height-md;
+  padding: 0 t.$spacing-3;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-family-sans;
+  color: var(--vt-color-text-primary);
+  background-color: #FFFFFF;
+  border: 1px solid #D1D1D6;
+  border-radius: 0 6px 6px 0;
+  outline: none;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  
+  &::placeholder {
+    color: var(--vt-color-text-tertiary);
+  }
+  
+  &:focus {
+    border-color: var(--vt-color-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px t.$spacing-2;
+  background-color: #9CA3AF;
+  color: #FFFFFF;
+  border-radius: 6px;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+}
+
+// ========================================
+// 4. 按钮
+// ========================================
+
+%button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-1;
+  height: t.$button-height-md;
+  padding: 0 t.$spacing-4;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  font-family: t.$font-family-sans;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  border: none;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  svg {
+    font-size: 12px;
+  }
+}
+
+.buttonPrimary {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: #6B7280;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: #4B5563;
+  }
+  
+  &:active:not(:disabled) {
+    background: #374151;
+    transform: scale(0.98);
+  }
+}
+
+.buttonSuccess {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: #10B981;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: #059669;
+  }
+  
+  &:active:not(:disabled) {
+    background: #047857;
+    transform: scale(0.98);
+  }
+}
+
+.buttonDanger {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: #EF4444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: #DC2626;
+  }
+  
+  &:active:not(:disabled) {
+    background: #B91C1C;
+    transform: scale(0.98);
+  }
+}
+
+// ========================================
+// 5. 日志列表
+// ========================================
+
+.logList {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #FFFFFF;
+  border: 1px solid #D1D1D6;
+  border-radius: 6px;
+  padding: t.$spacing-3;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  user-select: text; // 允许选中复制日志内容
+  -webkit-user-select: text; // Safari
+}
+
+.logEmpty {
+  text-align: center;
+  color: #9CA3AF;
+  padding: t.$spacing-6 0;
+  font-size: t.$font-size-sm;
+}
+
+.logItem {
+  display: flex;
+  gap: t.$spacing-2;
+  padding: 4px 0;
+  border-bottom: 1px solid #F3F4F6;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.logLevel {
+  flex-shrink: 0;
+  font-weight: t.$font-weight-semibold;
+  min-width: 60px;
+}
+
+.levelInfo {
+  color: #3B82F6;
+}
+
+.levelSuccess {
+  color: #10B981;
+}
+
+.levelWarning {
+  color: #F59E0B;
+}
+
+.levelError {
+  color: #EF4444;
+}
+
+.logTimestamp {
+  flex-shrink: 0;
+  color: #6B7280;
+  min-width: 160px;
+}
+
+.logMessage {
+  flex: 1;
+  color: var(--vt-color-text-primary);
+  word-break: break-word;
+}
+

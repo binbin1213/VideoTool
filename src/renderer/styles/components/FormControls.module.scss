@@ -9,8 +9,8 @@
   @include m.label();
   text-align: left !important;
   padding-right: 4px;
-  font-size: 12px !important; // 比默认的 11px 大一点
-  font-weight: 500; // 稍微加粗
+  font-size: 11px !important; // HandBrake smallSystem 字体
+  font-weight: 400; // 正常字重，不加粗
   min-width: 100px; // 固定最小宽度，确保对齐
   flex-shrink: 0; // 不缩小
 }

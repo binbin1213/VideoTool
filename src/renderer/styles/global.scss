@@ -1,13 +1,92 @@
+@use './tokens' as t;
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* 全局设置 Bootstrap CSS 变量，确保表单控件使用白色背景 */
+/* ============================================
+   CSS 变量定义 - 支持浅色/深色主题
+   ============================================ */
 :root {
-  --bs-body-bg: #fff;
-  --bs-form-select-bg: #fff;
+  /* 颜色 - 浅色主题（默认） */
+  --vt-color-bg: #{t.$color-light-bg};
+  --vt-color-surface: #{t.$color-light-surface};
+  --vt-color-surface-elev1: #{t.$color-light-surface-elev1};
+  --vt-color-text-primary: #{t.$color-light-text-primary};
+  --vt-color-text-secondary: #{t.$color-light-text-secondary};
+  --vt-color-text-disabled: #{t.$color-light-text-disabled};
+  --vt-color-border: #{t.$color-light-border};
+  --vt-color-focus: #{t.$color-light-focus};
+  
+  /* 品牌色和语义色（主题无关） */
+  --vt-color-brand-primary: #{t.$color-brand-primary};
+  --vt-color-semantic-info: #{t.$color-semantic-info};
+  --vt-color-semantic-success: #{t.$color-semantic-success};
+  --vt-color-semantic-warning: #{t.$color-semantic-warning};
+  --vt-color-semantic-danger: #{t.$color-semantic-danger};
+  
+  /* 中性色 */
+  --vt-color-neutral-0: #{t.$color-neutral-0};
+  --vt-color-neutral-100: #{t.$color-neutral-100};
+  --vt-color-neutral-200: #{t.$color-neutral-200};
+  --vt-color-neutral-500: #{t.$color-neutral-500};
+  
+  /* 状态透明度 */
+  --vt-state-alpha-hover: #{t.$state-alpha-hover};
+  --vt-state-alpha-pressed: #{t.$state-alpha-pressed};
+  --vt-state-alpha-selected: #{t.$state-alpha-selected};
+  --vt-state-opacity-disabled: #{t.$state-opacity-disabled};
+  
+  /* 间距 */
+  --vt-spacing-1: #{t.$spacing-1};
+  --vt-spacing-2: #{t.$spacing-2};
+  --vt-spacing-3: #{t.$spacing-3};
+  --vt-spacing-4: #{t.$spacing-4};
+  --vt-spacing-6: #{t.$spacing-6};
+  
+  /* 圆角 */
+  --vt-radius-sm: #{t.$radius-sm};
+  --vt-radius-md: #{t.$radius-md};
+  
+  /* 控件尺寸 */
+  --vt-button-height-md: #{t.$button-height-md};
+  --vt-input-height-md: #{t.$input-height-md};
+  
+  /* 动效 */
+  --vt-motion-duration-normal: #{t.$motion-duration-normal};
+  --vt-motion-easing-standard: #{t.$motion-easing-standard};
+
+  /* Bootstrap 覆盖（浅色） */
+  --bs-body-bg: #{t.$color-light-bg};
+  --bs-body-color: #{t.$color-light-text-primary};
+  --bs-border-color: #{t.$color-light-border};
+  --bs-form-select-bg: #{t.$color-light-bg};
+  --bs-primary: #{t.$color-brand-primary};
+  --bs-link-color: #{t.$color-brand-primary};
+}
+
+/* 深色主题 */
+[data-theme="dark"] {
+  /* 颜色 - 深色主题 */
+  --vt-color-bg: #{t.$color-dark-bg};
+  --vt-color-surface: #{t.$color-dark-surface};
+  --vt-color-surface-elev1: #{t.$color-dark-surface-elev1};
+  --vt-color-text-primary: #{t.$color-dark-text-primary};
+  --vt-color-text-secondary: #{t.$color-dark-text-secondary};
+  --vt-color-text-disabled: #{t.$color-dark-text-disabled};
+  --vt-color-border: #{t.$color-dark-border};
+  --vt-color-focus: #{t.$color-dark-focus};
+  
+  /* Bootstrap 覆盖（深色） */
+  --bs-body-bg: #{t.$color-dark-bg};
+  --bs-body-color: #{t.$color-dark-text-primary};
+  --bs-border-color: #{t.$color-dark-border};
+  --bs-form-select-bg: #{t.$color-dark-surface-elev1};
+  
+  /* 中性色在深色模式下调整 */
+  --vt-color-neutral-100: #{t.$color-neutral-800};
 }
 
 html, body, #root {
@@ -17,11 +96,15 @@ html, body, #root {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    'Microsoft YaHei', sans-serif;
+  font-family: t.$font-family-sans;
+  font-size: t.$font-size-base;
+  line-height: t.$line-height-base;
+  color: var(--vt-color-text-primary);
+  background-color: var(--vt-color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--vt-motion-duration-normal) var(--vt-motion-easing-standard),
+              color var(--vt-motion-duration-normal) var(--vt-motion-easing-standard);
 }
 
 code {
@@ -52,6 +135,8 @@ select,
 .form-select,
 .form-select-sm,
 .form-select-lg {
+  font-family: t.$font-family-sans !important;
+  font-size: t.$font-size-base !important;
   --bs-body-bg: #fff !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;

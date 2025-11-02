@@ -1,0 +1,380 @@
+@use '../../styles/tokens.scss' as t;
+
+.aboutContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: t.$spacing-4;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: t.$spacing-4;
+  -webkit-app-region: drag;
+  user-select: none;
+  cursor: move;
+}
+
+.title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: t.$font-weight-bold;
+  font-size: t.$font-size-2xl;
+  line-height: t.$line-height-2xl;
+  margin-bottom: t.$spacing-2;
+}
+
+.subtitle {
+  font-size: t.$font-size-sm;
+  line-height: t.$line-height-sm;
+  color: var(--vt-color-text-secondary);
+  margin-bottom: 0;
+}
+
+// ========================================
+// 偏好设置区域
+// ========================================
+.preferencesSection {
+  background-color: var(--vt-color-surface);
+  padding: t.$spacing-5;
+  border-radius: t.$radius-lg;
+  border: 1px solid var(--vt-color-border);  // 改为细边框，使用灰色
+  margin-bottom: t.$spacing-6;
+}
+
+.preferencesSectionTitle {
+  font-size: t.$font-size-lg;
+  line-height: t.$line-height-lg;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);  // 改为黑色文字
+  margin-bottom: t.$spacing-4;
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+}
+
+.preferenceItem {
+  margin-bottom: t.$spacing-4;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.preferenceItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$spacing-2;
+}
+
+.preferenceLabel {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  font-size: t.$font-size-base;
+  line-height: t.$line-height-base;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-primary);
+}
+
+.preferenceStatus {
+  font-size: t.$font-size-xs;
+  line-height: t.$line-height-xs;
+  color: var(--vt-color-text-secondary);
+}
+
+.preferenceHint {
+  font-size: t.$font-size-xs;
+  line-height: t.$line-height-xs;
+  color: var(--vt-color-text-secondary);
+  margin-top: t.$spacing-1;
+  display: block;
+}
+
+// ========================================
+// 按钮组（主题切换）- 遵循UI规范
+// ========================================
+.segmentedControl {
+  display: flex;
+  width: 100%;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+  gap: 1px;
+  background-color: var(--vt-color-border);
+}
+
+.segmentButton {
+  flex: 1;
+  height: t.$button-height-md;
+  padding: 0 t.$spacing-3;
+  border: none;
+  background-color: var(--vt-color-bg);
+  color: var(--vt-color-text-primary);
+  font-size: t.$font-size-base;
+  line-height: t.$line-height-base;
+  font-weight: t.$font-weight-medium;
+  cursor: pointer;
+  transition: background-color t.$motion-duration-normal t.$motion-easing-standard,
+              color t.$motion-duration-normal t.$motion-easing-standard;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-1;
+
+  // Hover状态
+  &:hover:not(.segmentButtonActive):not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-hover * 100%), var(--vt-color-bg));
+  }
+
+  // Pressed状态
+  &:active:not(.segmentButtonActive):not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-pressed * 100%), var(--vt-color-bg));
+  }
+
+  // 选中状态（黑白灰配色）
+  &.segmentButtonActive {
+    background-color: var(--vt-color-brand-primary);  // 中灰色背景 #4B5563
+    color: var(--vt-color-bg);  // 白色文字
+    font-weight: t.$font-weight-semibold;
+  }
+
+  // 禁用状态
+  &:disabled {
+    opacity: t.$state-opacity-disabled;
+    cursor: not-allowed;
+  }
+
+  // Focus状态
+  &:focus-visible {
+    outline: 2px solid var(--vt-color-focus);
+    outline-offset: -2px;
+    z-index: 1;
+  }
+}
+
+// ========================================
+// 下拉选择器（语言切换）- 遵循UI规范
+// ========================================
+.select {
+  width: 100%;
+  height: t.$input-height-md;
+  padding: 0 t.$spacing-3;
+  border: 1px solid var(--vt-color-border);
+  border-radius: t.$radius-sm;
+  background-color: var(--vt-color-bg);
+  color: var(--vt-color-text-primary);
+  font-size: t.$font-size-base;
+  line-height: t.$line-height-base;
+  font-family: t.$font-family-sans;
+  cursor: pointer;
+  transition: border-color t.$motion-duration-fast t.$motion-easing-standard,
+              box-shadow t.$motion-duration-fast t.$motion-easing-standard;
+
+  // Hover状态
+  &:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--vt-color-brand-primary) 50%, var(--vt-color-border));
+  }
+
+  // Focus状态
+  &:focus {
+    outline: none;
+    border-color: var(--vt-color-focus);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vt-color-focus) 20%, transparent);
+  }
+
+  // 禁用状态
+  &:disabled {
+    opacity: t.$state-opacity-disabled;
+    cursor: not-allowed;
+  }
+}
+
+// ========================================
+// 软件介绍、功能特性等其他部分
+// ========================================
+.section {
+  background: var(--vt-color-surface);
+  padding: t.$spacing-5;
+  border-radius: t.$radius-md;
+  margin-bottom: t.$spacing-6;
+}
+
+.sectionTitle {
+  font-size: t.$font-size-xl;
+  line-height: t.$line-height-xl;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin-bottom: t.$spacing-4;
+  padding-bottom: t.$spacing-3;
+  border-bottom: 2px solid var(--vt-color-border);
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: t.$spacing-4;
+  margin-bottom: t.$spacing-4;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: t.$spacing-3;
+}
+
+.featureIcon {
+  flex-shrink: 0;
+  width: t.$icon-size-lg;
+  height: t.$icon-size-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vt-color-brand-primary);
+}
+
+.featureText {
+  flex: 1;
+  
+  .featureTitle {
+    font-size: t.$font-size-base;
+    line-height: t.$line-height-base;
+    font-weight: t.$font-weight-medium;
+    color: var(--vt-color-text-primary);
+    margin-bottom: t.$spacing-1;
+  }
+  
+  .featureDescription {
+    font-size: t.$font-size-sm;
+    line-height: t.$line-height-sm;
+    color: var(--vt-color-text-secondary);
+  }
+}
+
+// ========================================
+// 按钮样式（更新、下载等）- 遵循UI规范
+// ========================================
+.button {
+  height: t.$button-height-md;
+  padding: 0 t.$spacing-3;
+  border: none;
+  border-radius: t.$radius-md;
+  font-size: t.$font-size-base;
+  line-height: t.$line-height-base;
+  font-weight: t.$font-weight-medium;
+  cursor: pointer;
+  transition: background-color t.$motion-duration-normal t.$motion-easing-standard,
+              transform t.$motion-duration-fast t.$motion-easing-standard;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-2;
+
+  &:disabled {
+    opacity: t.$state-opacity-disabled;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--vt-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.buttonPrimary {
+  @extend .button;
+  // Neutral 风格（黑白灰配色）
+  background-color: var(--vt-color-brand-primary);  // 中灰色背景 #4B5563
+  color: var(--vt-color-bg);  // 白色文字
+
+  &:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-bg) calc(t.$state-alpha-hover * 100%), var(--vt-color-brand-primary));
+  }
+
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-bg) calc(t.$state-alpha-pressed * 100%), var(--vt-color-brand-primary));
+    transform: translateY(1px);
+  }
+}
+
+.buttonNeutral {
+  @extend .button;
+  background-color: var(--vt-color-surface);
+  color: var(--vt-color-text-primary);
+  border: 1px solid var(--vt-color-border);
+
+  &:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-hover * 100%), var(--vt-color-surface));
+  }
+
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-pressed * 100%), var(--vt-color-surface));
+    transform: translateY(1px);
+  }
+}
+
+// ========================================
+// Alert消息框
+// ========================================
+.alert {
+  padding: t.$spacing-3 t.$spacing-4;
+  border-radius: t.$radius-md;
+  margin-bottom: t.$spacing-4;
+  display: flex;
+  align-items: flex-start;
+  gap: t.$spacing-3;
+  font-size: t.$font-size-sm;
+  line-height: t.$line-height-sm;
+
+  &.alertInfo {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-info) 10%, var(--vt-color-bg));
+    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-info) 30%, var(--vt-color-border));
+    color: var(--vt-color-semantic-info);
+  }
+
+  &.alertSuccess {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-success) 10%, var(--vt-color-bg));
+    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-success) 30%, var(--vt-color-border));
+    color: var(--vt-color-semantic-success);
+  }
+
+  &.alertWarning {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-warning) 10%, var(--vt-color-bg));
+    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-warning) 30%, var(--vt-color-border));
+    color: var(--vt-color-semantic-warning);
+  }
+
+  &.alertDanger {
+    background-color: color-mix(in srgb, var(--vt-color-semantic-danger) 10%, var(--vt-color-bg));
+    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-danger) 30%, var(--vt-color-border));
+    color: var(--vt-color-semantic-danger);
+  }
+}
+
+// ========================================
+// 进度条
+// ========================================
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--vt-color-border);
+  border-radius: t.$radius-pill;
+  overflow: hidden;
+  margin-bottom: t.$spacing-2;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--vt-color-brand-primary);  // 中灰色进度条 #4B5563
+  transition: width t.$motion-duration-normal t.$motion-easing-standard;
+}
+
+.progressText {
+  font-size: t.$font-size-xs;
+  line-height: t.$line-height-xs;
+  color: var(--vt-color-text-secondary);
+  font-family: t.$font-family-mono;
+  text-align: center;
+}
+

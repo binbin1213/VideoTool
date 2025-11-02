@@ -21,6 +21,8 @@ export interface FFmpegStatus {
 export class FFmpegManager {
   private static ffmpegPath: string | null = null;
   private static ffprobePath: string | null = null;
+  private static lastCheckTime: number = 0;
+  private static checkCooldown: number = 5000; // 5秒冷却时间
   
   // FFmpeg 下载地址（根据平台）
   private static readonly DOWNLOAD_URLS = {
@@ -76,6 +78,14 @@ export class FFmpegManager {
    * 检查 FFmpeg 是否已安装
    */
   static async checkFFmpeg(): Promise<FFmpegStatus> {
+    const now = Date.now();
+    const shouldLog = (now - this.lastCheckTime) > this.checkCooldown;
+    
+    // 立即更新时间戳，防止竞态条件
+    if (shouldLog) {
+      this.lastCheckTime = now;
+    }
+    
     try {
       // 1. 先检查本地安装的 FFmpeg
       const localPath = this.getFFmpegExecutable();
@@ -84,7 +94,11 @@ export class FFmpegManager {
         try {
           const { stdout } = await execAsync(`"${localPath}" -version`);
           const version = stdout.split('\n')[0];
-          log.info('找到本地 FFmpeg:', version);
+          
+          // 只在冷却时间后记录日志，避免频繁记录
+          if (shouldLog) {
+            log.info('找到本地 FFmpeg:', version);
+          }
           
           this.ffmpegPath = localPath;
           this.ffprobePath = this.getFFprobeExecutable();
@@ -114,7 +128,11 @@ export class FFmpegManager {
             : `${systemPath} -version`;
           const { stdout } = await execAsync(command);
           const version = stdout.split('\n')[0];
-          log.info(`找到系统 FFmpeg (${systemPath}):`, version);
+          
+          // 只在冷却时间后记录日志，避免频繁记录
+          if (shouldLog) {
+            log.info(`找到系统 FFmpeg (${systemPath}):`, version);
+          }
           
           // 如果是绝对路径，直接使用；否则使用命令名
           this.ffmpegPath = systemPath;
@@ -141,7 +159,11 @@ export class FFmpegManager {
         try {
           const { stdout } = await execAsync(`"${bundledFFmpeg.ffmpegPath}" -version`);
           const version = stdout.split('\n')[0];
-          log.info('使用打包的 FFmpeg:', version);
+          
+          // 只在冷却时间后记录日志，避免频繁记录
+          if (shouldLog) {
+            log.info('使用打包的 FFmpeg:', version);
+          }
 
           this.ffmpegPath = bundledFFmpeg.ffmpegPath;
           this.ffprobePath = bundledFFmpeg.ffprobePath;

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button, Form, Alert, ProgressBar, Row, Col, Modal, Badge } from 'react-bootstrap';
-import formStyles from '../../styles/components/FormControls.module.scss';
-import { FaFileUpload, FaPlay, FaCog, FaEdit, FaSave, FaTrash } from 'react-icons/fa';
+import { Modal, Row, Col } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { FaFileUpload, FaPlay, FaCog, FaEdit, FaSave, FaTrash, FaFile, FaFolderOpen } from 'react-icons/fa';
+import styles from './SubtitleConvertTab.module.scss';
 import {
   applyRegexRules,
   parseSRT,
@@ -22,6 +23,7 @@ interface SubtitleConvertTabProps {
 }
 
 function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
+  const { t } = useTranslation();
   const [batchMode, setBatchMode] = useState(false); // 批量模式开关
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // 批量文件列表
@@ -344,67 +346,67 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
   };
 
   return (
-    <div className="subtitle-convert-container">
-      <div className="subtitle-convert-header">
+    <div className={styles.container}>
+      <div className={styles.header}>
         <h2>
-          <FaPlay className="me-2" />
-          字幕格式转换 (SRT → ASS)
+          <FaPlay />
+          {t('subtitleConvert.title') || '字幕格式转换 (SRT → ASS)'}
         </h2>
       </div>
 
-      <div className="subtitle-convert-content">
-        <div className="main-area">
+      <div className={styles.content}>
+        <div className={styles.mainArea}>
           {/* 批量模式开关 */}
-          <fieldset style={{ border: 'none', backgroundColor: '#f8f9fa', marginBottom: '8px', padding: '8px 12px', borderRadius: '6px' }}>
-            <Form.Check
-              type="switch"
-              id="batch-mode-switch"
-              label={
-                <span style={{ fontSize: '12px', fontWeight: 500 }}>
-                  {batchMode ? '📦 批量转换模式（可选择多个文件）' : '📄 单文件转换模式'}
-                </span>
-              }
-              checked={batchMode}
-              onChange={(e) => {
-                setBatchMode(e.target.checked);
-                setSelectedFile(null);
-                setSelectedFiles([]);
-                setResult(null);
-                setLogs([]);
-              }}
-              disabled={converting}
-            />
-          </fieldset>
+          <div className={styles.modeSwitch}>
+            <label className={styles.switchLabel}>
+              <span>
+                {batchMode ? <FaFolderOpen /> : <FaFile />}
+                {batchMode 
+                  ? (t('subtitleConvert.batchMode') || '批量转换模式（可选择多个文件）')
+                  : (t('subtitleConvert.singleMode') || '单文件转换模式')
+                }
+              </span>
+              <input
+                type="checkbox"
+                className={styles.switchInput}
+                checked={batchMode}
+                onChange={(e) => {
+                  setBatchMode(e.target.checked);
+                  setSelectedFile(null);
+                  setSelectedFiles([]);
+                  setResult(null);
+                  setLogs([]);
+                }}
+                disabled={converting}
+              />
+            </label>
+          </div>
 
           {/* 文件选择区域 */}
-          <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-            <legend style={{ display: 'none' }}>
-              <FaFileUpload className="me-1" />
-              选择SRT文件
-            </legend>
+          <div className={styles.section}>
             <div
-              className="file-selector-zone text-center"
+              className={styles.fileSelector}
               onClick={() => fileInputRef.current?.click()}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
-              <FaFileUpload size={48} className="mb-3" style={{ color: '#667eea' }} />
-              <p className="mb-2" style={{ fontSize: '15px', fontWeight: '500', color: '#495057' }}>
+              <FaFileUpload size={48} className={styles.fileIcon} />
+              <p className={styles.fileText}>
                 {batchMode ? (
                   selectedFiles.length > 0 ? (
-                    <strong>已选择 {selectedFiles.length} 个文件</strong>
+                    <strong>{t('subtitleConvert.filesSelected', { count: selectedFiles.length }) || `已选择 ${selectedFiles.length} 个文件`}</strong>
                   ) : (
-                    '点击选择多个SRT文件'
+                    t('subtitleConvert.selectMultipleFiles') || '点击选择多个SRT文件'
                   )
                 ) : (
                   selectedFile ? (
                     <strong>{selectedFile.name}</strong>
                   ) : (
-                    '点击选择或拖拽SRT文件到此处'
+                    t('subtitleConvert.selectOrDrag') || '点击选择或拖拽SRT文件到此处'
                   )
                 )}
               </p>
-              <p className="text-muted small">支持的格式：.srt</p>
+              <p className={styles.fileHint}>{t('subtitleConvert.supportedFormat') || '支持的格式：.srt'}</p>
             </div>
             <input
               ref={fileInputRef}
@@ -414,197 +416,180 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
               style={{ display: 'none' }}
               onChange={handleFileSelect}
             />
-          </fieldset>
+          </div>
 
           {/* 批量模式：文件列表 */}
           {batchMode && selectedFiles.length > 0 && (
-            <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '8px 12px', maxHeight: '200px', overflowY: 'auto' }}>
-              <legend style={{ fontSize: '11px', fontWeight: 600, marginBottom: '8px' }}>
-                📋 文件列表 ({selectedFiles.length}个)
-              </legend>
-              {selectedFiles.map((file, index) => (
-                <div 
-                  key={index}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '4px 8px',
-                    marginBottom: '4px',
-                    background: index === currentFileIndex && converting ? '#e7f3ff' : '#f8f9fa',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    border: index === currentFileIndex && converting ? '1px solid #0d6efd' : '1px solid transparent'
-                  }}
-                >
-                  <span style={{ marginRight: '8px', color: '#6c757d' }}>{index + 1}.</span>
-                  <span style={{ flex: 1, color: '#495057' }}>{file.name}</span>
-                  {converting && index < currentFileIndex && (
-                    <span style={{ color: '#28a745', fontSize: '10px' }}>✓</span>
-                  )}
-                  {converting && index === currentFileIndex && (
-                    <span style={{ color: '#0d6efd', fontSize: '10px' }}>⏳</span>
-                  )}
-                </div>
-              ))}
-            </fieldset>
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                {t('subtitleConvert.fileList') || '文件列表'} ({selectedFiles.length}个)
+              </div>
+              <div className={styles.fileList}>
+                {selectedFiles.map((file, index) => (
+                  <div 
+                    key={index}
+                    className={`${styles.fileItem} ${index === currentFileIndex && converting ? styles.processing : ''}`}
+                  >
+                    <span className={styles.fileIndex}>{index + 1}.</span>
+                    <span className={styles.fileName}>{file.name}</span>
+                    {converting && index < currentFileIndex && (
+                      <span className={styles.fileStatus} style={{ color: 'var(--vt-color-semantic-success)' }}>✓</span>
+                    )}
+                    {converting && index === currentFileIndex && (
+                      <span className={styles.fileStatus} style={{ color: 'var(--vt-color-semantic-info)' }}>...</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {/* 转换设置 */}
-          <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-            <legend style={{ display: 'none' }}>
-              <FaCog className="me-1" />
-              转换设置
-            </legend>
-              <Form.Group as={Row} className={`mb-2 align-items-center ${formStyles.rowTight}`}>
-                <Form.Label column sm={2} className={formStyles.label}>ASS样式模板:</Form.Label>
-                <Col sm={10}>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <FaCog /> {t('subtitleConvert.settings') || '转换设置'}
+            </div>
+              <div className={styles.formRow}>
+                <label className={styles.formLabel}>{t('subtitleConvert.styleTemplate') || 'ASS样式模板'}:</label>
+                <div className={styles.formControl}>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <Form.Select
-                      className={formStyles.select}
+                    <select
+                      className={styles.select}
                       value={selectedStyle}
                       onChange={(e) => setSelectedStyle(e.target.value)}
                       style={{ width: '180px' }}
                     >
-                      <optgroup label="预设样式">
+                      <optgroup label={t('subtitleConvert.presetStyles') || '预设样式'}>
                         {getPresetStyleNames().map(style => (
                           <option key={style} value={style}>{style}</option>
                         ))}
                       </optgroup>
                       {getCustomStyles().length > 0 && (
-                        <optgroup label="自定义样式">
+                        <optgroup label={t('subtitleConvert.customStyles') || '自定义样式'}>
                           {getCustomStyles().map(style => (
                             <option key={style.name} value={style.name}>{style.name}</option>
                           ))}
                         </optgroup>
                       )}
-                    </Form.Select>
+                    </select>
                     
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
+                    <button
+                      className={styles.buttonSecondary}
                       onClick={handleEditStyle}
-                      style={{ fontSize: '11px', height: '22px', padding: '0 10px' }}
                     >
-                      <FaEdit size={10} className="me-1" />
-                      编辑
-                    </Button>
+                      {t('subtitleConvert.editStyle') || '编辑'}
+                    </button>
                     
                     {!getPresetStyleNames().includes(selectedStyle) && (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
+                      <button
+                        className={`${styles.buttonDanger} ${styles.buttonSmall}`}
                         onClick={() => handleDeleteCustomStyle(selectedStyle)}
-                        style={{ fontSize: '11px', height: '22px', padding: '0 10px' }}
                       >
                         <FaTrash size={10} />
-                      </Button>
+                      </button>
                     )}
                     
-                    <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--vt-color-text-tertiary)' }}>
                       {getPresetStyleNames().includes(selectedStyle) ? (
-                        <Badge bg="secondary" style={{ fontSize: '9px' }}>预设</Badge>
+                        <span className={`${styles.badge} ${styles.badgePreset}`}>{t('subtitleConvert.preset') || '预设'}</span>
                       ) : (
-                        <Badge bg="info" style={{ fontSize: '9px' }}>自定义</Badge>
+                        <span className={`${styles.badge} ${styles.badgeCustom}`}>{t('subtitleConvert.custom') || '自定义'}</span>
                       )}
                     </span>
                   </div>
-                </Col>
-              </Form.Group>
+                </div>
+              </div>
 
-              <Form.Group as={Row} className={`mb-2 align-items-center ${formStyles.rowTight}`}>
-                <Form.Label column sm={2} className={formStyles.label}>清理规则:</Form.Label>
-                <Col sm={4}>
-                  <div className={formStyles.controlInline}>
-                    <Form.Check
+              <div className={styles.formRow}>
+                <label className={styles.formLabel}>{t('subtitleConvert.cleaningRules') || '清理规则'}:</label>
+                <div className={styles.formControl}>
+                  <label className={styles.checkbox}>
+                    <input
                       type="checkbox"
-                      label={`应用 (${regexRules.filter(r => r.enabled).length})`}
                       checked={applyRegex}
                       onChange={(e) => setApplyRegex(e.target.checked)}
                     />
-                    <span className={formStyles.help}>自动清理标签与标点</span>
-                  </div>
-                </Col>
-              </Form.Group>
+                    <span>{t('subtitleConvert.applyRules', { count: regexRules.filter(r => r.enabled).length }) || `应用 (${regexRules.filter(r => r.enabled).length})`}</span>
+                  </label>
+                  <span style={{ fontSize: '11px', color: 'var(--vt-color-text-tertiary)', marginLeft: '8px' }}>
+                    {t('subtitleConvert.autoCleanTags') || '自动清理标签与标点'}
+                  </span>
+                </div>
+              </div>
 
-              <Form.Group as={Row} className={`mb-2 align-items-center ${formStyles.rowTight}`}>
-                <Form.Label column sm={2} className={formStyles.label}>添加水印:</Form.Label>
-                <Col sm={10}>
+              <div className={styles.formRow}>
+                <label className={styles.formLabel}>{t('subtitleConvert.addWatermark') || '添加水印'}:</label>
+                <div className={styles.formControl}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <Form.Check
-                      type="checkbox"
-                      label="启用字幕水印"
-                      checked={enableWatermark}
-                      onChange={(e) => setEnableWatermark(e.target.checked)}
-                    />
+                    <label className={styles.checkbox}>
+                      <input
+                        type="checkbox"
+                        checked={enableWatermark}
+                        onChange={(e) => setEnableWatermark(e.target.checked)}
+                      />
+                      <span>{t('subtitleConvert.enableWatermark') || '启用字幕水印'}</span>
+                    </label>
                     {enableWatermark && (
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                        <Form.Control
+                        <input
                           type="text"
-                          placeholder="输入水印文字"
+                          className={styles.input}
+                          placeholder={t('subtitleConvert.watermarkText') || '输入水印文字'}
                           value={watermarkText}
                           onChange={(e) => setWatermarkText(e.target.value)}
-                          style={{ width: '160px', fontSize: '11px', height: '22px' }}
+                          style={{ width: '160px' }}
                         />
-                        <Form.Select
+                        <select
+                          className={styles.select}
                           value={watermarkPosition}
                           onChange={(e) => setWatermarkPosition(e.target.value as any)}
-                          style={{ width: '120px', fontSize: '11px', height: '22px' }}
+                          style={{ width: '120px' }}
                         >
-                          <option value="top-left">左上角</option>
-                          <option value="top-right">右上角</option>
-                          <option value="bottom-left">左下角</option>
-                          <option value="bottom-right">右下角</option>
-                        </Form.Select>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          (半透明小字)
+                          <option value="top-left">{t('subtitleConvert.positionTopLeft') || '左上角'}</option>
+                          <option value="top-right">{t('subtitleConvert.positionTopRight') || '右上角'}</option>
+                          <option value="bottom-left">{t('subtitleConvert.positionBottomLeft') || '左下角'}</option>
+                          <option value="bottom-right">{t('subtitleConvert.positionBottomRight') || '右下角'}</option>
+                        </select>
+                        <span style={{ fontSize: '11px', color: 'var(--vt-color-text-tertiary)' }}>
+                          {t('subtitleConvert.watermarkHint') || '(半透明小字)'}
                         </span>
                       </div>
                     )}
                   </div>
-                </Col>
-              </Form.Group>
+                </div>
+              </div>
 
-              <div className="d-grid gap-2">
-                <Button
-                  variant="primary"
-                  size="lg"
+              <div className={styles.buttonGroup}>
+                <button
+                  className={`${styles.buttonPrimary} ${styles.buttonLarge}`}
                   onClick={handleConvert}
                   disabled={(batchMode ? selectedFiles.length === 0 : !selectedFile) || converting}
+                  style={{ flex: 1 }}
                 >
                   {converting 
-                    ? (batchMode ? `转换中... (${currentFileIndex + 1}/${selectedFiles.length})` : '转换中...') 
-                    : (batchMode ? `开始批量转换 (${selectedFiles.length}个文件)` : '开始转换')
+                    ? (batchMode 
+                        ? t('subtitleConvert.batchConverting', { current: currentFileIndex + 1, total: selectedFiles.length }) || `转换中... (${currentFileIndex + 1}/${selectedFiles.length})`
+                        : t('subtitleConvert.converting') || '转换中...'
+                      )
+                    : (batchMode 
+                        ? t('subtitleConvert.startBatchConvert', { count: selectedFiles.length }) || `开始批量转换 (${selectedFiles.length}个文件)`
+                        : t('subtitleConvert.startConvert') || '开始转换'
+                      )
                   }
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
+                </button>
+                <button
+                  className={`${styles.buttonSecondary} ${styles.buttonSmall}`}
                   onClick={handleClearAll}
                   disabled={converting || (batchMode ? selectedFiles.length === 0 : !selectedFile)}
                 >
-                  清空重新开始
-                </Button>
+                  {t('subtitleConvert.clearAndRestart') || '清空重新开始'}
+                </button>
               </div>
-          </fieldset>
+          </div>
 
           {/* 样式预览 */}
-          <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '12px' }}>
-            <legend style={{ fontSize: '11px', fontWeight: 600, marginBottom: '12px', color: '#495057' }}>
-              📺 样式预览
-            </legend>
-            <div style={{ 
-              position: 'relative',
-              width: '100%',
-              minHeight: '120px',
-              border: '1px solid #e0e0e0',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '20px'
-            }}>
+          <div className={styles.stylePreview}>
+            <div className={styles.previewBox}>
               {(() => {
                 const currentStyle = getStyleParams(selectedStyle);
                 if (!currentStyle) return null;
@@ -623,10 +608,10 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                       fontWeight: currentStyle.bold ? 'bold' : 'normal',
                       fontStyle: currentStyle.italic ? 'italic' : 'normal',
                       textAlign: 'center' as const,
-                      lineHeight: 1.6,
-                      marginBottom: '12px'
+                      lineHeight: 1.4,
+                      marginBottom: '6px'
                     }}>
-                      这是字幕预览效果
+                      {t('subtitleConvert.previewText') || '这是字幕预览效果'}
                     </div>
                     <div style={{
                       fontFamily: currentStyle.fontname,
@@ -635,96 +620,98 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                       textShadow: textShadow,
                       fontWeight: currentStyle.bold ? 'bold' : 'normal',
                       textAlign: 'center' as const,
-                      lineHeight: 1.6,
-                      opacity: 0.95
+                      lineHeight: 1.4,
+                      opacity: 0.9
                     }}>
-                      Subtitle Preview Effect
+                      {t('subtitleConvert.previewTextEn') || 'Subtitle Preview'}
                     </div>
                   </>
                 );
               })()}
             </div>
             <div style={{ 
-              fontSize: '10px', 
-              color: '#6c757d', 
+              fontSize: '11px', 
+              color: 'var(--vt-color-text-tertiary)', 
               marginTop: '8px',
               textAlign: 'center' as const
             }}>
-              当前样式：<strong>{selectedStyle}</strong>
+              {t('subtitleConvert.currentStyle') || '当前样式'}：<strong>{selectedStyle}</strong>
               {enableWatermark && watermarkText && (
                 <span style={{ marginLeft: '12px' }}>
-                  | 水印：{watermarkText} ({watermarkPosition === 'top-left' ? '左上' : watermarkPosition === 'top-right' ? '右上' : watermarkPosition === 'bottom-left' ? '左下' : '右下'})
+                  | {t('subtitleConvert.watermark') || '水印'}：{watermarkText} ({watermarkPosition === 'top-left' ? (t('subtitleConvert.positionTopLeft') || '左上') : watermarkPosition === 'top-right' ? (t('subtitleConvert.positionTopRight') || '右上') : watermarkPosition === 'bottom-left' ? (t('subtitleConvert.positionBottomLeft') || '左下') : (t('subtitleConvert.positionBottomRight') || '右下')})
                 </span>
               )}
             </div>
-          </fieldset>
+          </div>
 
           {/* 转换进度 */}
           {converting && (
-            <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-              <legend style={{ display: 'none' }}>转换进度</legend>
-              <ProgressBar
-                now={progress}
-                label={`${progress}%`}
-                animated={progress < 100}
-                variant={progress === 100 ? 'success' : 'primary'}
-              />
-            </fieldset>
+            <div className={styles.section}>
+              <div className={styles.progressBar}>
+                <div 
+                  className={styles.progressFill}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <div className={styles.progressText}>{progress}%</div>
+            </div>
           )}
 
           {/* 转换结果 */}
           {result && (
-            <Alert variant={result.success ? 'success' : 'danger'}>
-              <Alert.Heading>
-                {result.success ? '✅ 转换成功！' : '❌ 转换失败'}
-              </Alert.Heading>
-              <p>{result.message}</p>
+            <div className={`${styles.alert} ${result.success ? styles.alertSuccess : styles.alertError}`}>
+              <div className={styles.alertHeading}>
+                {result.success 
+                  ? (t('subtitleConvert.convertSuccess') || '转换成功！')
+                  : (t('subtitleConvert.convertFailed') || '转换失败')
+                }
+              </div>
+              <div className={styles.alertText}>{result.message}</div>
               {result.outputPath && (
-                <p className="mb-0">
-                  <strong>输出文件：</strong>{result.outputPath}
-                </p>
+                <div className={styles.alertText} style={{ marginBottom: 0 }}>
+                  <strong>{t('subtitleConvert.outputFile') || '输出文件'}：</strong>{result.outputPath}
+                </div>
               )}
-            </Alert>
+            </div>
           )}
         </div>
 
-        <div className="info-area">
+        <div className={styles.infoArea}>
           {/* 功能说明 */}
-          <fieldset style={{ border: 'none', backgroundColor: '#fff', marginBottom: '4px', padding: '0 6px 6px 6px' }}>
-            <legend style={{ display: 'none' }}>📖 功能说明</legend>
-            <h6 style={{ fontSize: '10px', marginBottom: '8px' }}>转换流程：</h6>
-            <ol className="small" style={{ fontSize: '10px', paddingLeft: '20px', marginBottom: '12px' }}>
-              <li>选择SRT字幕文件</li>
-              <li>应用正则替换规则清理文本</li>
-              <li>选择ASS样式模板</li>
-              <li>点击"开始转换"</li>
-              <li>自动下载ASS文件</li>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>{t('subtitleConvert.guideTitle') || '功能说明'}</div>
+            <h6>{t('subtitleConvert.convertSteps') || '转换流程'}：</h6>
+            <ol>
+              <li>{t('subtitleConvert.step1') || '选择SRT字幕文件'}</li>
+              <li>{t('subtitleConvert.step2') || '应用正则替换规则清理文本'}</li>
+              <li>{t('subtitleConvert.step3') || '选择ASS样式模板'}</li>
+              <li>{t('subtitleConvert.step4') || '点击"开始转换"'}</li>
+              <li>{t('subtitleConvert.step5') || '自动下载ASS文件'}</li>
             </ol>
 
-            <hr style={{ margin: '8px 0' }} />
+            <hr />
 
-            <h6 style={{ fontSize: '10px', marginBottom: '8px' }}>正则替换规则：</h6>
-            <ul className="small" style={{ fontSize: '10px', paddingLeft: '20px', marginBottom: '0' }}>
-              <li>移除HTML标签</li>
-              <li>清理标点符号</li>
-              <li>格式化空格</li>
-              <li>统一换行符</li>
+            <h6>{t('subtitleConvert.cleaningRulesTitle') || '正则替换规则'}：</h6>
+            <ul>
+              <li>{t('subtitleConvert.removeHTMLTags') || '移除HTML标签'}</li>
+              <li>{t('subtitleConvert.cleanPunctuation') || '清理标点符号'}</li>
+              <li>{t('subtitleConvert.formatSpaces') || '格式化空格'}</li>
+              <li>{t('subtitleConvert.unifyLineBreaks') || '统一换行符'}</li>
             </ul>
-          </fieldset>
+          </div>
 
           {/* 日志提示 */}
           {logs.length > 0 && (
-            <fieldset style={{ border: 'none', backgroundColor: '#fff', padding: '0 6px 6px 6px' }}>
-              <legend style={{ display: 'none' }}>📋 处理日志</legend>
-              <div className="text-center" style={{ padding: '10px' }}>
-                <p className="mb-2" style={{ fontSize: '10px', color: '#6c757d' }}>
-                  共 {logs.length} 条日志记录
+            <div className={styles.section}>
+              <div style={{ textAlign: 'center', padding: '10px' }}>
+                <p style={{ color: 'var(--vt-color-text-secondary)' }}>
+                  {t('subtitleConvert.logCount', { count: logs.length }) || `共 ${logs.length} 条日志记录`}
                 </p>
-                <p className="mb-0" style={{ fontSize: '10px', color: '#adb5bd' }}>
-                  详细日志请查看专门的日志页面
+                <p style={{ color: 'var(--vt-color-text-tertiary)' }}>
+                  {t('subtitleConvert.viewDetailedLogs') || '详细日志请查看专门的日志页面'}
                 </p>
               </div>
-            </fieldset>
+            </div>
           )}
 
         </div>
@@ -733,22 +720,24 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
       {/* 样式编辑器 Modal */}
       <Modal show={showStyleEditor} onHide={() => setShowStyleEditor(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title style={{ fontSize: '16px' }}>
-            <FaCog className="me-2" />
-            编辑ASS样式 - {editingStyle?.name}
+          <Modal.Title className={styles.modalTitle}>
+            <FaCog />
+            {t('subtitleConvert.styleEditor') || '编辑ASS样式'} - {editingStyle?.name}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {editingStyle && (
-            <Form>
+            <div>
               <Row>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>字体名称</Form.Label>
-                    <Form.Select
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.fontName') || '字体名称'}
+                    </label>
+                    <select
+                      className={styles.select}
                       value={editingStyle.fontname}
                       onChange={(e) => setEditingStyle({...editingStyle, fontname: e.target.value})}
-                      style={{ fontSize: '12px' }}
                     >
                       <optgroup label="中文字体（推荐）">
                         <option value="Microsoft YaHei">微软雅黑 (Microsoft YaHei)</option>
@@ -767,178 +756,182 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                         <option value="Tahoma">Tahoma</option>
                         <option value="Times New Roman">Times New Roman</option>
                       </optgroup>
-                    </Form.Select>
-                    <Form.Text style={{ fontSize: '10px' }}>
-                      选择系统中已安装的字体
-                    </Form.Text>
-                  </Form.Group>
+                    </select>
+                    <small className={styles.fieldHint}>
+                      {t('subtitleConvert.fontSelectHint') || '选择系统中已安装的字体'}
+                    </small>
+                  </div>
                 </Col>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>字体大小</Form.Label>
-                    <Form.Control
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.fontSize') || '字体大小'}
+                    </label>
+                    <input
                       type="number"
+                      className={styles.input}
                       value={editingStyle.fontsize}
                       onChange={(e) => setEditingStyle({...editingStyle, fontsize: parseInt(e.target.value) || 18})}
                       min={8}
                       max={72}
-                      style={{ fontSize: '12px' }}
                     />
-                    <Form.Text style={{ fontSize: '10px' }}>
-                      推荐: 14-24
-                    </Form.Text>
-                  </Form.Group>
+                    <small className={styles.fieldHint}>
+                      {t('subtitleConvert.fontSizeHint') || '推荐: 14-24'}
+                    </small>
+                  </div>
                 </Col>
               </Row>
 
               <Row>
                 <Col md={4}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>文字颜色</Form.Label>
-                    <Form.Select
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.textColor') || '文字颜色'}
+                    </label>
+                    <select
+                      className={styles.select}
                       value={editingStyle.primaryColour}
                       onChange={(e) => setEditingStyle({...editingStyle, primaryColour: e.target.value})}
-                      style={{ fontSize: '12px' }}
                     >
-                      <option value="&H00FFFFFF">白色</option>
-                      <option value="&H00000000">黑色</option>
-                      <option value="&H000000FF">红色</option>
-                      <option value="&H0000FF00">绿色</option>
-                      <option value="&H00FF0000">蓝色</option>
-                      <option value="&H0000FFFF">黄色</option>
-                    </Form.Select>
-                    <Form.Text style={{ fontSize: '10px' }}>
+                      <option value="&H00FFFFFF">{t('subtitleConvert.white') || '白色'}</option>
+                      <option value="&H00000000">{t('subtitleConvert.black') || '黑色'}</option>
+                      <option value="&H000000FF">{t('subtitleConvert.red') || '红色'}</option>
+                      <option value="&H0000FF00">{t('subtitleConvert.green') || '绿色'}</option>
+                      <option value="&H00FF0000">{t('subtitleConvert.blue') || '蓝色'}</option>
+                      <option value="&H0000FFFF">{t('subtitleConvert.yellow') || '黄色'}</option>
+                    </select>
+                    <small className={styles.fieldHint}>
                       字幕主色
-                    </Form.Text>
-                  </Form.Group>
+                    </small>
+                  </div>
                 </Col>
                 <Col md={4}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>描边颜色</Form.Label>
-                    <Form.Select
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.outlineColor') || '描边颜色'}
+                    </label>
+                    <select
+                      className={styles.select}
                       value={editingStyle.outlineColour}
                       onChange={(e) => setEditingStyle({...editingStyle, outlineColour: e.target.value})}
-                      style={{ fontSize: '12px' }}
                     >
-                      <option value="&H00000000">黑色</option>
-                      <option value="&H00FFFFFF">白色</option>
-                      <option value="&H00404040">深灰</option>
-                      <option value="&H00808080">灰色</option>
-                      <option value="&H000000FF">红色</option>
-                      <option value="&H0000FF00">绿色</option>
-                      <option value="&H00FF0000">蓝色</option>
-                    </Form.Select>
-                    <Form.Text style={{ fontSize: '10px' }}>
+                      <option value="&H00000000">{t('subtitleConvert.black') || '黑色'}</option>
+                      <option value="&H00FFFFFF">{t('subtitleConvert.white') || '白色'}</option>
+                      <option value="&H00404040">{t('subtitleConvert.darkGray') || '深灰'}</option>
+                      <option value="&H00808080">{t('subtitleConvert.gray') || '灰色'}</option>
+                      <option value="&H000000FF">{t('subtitleConvert.red') || '红色'}</option>
+                      <option value="&H0000FF00">{t('subtitleConvert.green') || '绿色'}</option>
+                      <option value="&H00FF0000">{t('subtitleConvert.blue') || '蓝色'}</option>
+                    </select>
+                    <small className={styles.fieldHint}>
                       描边边框色
-                    </Form.Text>
-                  </Form.Group>
+                    </small>
+                  </div>
                 </Col>
                 <Col md={4}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>描边宽度</Form.Label>
-                    <Form.Control
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.outlineWidth') || '描边宽度'}
+                    </label>
+                    <input
                       type="number"
+                      className={styles.input}
                       value={editingStyle.outline}
                       onChange={(e) => setEditingStyle({...editingStyle, outline: parseFloat(e.target.value) || 0})}
                       min={0}
                       max={5}
                       step={0.1}
-                      style={{ fontSize: '12px' }}
                     />
-                    <Form.Text style={{ fontSize: '10px' }}>
-                      推荐: 0.5-1.5
-                    </Form.Text>
-                  </Form.Group>
+                    <small className={styles.fieldHint}>
+                      {t('subtitleConvert.outlineWidthHint') || '推荐: 0.5-1.5'}
+                    </small>
+                  </div>
                 </Col>
               </Row>
 
               <Row>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>对齐方式</Form.Label>
-                    <Form.Select
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.alignment') || '对齐方式'}
+                    </label>
+                    <select
+                      className={styles.select}
                       value={editingStyle.alignment}
                       onChange={(e) => setEditingStyle({...editingStyle, alignment: parseInt(e.target.value) as any})}
-                      style={{ fontSize: '12px' }}
                     >
-                      <option value={1}>底部左对齐</option>
-                      <option value={2}>底部居中</option>
-                      <option value={3}>底部右对齐</option>
-                      <option value={4}>中间左对齐</option>
-                      <option value={5}>中间居中</option>
-                      <option value={6}>中间右对齐</option>
-                      <option value={7}>顶部左对齐</option>
-                      <option value={8}>顶部居中</option>
-                      <option value={9}>顶部右对齐</option>
-                    </Form.Select>
-                    <Form.Text style={{ fontSize: '10px' }}>
-                      数字键盘布局: 1-9
-                    </Form.Text>
-                  </Form.Group>
+                      <option value={1}>{t('subtitleConvert.bottomLeft') || '底部左对齐'}</option>
+                      <option value={2}>{t('subtitleConvert.bottomCenter') || '底部居中'}</option>
+                      <option value={3}>{t('subtitleConvert.bottomRight') || '底部右对齐'}</option>
+                      <option value={4}>{t('subtitleConvert.middleLeft') || '中间左对齐'}</option>
+                      <option value={5}>{t('subtitleConvert.middleCenter') || '中间居中'}</option>
+                      <option value={6}>{t('subtitleConvert.middleRight') || '中间右对齐'}</option>
+                      <option value={7}>{t('subtitleConvert.topLeft') || '顶部左对齐'}</option>
+                      <option value={8}>{t('subtitleConvert.topCenter') || '顶部居中'}</option>
+                      <option value={9}>{t('subtitleConvert.topRight') || '顶部右对齐'}</option>
+                    </select>
+                    <small className={styles.fieldHint}>
+                      {t('subtitleConvert.alignmentHint') || '数字键盘布局: 1-9'}
+                    </small>
+                  </div>
                 </Col>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>底部边距</Form.Label>
-                    <Form.Control
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.bottomMargin') || '底部边距'}
+                    </label>
+                    <input
                       type="number"
+                      className={styles.input}
                       value={editingStyle.marginV}
                       onChange={(e) => setEditingStyle({...editingStyle, marginV: parseInt(e.target.value) || 0})}
                       min={0}
                       max={100}
-                      style={{ fontSize: '12px' }}
                     />
-                    <Form.Text style={{ fontSize: '10px' }}>
-                      推荐: 10-30（距离底部的像素）
-                    </Form.Text>
-                  </Form.Group>
+                    <small className={styles.fieldHint}>
+                      {t('subtitleConvert.marginHint') || '推荐: 10-30（距离底部的像素）'}
+                    </small>
+                  </div>
                 </Col>
               </Row>
 
               <Row>
                 <Col md={12}>
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '12px', fontWeight: 600 }}>保存为新预设名称（可选）</Form.Label>
-                    <Form.Control
+                  <div className={styles.modalFormGroup}>
+                    <label className={styles.modalLabel}>
+                      {t('subtitleConvert.savePresetName') || '保存为新预设名称（可选）'}
+                    </label>
+                    <input
                       type="text"
-                      placeholder="留空则使用原样式名"
+                      className={styles.input}
+                      placeholder={t('subtitleConvert.savePresetPlaceholder') || '留空则使用原样式名'}
                       value={customStyleName}
                       onChange={(e) => setCustomStyleName(e.target.value)}
-                      style={{ fontSize: '12px' }}
                     />
-                    <Form.Text style={{ fontSize: '10px' }}>
-                      输入名称将保存为新的自定义样式
-                    </Form.Text>
-                  </Form.Group>
+                    <small className={styles.fieldHint}>
+                      {t('subtitleConvert.savePresetHint') || '输入名称将保存为新的自定义样式'}
+                    </small>
+                  </div>
                 </Col>
               </Row>
 
-              <Alert variant="info" style={{ fontSize: '11px', padding: '8px 12px', marginBottom: '16px' }}>
-                <strong>💡 提示：</strong>
-                修改后点击"保存"将创建自定义样式预设，不会影响原预设样式。
-              </Alert>
+              <div className={`${styles.alert} ${styles.alertInfo}`} style={{ marginBottom: '16px' }}>
+                <strong>{t('common.info') || '提示'}：</strong>
+                {t('subtitleConvert.editorTip') || '修改后点击"保存"将创建自定义样式预设，不会影响原预设样式。'}
+              </div>
 
               {/* 样式预览 */}
-              <div style={{ 
-                marginTop: '16px', 
-                padding: '12px', 
-                background: '#f8f9fa', 
-                borderRadius: '6px',
-                border: '1px solid #e0e0e0'
-              }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, marginBottom: '8px', color: '#495057' }}>
-                  实时预览：
+              <div className={styles.modalPreviewWrapper}>
+                <div className={styles.modalPreviewTitle}>
+                  {t('subtitleConvert.realTimePreview') || '实时预览'}：
                 </div>
-                <div style={{ 
-                  position: 'relative',
-                  width: '100%',
-                  height: '120px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  borderRadius: '4px',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: editingStyle.alignment <= 3 ? 'flex-end' : editingStyle.alignment <= 6 ? 'center' : 'flex-start',
-                  justifyContent: editingStyle.alignment % 3 === 1 ? 'flex-start' : editingStyle.alignment % 3 === 2 ? 'center' : 'flex-end'
-                }}>
+                <div 
+                  className={styles.modalPreviewBox}
+                  style={{ 
+                    alignItems: editingStyle.alignment <= 3 ? 'flex-end' : editingStyle.alignment <= 6 ? 'center' : 'flex-start',
+                    justifyContent: editingStyle.alignment % 3 === 1 ? 'flex-start' : editingStyle.alignment % 3 === 2 ? 'center' : 'flex-end'
+                  }}
+                >
                   <div style={{
                     fontFamily: editingStyle.fontname,
                     fontSize: `${editingStyle.fontsize * 0.8}px`,
@@ -951,31 +944,26 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                     textAlign: 'center' as const,
                     lineHeight: 1.4
                   }}>
-                    这是字幕预览效果
+                    {t('subtitleConvert.previewText') || '这是字幕预览效果'}
                     <br />
-                    <span style={{ fontSize: '0.85em', opacity: 0.9 }}>Subtitle Preview</span>
+                    <span style={{ fontSize: '0.85em', opacity: 0.9 }}>{t('subtitleConvert.previewTextEn') || 'Subtitle Preview'}</span>
                   </div>
                 </div>
-                <div style={{ 
-                  fontSize: '10px', 
-                  color: '#6c757d', 
-                  marginTop: '6px',
-                  textAlign: 'center' as const
-                }}>
-                  预览按实际渲染可能略有差异
+                <div className={styles.modalPreviewNote}>
+                  {t('subtitleConvert.previewNote') || '预览按实际渲染可能略有差异'}
                 </div>
               </div>
-            </Form>
+            </div>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowStyleEditor(false)} size="sm">
-            取消
-          </Button>
-          <Button variant="primary" onClick={handleSaveCustomStyle} size="sm">
-            <FaSave className="me-1" />
-            保存为预设
-          </Button>
+          <button className={`${styles.buttonSecondary} ${styles.buttonSmall}`} onClick={() => setShowStyleEditor(false)}>
+            {t('common.cancel') || '取消'}
+          </button>
+          <button className={`${styles.buttonPrimary} ${styles.buttonSmall}`} onClick={handleSaveCustomStyle}>
+            <FaSave style={{ marginRight: '4px' }} />
+            {t('subtitleConvert.saveAsPreset') || '保存为预设'}
+          </button>
         </Modal.Footer>
       </Modal>
     </div>

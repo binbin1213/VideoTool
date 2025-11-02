@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Color.Brand.Primary</key>
+  <string>#FF6A00</string>
+  <key>Color.Text.Primary.Light</key>
+  <string>#111827</string>
+  <key>Color.Text.Primary.Dark</key>
+  <string>#F3F4F6</string>
+  <key>Color.Border.Light</key>
+  <string>#E5E7EB</string>
+  <key>Color.Border.Dark</key>
+  <string>#2A2F3A</string>
+  <key>Color.Focus</key>
+  <string>#2680EB</string>
+  <!-- 可按需扩展所有 tokens，运行时由代码映射到 NSColor -->
+</dict>
+</plist>
+

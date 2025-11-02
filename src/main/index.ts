@@ -83,7 +83,9 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1120,
     height: 956,
-    resizable: false, // 禁止手动调整大小
+    minWidth: 900, // 最小宽度
+    minHeight: 700, // 最小高度
+    resizable: true, // 允许手动调整大小
     maximizable: true, // 允许最大化
     fullscreenable: true, // 允许全屏
     icon: icon,

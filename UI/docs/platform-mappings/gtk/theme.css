@@ -1,0 +1,37 @@
+:root {
+  /* Brand */
+  --hb-color-brand-primary: #FF6A00;
+
+  /* Light */
+  --hb-text-primary-light: #111827;
+  --hb-border-light: #E5E7EB;
+  --hb-focus: #2680EB;
+
+  /* Sizes */
+  --hb-font-size-md: 14pt;
+  --hb-font-size-lg: 16pt;
+  --hb-radius-md: 8px;
+  --hb-button-height-md: 32px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hb-text-primary-dark: #F3F4F6;
+    --hb-border-dark: #2A2F3A;
+  }
+}
+
+.hb-button-primary {
+  background: var(--hb-color-brand-primary);
+  color: white;
+  min-height: var(--hb-button-height-md);
+  border-radius: var(--hb-radius-md);
+}
+
+.hb-textbox {
+  min-height: 32px;
+  border: 1px solid var(--hb-border-light);
+  border-radius: 4px;
+}
+
+

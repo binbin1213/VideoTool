@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button, Form, Badge, Alert } from 'react-bootstrap';
-import formStyles from '../../styles/components/FormControls.module.scss';
-import { FaTrash, FaDownload, FaSearch, FaFolder, FaInfoCircle, FaSyncAlt } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { FaTrash, FaDownload, FaSearch, FaInfoCircle, FaSyncAlt } from 'react-icons/fa';
 import { LogEntry } from '../../App';
+import styles from './LogViewerTab.module.scss';
 
 interface LogViewerTabProps {
   logs: LogEntry[];
@@ -10,25 +10,12 @@ interface LogViewerTabProps {
 }
 
 function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
+  const { t } = useTranslation();
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [searchText, setSearchText] = useState('');
-  const [systemLogPath, setSystemLogPath] = useState<string>('');
   const [systemLogs, setSystemLogs] = useState<LogEntry[]>([]); // 从文件读取的日志
   const [loading, setLoading] = useState<boolean>(false);
   const logListRef = useRef<HTMLDivElement>(null); // 日志列表容器引用
-
-  // 获取系统日志文件路径
-  useEffect(() => {
-    const fetchLogPath = async () => {
-      try {
-        const path = await (window as any).electron.ipcRenderer.invoke('get-log-path');
-        setSystemLogPath(path);
-      } catch (error) {
-        console.error('获取日志路径失败:', error);
-      }
-    };
-    fetchLogPath();
-  }, []);
 
   // 滚动到日志底部（最新日志）
   const scrollToBottom = () => {
@@ -59,7 +46,18 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
   }, []);
 
   const getLevelClass = (level: string) => {
-    return `level-${level}`;
+    switch (level) {
+      case 'info':
+        return styles.levelInfo;
+      case 'success':
+        return styles.levelSuccess;
+      case 'warning':
+        return styles.levelWarning;
+      case 'error':
+        return styles.levelError;
+      default:
+        return '';
+    }
   };
 
   // 使用系统日志代替传入的 logs
@@ -77,20 +75,20 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
   }, [systemLogs, filterLevel, searchText]);
 
   const handleClearLogs = async () => {
-    if (confirm('⚠️ 确定要清空 main.log 文件吗？此操作不可恢复！')) {
+    if (confirm(t('logs.confirmClear'))) {
       try {
         const result = await (window as any).electron.ipcRenderer.invoke('clear-log-file');
         if (result.success) {
           // 清空前端显示
           setSystemLogs([]);
           onClearLogs();
-          alert('✅ 日志已清空！');
+          alert(t('logs.clearSuccess'));
         } else {
-          alert('❌ 清空日志失败：' + result.message);
+          alert(t('logs.clearFailed') + ': ' + result.message);
         }
       } catch (error) {
         console.error('清空日志失败:', error);
-        alert('❌ 清空日志失败！');
+        alert(t('logs.clearFailed'));
       }
     }
   };
@@ -109,123 +107,92 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
     URL.revokeObjectURL(url);
   };
 
-  const handleOpenLogFolder = async () => {
-    try {
-      await (window as any).electron.ipcRenderer.invoke('open-log-folder');
-    } catch (error) {
-      console.error('打开日志文件夹失败:', error);
-      alert('打开日志文件夹失败，请手动打开:\n' + systemLogPath);
-    }
-  };
-
   return (
-    <div className="log-viewer-container">
-      <div className="log-viewer-header">
-        <h2>📋 日志查看器</h2>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2>
+          <FaInfoCircle />
+          {t('logs.title')}
+        </h2>
       </div>
 
-      <div className="log-viewer-content">
-        <div>
-          {/* 系统日志路径提示 */}
-          {systemLogPath && (
-              <Alert variant="info" className="mb-3 d-flex align-items-center justify-content-between">
-                <div className="d-flex align-items-center">
-                  <FaInfoCircle className="me-2" />
-                  <small>
-                    <strong>完整日志文件：</strong>
-                    <code className="ms-2" style={{ fontSize: '0.85em' }}>{systemLogPath}</code>
-                  </small>
-                </div>
-                <Button 
-                  variant="outline-primary" 
-                  size="sm"
-                  onClick={handleOpenLogFolder}
-                >
-                  <FaFolder className="me-1" />
-                  打开文件夹
-                </Button>
-              </Alert>
-            )}
-            
-            {/* 工具栏 */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div className="d-flex gap-2 align-items-center">
-                <Form.Select 
-                  className={formStyles.select}
-                  value={filterLevel}
-                  onChange={(e) => setFilterLevel(e.target.value)}
-                >
-                  <option value="all">全部日志</option>
-                  <option value="info">信息</option>
-                  <option value="success">成功</option>
-                  <option value="warning">警告</option>
-                  <option value="error">错误</option>
-                </Form.Select>
+      <div className={styles.content}>
+        {/* 工具栏 */}
+        <div className={styles.toolbar}>
+          <div className={styles.toolbarLeft}>
+            <select 
+              className={styles.select}
+              value={filterLevel}
+              onChange={(e) => setFilterLevel(e.target.value)}
+            >
+              <option value="all">{t('logs.filterAll')}</option>
+              <option value="info">{t('logs.filterInfo')}</option>
+              <option value="success">{t('logs.filterSuccess')}</option>
+              <option value="warning">{t('logs.filterWarning')}</option>
+              <option value="error">{t('logs.filterError')}</option>
+            </select>
 
-                <div className="input-group" style={{ width: '250px' }}>
-                  <span className="input-group-text">
-                    <FaSearch size={12} />
-                  </span>
-                  <Form.Control
-                    type="text"
-                    placeholder="搜索日志..."
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                  />
-                </div>
-
-                <Badge bg="secondary" className="ms-2">
-                  {filteredLogs.length} / {allLogs.length}
-                </Badge>
-              </div>
-
-              <div className="d-flex gap-2">
-                <Button 
-                  variant="outline-success" 
-                  size="sm"
-                  onClick={loadSystemLogs}
-                  disabled={loading}
-                >
-                  <FaSyncAlt className="me-1" />
-                  {loading ? '加载中...' : '刷新日志'}
-                </Button>
-                <Button 
-                  variant="outline-primary" 
-                  size="sm"
-                  onClick={handleExportLogs}
-                >
-                  <FaDownload className="me-1" />
-                  导出日志
-                </Button>
-                <Button 
-                  variant="outline-danger" 
-                  size="sm"
-                  onClick={handleClearLogs}
-                >
-                  <FaTrash className="me-1" />
-                  清空日志
-                </Button>
-              </div>
+            <div className={styles.searchGroup}>
+              <span className={styles.searchIcon}>
+                <FaSearch size={12} />
+              </span>
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder={t('logs.searchPlaceholder')}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
             </div>
 
-            {/* 日志列表 */}
-            <div className="log-list" ref={logListRef}>
-              {filteredLogs.length === 0 ? (
-                <div className="text-center" style={{ color: '#858585', paddingTop: '40px' }}>
-                  <p>暂无日志记录</p>
-                </div>
-              ) : (
-                filteredLogs.map((log, index) => (
-                  <div key={index} className="log-item">
-                    <span className={`log-level-text ${getLevelClass(log.level)}`}>
-                      [{log.level.toUpperCase()}]
-                    </span>
-                    <span className="log-timestamp">{log.timestamp}</span>
-                    <span className="log-message">{log.message}</span>
-                  </div>
-                ))
-              )}
+            <span className={styles.badge}>
+              {filteredLogs.length} / {allLogs.length}
+            </span>
+          </div>
+
+          <div className={styles.toolbarRight}>
+            <button 
+              className={styles.buttonSuccess}
+              onClick={loadSystemLogs}
+              disabled={loading}
+            >
+              <FaSyncAlt />
+              {loading ? t('logs.refreshing') : t('logs.refresh')}
+            </button>
+            <button 
+              className={styles.buttonPrimary}
+              onClick={handleExportLogs}
+            >
+              <FaDownload />
+              {t('logs.export')}
+            </button>
+            <button 
+              className={styles.buttonDanger}
+              onClick={handleClearLogs}
+            >
+              <FaTrash />
+              {t('logs.clear')}
+            </button>
+          </div>
+        </div>
+
+        {/* 日志列表 */}
+        <div className={styles.logList} ref={logListRef}>
+          {filteredLogs.length === 0 ? (
+            <div className={styles.logEmpty}>
+              <p>{t('logs.empty')}</p>
             </div>
+          ) : (
+            filteredLogs.map((log, index) => (
+              <div key={index} className={styles.logItem}>
+                <span className={`${styles.logLevel} ${getLevelClass(log.level)}`}>
+                  [{log.level.toUpperCase()}]
+                </span>
+                <span className={styles.logTimestamp}>{log.timestamp}</span>
+                <span className={styles.logMessage}>{log.message}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
@@ -233,4 +200,3 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
 }
 
 export default LogViewerTab;
-
