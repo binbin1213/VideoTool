@@ -164,9 +164,9 @@ function App() {
       case 'subtitle-convert':
         return <SubtitleConvertTab addLog={addLog} />;
       case 'merge':
-        return <MergeTab addLog={addLog} taskProgress={taskProgress} setTaskProgress={setTaskProgress} />;
+        return <MergeTab addLog={addLog} taskProgress={taskProgress} setTaskProgress={setTaskProgress} ffmpegAvailable={ffmpegStatus.installed} />;
       case 'subtitle-burn':
-        return <SubtitleBurnTab addLog={addLog} taskProgress={taskProgress} setTaskProgress={setTaskProgress} />;
+        return <SubtitleBurnTab addLog={addLog} taskProgress={taskProgress} setTaskProgress={setTaskProgress} ffmpegAvailable={ffmpegStatus.installed} />;
       case 'logs':
         return <LogViewerTab logs={globalLogs} onClearLogs={clearLogs} />;
       case 'about':
@@ -223,7 +223,7 @@ function App() {
             )}
             
             <div style={{ flex: 1, overflow: 'auto' }}>
-              {renderContent()}
+            {renderContent()}
             </div>
           </Col>
         </Row>

@@ -1,22 +1,26 @@
 @use './tokens' as t;
 
-// 全局字体大小设置
-html, body {
-  font-size: t.$font-size-base; // 使用设计令牌
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+/* ============================================
+   App.scss - 应用布局和侧边栏样式
+   
+   职责：
+   1. 应用级布局（.app, .main-content）
+   2. 左右分栏布局（.sidebar-col, .content-col）
+   3. 侧边栏样式（.sidebar）
+   
+   注意：
+   - 全局重置样式在 global.scss 中
+   - 各个功能页面的样式在各自的 .module.scss 中
+   - 通用组件样式在 styles/components/ 目录中
+   ============================================ */
 
-// 重置所有元素的默认边距
-* {
-  box-sizing: border-box;
-}
-
+// ========================================
+// 应用级布局
+// ========================================
 .app {
   height: 100vh;
   width: 100vw;
-  background-color: var(--vt-color-bg); // 使用CSS变量支持主题
+  background-color: var(--vt-color-bg);
   color: var(--vt-color-text-primary);
   overflow: hidden;
   font-size: 1rem;
@@ -42,6 +46,9 @@ html, body {
   }
 }
 
+// ========================================
+// 左右分栏布局
+// ========================================
 .sidebar-col {
   width: 180px;
   background-color: transparent;
@@ -54,28 +61,31 @@ html, body {
 
 .content-col {
   flex: 1;
-  background-color: var(--vt-color-bg);
+  background-color: #F5F5F5; // 灰色背景，与各页面的白色卡片形成对比
   overflow: hidden;
   height: 100vh;
   padding: 0 !important;
   margin: 0 !important;
 }
 
-// Sidebar styles
+// ========================================
+// 侧边栏样式
+// ========================================
 .sidebar {
   height: 100vh;
   padding: 0;
   margin: 0;
   
+  // Logo 区域
   .sidebar-logo {
-    padding: 46px 8px t.$spacing-4 20px; // 使用设计令牌
+    padding: 46px 8px t.$spacing-4 20px;
     display: flex;
     align-items: center;
     gap: 10px;
     border-bottom: 1px solid var(--vt-color-border);
     margin: 0;
     margin-bottom: t.$spacing-2;
-    -webkit-app-region: drag;
+    -webkit-app-region: drag; // 允许拖动窗口
     user-select: none;
     
     img {
@@ -85,32 +95,34 @@ html, body {
     }
     
     .logo-text {
-      font-size: 20px; // 增大字号
-      font-weight: 700; // 加粗
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); // 渐变色
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      letter-spacing: 0.5px; // 字母间距
+      letter-spacing: 0.5px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
   }
   
+  // 导航项
   .sidebar-item {
     padding: 8px 12px;
-    margin: 0 8px 3px 16px; // 左侧16px，右侧8px，稍微向右
+    margin: 0 8px 3px 16px;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     color: #343a40;
     text-decoration: none;
-    font-size: 16px; // 增大侧边栏字号
+    font-size: 16px;
     
     &:hover {
       background-color: #e9ecef;
       color: #212529;
     }
     
+    // 激活状态
     &.active {
       background-color: #0d6efd;
       color: #ffffff;
@@ -122,472 +134,7 @@ html, body {
     }
     
     svg {
-      font-size: 16px; // 增大图标大小
+      font-size: 16px;
     }
   }
 }
-
-// 字幕转换页面布局
-.subtitle-convert-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-}
-
-.subtitle-convert-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #dee2e6;
-  flex-shrink: 0;
-  -webkit-app-region: drag; // 允许拖动窗口
-  user-select: none; // 禁止文本选择
-  
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #495057;
-  }
-}
-
-.subtitle-convert-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  
-  .main-area {
-    flex: 1;
-    padding: 14px;
-    overflow-y: auto;
-    font-size: 13px;
-  }
-  
-  .info-area {
-    width: 220px;
-    flex-shrink: 0;
-    background-color: transparent;
-    border-left: 1px solid #dee2e6;
-    padding: 14px;
-    overflow-y: auto;
-    font-size: 12px;
-  }
-}
-
-// Common components styles
-.file-selector-zone {
-  border: 2px dashed #dee2e6;
-  border-radius: 6px;
-  padding: 26px 14px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    border-color: #0d6efd;
-    background-color: #f8f9fa;
-  }
-  
-  &.drag-over {
-    border-color: #0d6efd;
-    background-color: #e7f1ff;
-  }
-  
-  svg {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-  
-  p {
-    font-size: 13px;
-    margin-bottom: 6px;
-  }
-  
-  .text-muted {
-    font-size: 11px;
-  }
-}
-
-.progress-section {
-  margin-top: 14px;
-  padding: 14px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-}
-
-.card {
-  margin-bottom: 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  font-size: 13px;
-  
-  .card-header {
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  
-  .card-body {
-    padding: 12px;
-    
-    h6 {
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-    
-    ol, ul {
-      margin-bottom: 10px;
-      padding-left: 20px;
-      
-      li {
-        margin-bottom: 4px;
-        font-size: 12px;
-        line-height: 1.4;
-      }
-    }
-    
-    hr {
-      margin: 10px 0;
-    }
-  }
-}
-
-.small {
-  font-size: 11px !important;
-}
-
-.btn-lg {
-  font-size: 14px !important;
-  padding: 8px 16px !important;
-}
-
-// 通用按钮样式优化 - 原生风格
-.btn {
-  border-radius: 6px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0 !important;
-  font-size: 14px !important;
-  padding: 8px 24px !important;
-  line-height: 1.5 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.1) !important;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.15) !important;
-  }
-  
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 3px rgba(0,0,0,0.1) !important;
-  }
-}
-
-// 主要按钮
-.btn-primary {
-  background: linear-gradient(180deg, #0d6efd 0%, #0b5ed7 100%) !important;
-  border-bottom: 2px solid #0a58ca !important;
-  
-  &:hover {
-    background: linear-gradient(180deg, #0b5ed7 0%, #0a58ca 100%) !important;
-  }
-  
-  &:active {
-    border-bottom: 1px solid #0a58ca !important;
-  }
-}
-
-// 次要按钮（灰色浏览按钮）
-.btn-secondary {
-  background: linear-gradient(180deg, #6c757d 0%, #5c636a 100%) !important;
-  border-bottom: 2px solid #4e555b !important;
-  
-  &:hover {
-    background: linear-gradient(180deg, #5c636a 0%, #545b62 100%) !important;
-  }
-  
-  &:active {
-    border-bottom: 1px solid #4e555b !important;
-  }
-}
-
-// 危险按钮
-.btn-danger {
-  background: linear-gradient(180deg, #dc3545 0%, #c82333 100%) !important;
-  border-bottom: 2px solid #bd2130 !important;
-  
-  &:hover {
-    background: linear-gradient(180deg, #c82333 0%, #bd2130 100%) !important;
-  }
-  
-  &:active {
-    border-bottom: 1px solid #bd2130 !important;
-  }
-}
-
-
-.form-label {
-  font-size: 12px !important;
-  color: #000 !important;
-  margin-bottom: 6px;
-}
-
-.form-select {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  color: #000 !important;
-  padding: 0 20px 0 8px !important;
-  height: 18px !important;
-  line-height: 18px !important;
-}
-
-.form-check-label {
-  font-size: 12px;
-}
-
-.form-text {
-  font-size: 11px;
-  color: #6c757d;
-}
-
-// 下拉选项字体
-select option {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  color: #000 !important;
-  padding: 2px 6px !important;
-  line-height: 1.4 !important;
-}
-
-.badge {
-  font-size: 11px;
-  padding: 3px 6px;
-}
-
-// 关于页面布局
-.about-container {
-  min-height: 100%;
-  background-color: var(--vt-color-bg);
-  padding: 20px 30px;
-}
-
-// 日志查看器布局
-.log-viewer-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-}
-
-.log-viewer-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #dee2e6;
-  flex-shrink: 0;
-  -webkit-app-region: drag; // 允许拖动窗口
-  user-select: none; // 禁止文本选择
-  
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #495057;
-  }
-}
-
-.log-viewer-content {
-  flex: 1;
-  padding: 14px;
-  overflow-y: auto;
-  
-  .card {
-    height: calc(100vh - 100px);
-    
-    .card-body {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-  }
-}
-
-.log-list {
-  flex: 1;
-  overflow-y: auto;
-  background-color: #1a1a1a;
-  border-radius: 6px;
-  padding: 16px;
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 13px;
-  border: 1px solid #333333;
-  line-height: 1.6;
-}
-
-.log-item {
-  display: block;
-  padding: 2px 0;
-  color: #d4d4d4;
-  white-space: pre-wrap;
-  word-break: break-word;
-  
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-}
-
-.log-level-text {
-  display: inline;
-  font-weight: 600;
-  margin-right: 4px;
-  
-  &.level-info {
-    color: #4fc3f7;
-  }
-  
-  &.level-success {
-    color: #81c784;
-  }
-  
-  &.level-error {
-    color: #e57373;
-  }
-  
-  &.level-warning {
-    color: #ffb74d;
-  }
-}
-
-.log-timestamp {
-  display: inline;
-  color: #858585;
-  margin-right: 8px;
-}
-
-.log-message {
-  display: inline;
-  color: #d4d4d4;
-}
-
-// 音视频合并页面布局
-.merge-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-}
-
-.merge-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #dee2e6;
-  flex-shrink: 0;
-  -webkit-app-region: drag; // 允许拖动窗口
-  user-select: none; // 禁止文本选择
-  
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #495057;
-  }
-}
-
-.merge-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  
-  .main-area {
-    flex: 1;
-    padding: 14px;
-    overflow-y: auto;
-    font-size: 13px;
-  }
-  
-  .info-area {
-    width: 220px;
-    flex-shrink: 0;
-    background-color: transparent;
-    border-left: 1px solid #dee2e6;
-    padding: 14px;
-    overflow-y: auto;
-    font-size: 12px;
-  }
-}
-
-// 字幕烧录页面布局
-.subtitle-burn-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-}
-
-.subtitle-burn-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #dee2e6;
-  flex-shrink: 0;
-  -webkit-app-region: drag; // 允许拖动窗口
-  user-select: none; // 禁止文本选择
-  
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #495057;
-  }
-}
-
-.subtitle-burn-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  
-  .main-area {
-    flex: 1;
-    padding: 14px;
-    overflow-y: auto;
-    font-size: 13px;
-  }
-  
-  .info-area {
-    width: 220px;
-    flex-shrink: 0;
-    background-color: transparent;
-    border-left: 1px solid #dee2e6;
-    padding: 14px;
-    overflow-y: auto;
-    font-size: 12px;
-  }
-}
-
-// 自定义 Accordion 样式（TranscodeTab 视频信息卡片）
-.custom-accordion-header {
-  font-size: 10px !important;
-  padding: 0 !important;
-  
-  button {
-    font-size: 10px !important;
-    padding: 6px 10px !important;
-    background-color: #e9ecef !important;
-    color: #333 !important;
-    font-weight: 500 !important;
-    border: none !important;
-    
-    &:not(.collapsed) {
-      background-color: #d3d3d3 !important;
-      color: #000 !important;
-    }
-    
-    &:focus {
-      box-shadow: none !important;
-      border: none !important;
-    }
-    
-    &::after {
-      font-size: 10px !important;
-    }
-  }
-}
-

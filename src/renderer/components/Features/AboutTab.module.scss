@@ -4,6 +4,10 @@
   max-width: 800px;
   margin: 0 auto;
   padding: t.$spacing-4;
+  background-color: #F5F5F5;
+  min-height: 100vh;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .header {
@@ -36,7 +40,7 @@
 // 偏好设置区域
 // ========================================
 .preferencesSection {
-  background-color: var(--vt-color-surface);
+  background-color: #FFFFFF;
   padding: t.$spacing-5;
   border-radius: t.$radius-lg;
   border: 1px solid var(--vt-color-border);  // 改为细边框，使用灰色
@@ -160,10 +164,10 @@
 .select {
   width: 100%;
   height: t.$input-height-md;
-  padding: 0 t.$spacing-3;
+  padding: 0 32px 0 t.$spacing-3;
   border: 1px solid var(--vt-color-border);
   border-radius: t.$radius-sm;
-  background-color: var(--vt-color-bg);
+  background-color: #FFFFFF;
   color: var(--vt-color-text-primary);
   font-size: t.$font-size-base;
   line-height: t.$line-height-base;
@@ -171,6 +175,18 @@
   cursor: pointer;
   transition: border-color t.$motion-duration-fast t.$motion-easing-standard,
               box-shadow t.$motion-duration-fast t.$motion-easing-standard;
+  appearance: none;
+  
+  // 添加下拉箭头图标
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
+      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
+      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+    </svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 18px 18px !important;
 
   // Hover状态
   &:hover:not(:disabled) {
@@ -195,9 +211,10 @@
 // 软件介绍、功能特性等其他部分
 // ========================================
 .section {
-  background: var(--vt-color-surface);
+  background: #FFFFFF;
   padding: t.$spacing-5;
-  border-radius: t.$radius-md;
+  border-radius: t.$radius-lg;
+  border: 1px solid var(--vt-color-border);
   margin-bottom: t.$spacing-6;
 }
 
@@ -253,102 +270,48 @@
 }
 
 // ========================================
-// 按钮样式（更新、下载等）- 遵循UI规范
+// 按钮样式 - 使用全局 buttonStyles
 // ========================================
-.button {
-  height: t.$button-height-md;
-  padding: 0 t.$spacing-3;
-  border: none;
-  border-radius: t.$radius-md;
-  font-size: t.$font-size-base;
-  line-height: t.$line-height-base;
-  font-weight: t.$font-weight-medium;
-  cursor: pointer;
-  transition: background-color t.$motion-duration-normal t.$motion-easing-standard,
-              transform t.$motion-duration-fast t.$motion-easing-standard;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: t.$spacing-2;
-
-  &:disabled {
-    opacity: t.$state-opacity-disabled;
-    cursor: not-allowed;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--vt-color-focus);
-    outline-offset: 2px;
-  }
-}
-
-.buttonPrimary {
-  @extend .button;
-  // Neutral 风格（黑白灰配色）
-  background-color: var(--vt-color-brand-primary);  // 中灰色背景 #4B5563
-  color: var(--vt-color-bg);  // 白色文字
-
-  &:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--vt-color-bg) calc(t.$state-alpha-hover * 100%), var(--vt-color-brand-primary));
-  }
-
-  &:active:not(:disabled) {
-    background-color: color-mix(in srgb, var(--vt-color-bg) calc(t.$state-alpha-pressed * 100%), var(--vt-color-brand-primary));
-    transform: translateY(1px);
-  }
-}
-
-.buttonNeutral {
-  @extend .button;
-  background-color: var(--vt-color-surface);
-  color: var(--vt-color-text-primary);
-  border: 1px solid var(--vt-color-border);
-
-  &:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-hover * 100%), var(--vt-color-surface));
-  }
-
-  &:active:not(:disabled) {
-    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-pressed * 100%), var(--vt-color-surface));
-    transform: translateY(1px);
-  }
-}
+// 已移除本地按钮样式定义，统一使用 ../../styles/components/Button.module.scss
 
 // ========================================
-// Alert消息框
+// Alert消息框 - 黑白灰配色
 // ========================================
 .alert {
-  padding: t.$spacing-3 t.$spacing-4;
-  border-radius: t.$radius-md;
+  padding: t.$spacing-2 t.$spacing-3;
+  border-radius: t.$radius-sm;
   margin-bottom: t.$spacing-4;
   display: flex;
   align-items: flex-start;
-  gap: t.$spacing-3;
-  font-size: t.$font-size-sm;
-  line-height: t.$line-height-sm;
+  gap: t.$spacing-2;
+  font-size: t.$font-size-xs;
+  line-height: t.$line-height-xs;
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  color: var(--vt-color-text-secondary);
 
   &.alertInfo {
-    background-color: color-mix(in srgb, var(--vt-color-semantic-info) 10%, var(--vt-color-bg));
-    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-info) 30%, var(--vt-color-border));
-    color: var(--vt-color-semantic-info);
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    color: var(--vt-color-text-secondary);
   }
 
   &.alertSuccess {
-    background-color: color-mix(in srgb, var(--vt-color-semantic-success) 10%, var(--vt-color-bg));
-    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-success) 30%, var(--vt-color-border));
-    color: var(--vt-color-semantic-success);
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    color: var(--vt-color-text-secondary);
   }
 
   &.alertWarning {
-    background-color: color-mix(in srgb, var(--vt-color-semantic-warning) 10%, var(--vt-color-bg));
-    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-warning) 30%, var(--vt-color-border));
-    color: var(--vt-color-semantic-warning);
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    color: var(--vt-color-text-secondary);
   }
 
   &.alertDanger {
-    background-color: color-mix(in srgb, var(--vt-color-semantic-danger) 10%, var(--vt-color-bg));
-    border: 1px solid color-mix(in srgb, var(--vt-color-semantic-danger) 30%, var(--vt-color-border));
-    color: var(--vt-color-semantic-danger);
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    color: var(--vt-color-text-secondary);
   }
 }
 

@@ -134,152 +134,50 @@ export class OptimizerFactory {
   }
 
   /**
-   * 智能优化 - 带预处理逻辑
+   * 智能优化 - 规则优先策略
    * 
-   * 策略：
-   * 1. 检查是否需要转码（已经完美则建议 copy）
-   * 2. 简单场景用规则引擎
-   * 3. 复杂场景才调用 AI
+   * 新策略（2024）：
+   * 1. 标准场景（mobile/web/archive/compress/fast）→ 规则引擎（快速、免费、可靠）
+   * 2. AI模式需要用户明确启用 → AI优化器（灵活、智能）
+   * 3. 降级 → 规则引擎
    */
   static async smartOptimize(
     videoInfo: VideoInfo,
     goal: OptimizationGoal,
     aiConfig?: AIConfig
   ): Promise<OptimizationSuggestion> {
-    // 1. 检查是否已经完美（不需要转码）
-    if (this.isPerfectVideo(videoInfo, goal)) {
-      log.info('视频已经完美，建议流式复制');
-      return {
-        config: {
-          format: 'mp4',
-          videoCodec: 'copy' as any,
-          audioCodec: 'copy' as any,
-          resolution: 'original',
-          framerate: 'original',
-          qualityMode: 'crf',
-          crf: 23,
-          preset: 'medium',
-          audioBitrate: '128k',
-          useHardwareAccel: false,
-          hwaccel: 'none',
-        },
-        reason: '原视频格式已经很好（H.264/H.265 + AAC + MP4，比特率合理），建议直接使用或流式复制，避免质量损失和时间浪费',
-        estimatedSize: Math.round(videoInfo.size / 1024 / 1024),
-        estimatedTime: 5, // 流式复制很快
-        confidence: 1.0,
-      };
-    }
-
-    // 2. 检查是否简单场景（用规则就够）
-    if (this.isSimpleCase(videoInfo, goal)) {
-      log.info('简单场景，使用规则优化器');
+    // 标准场景：优先使用规则引擎（快速、免费、可靠）
+    const standardScenes = ['mobile', 'web', 'archive', 'compress', 'fast', 'quality', 'size', 'speed', 'balanced', 'custom'];
+    
+    if (standardScenes.includes(goal.target)) {
+      // 用户明确启用AI且提供了API Key
+      if (aiConfig?.enabled && aiConfig.apiKey) {
+        try {
+          log.info(`标准场景 [${goal.target}]，用户启用AI，尝试使用 AI 优化器`);
+          const optimizer = this.getAIOptimizer(aiConfig.apiKey, aiConfig.platform);
+          const available = await optimizer.isAvailable();
+          
+          if (available) {
+            return optimizer.optimize(videoInfo, goal);
+          }
+          
+          log.warn('AI 不可用，降级到规则优化器');
+        } catch (error) {
+          log.error('AI 优化失败，降级到规则优化器:', error);
+        }
+      }
+      
+      // 默认使用规则引擎（大部分场景）
+      log.info(`标准场景 [${goal.target}]，使用规则优化器（快速、免费、可靠）`);
       const optimizer = this.getRuleOptimizer();
       return optimizer.optimize(videoInfo, goal);
     }
 
-    // 3. 复杂场景，尝试使用 AI
-    if (aiConfig?.enabled && aiConfig.apiKey) {
-      try {
-        log.info('复杂场景，使用 AI 优化器');
-        const optimizer = this.getAIOptimizer(aiConfig.apiKey, aiConfig.platform);
-        const available = await optimizer.isAvailable();
-        
-        if (available) {
-          return optimizer.optimize(videoInfo, goal);
-        }
-        
-        log.warn('AI 不可用，降级到规则优化器');
-      } catch (error) {
-        log.error('AI 优化失败:', error);
-      }
-    }
-
-    // 4. 降级到规则优化器
-    log.info('使用规则优化器');
+    // 非标准场景：降级到规则引擎
+    log.info(`场景 [${goal.target}]，使用规则优化器`);
     const optimizer = this.getRuleOptimizer();
     return optimizer.optimize(videoInfo, goal);
   }
 
-  /**
-   * 判断视频是否已经完美（不需要转码）
-   */
-  private static isPerfectVideo(videoInfo: VideoInfo, goal: OptimizationGoal): boolean {
-    // 如果用户明确要求压缩大小，则需要转码
-    if (goal.maxFileSize && videoInfo.size > goal.maxFileSize * 1024 * 1024) {
-      return false;
-    }
-
-    // 检查格式是否已经很好
-    const isGoodCodec = ['h264', 'hevc', 'h265'].includes(videoInfo.videoCodec.toLowerCase());
-    const isGoodAudio = ['aac', 'mp3'].includes(videoInfo.audioCodec.toLowerCase());
-    const isGoodFormat = ['mp4', 'mov'].includes(videoInfo.formatName.toLowerCase());
-
-    if (!isGoodCodec || !isGoodAudio || !isGoodFormat) {
-      return false;
-    }
-
-    // 检查比特率是否合理（不过高也不过低）
-    const bitrateInMbps = videoInfo.bitrate / 1000000;
-    const width = videoInfo.width || 1920;
-
-    let minBitrate = 2; // Mbps
-    let maxBitrate = 10; // Mbps
-
-    if (width <= 1280) {
-      // 720p
-      minBitrate = 1.5;
-      maxBitrate = 6;
-    } else if (width <= 1920) {
-      // 1080p
-      minBitrate = 2;
-      maxBitrate = 10;
-    } else if (width <= 2560) {
-      // 1440p
-      minBitrate = 6;
-      maxBitrate = 20;
-    } else {
-      // 4K+
-      minBitrate = 15;
-      maxBitrate = 50;
-    }
-
-    const isReasonableBitrate = bitrateInMbps >= minBitrate && bitrateInMbps <= maxBitrate;
-
-    const isPerfect = isGoodCodec && isGoodAudio && isGoodFormat && isReasonableBitrate;
-    
-    if (isPerfect) {
-      log.info(`视频已完美: ${videoInfo.videoCodec} + ${videoInfo.audioCodec} + ${videoInfo.formatName}, ${bitrateInMbps.toFixed(2)} Mbps`);
-    }
-
-    return isPerfect;
-  }
-
-  /**
-   * 判断是否简单场景（规则引擎足够）
-   */
-  private static isSimpleCase(videoInfo: VideoInfo, goal: OptimizationGoal): boolean {
-    // 以下场景认为简单，可用规则处理：
-    
-    // 1. 标准分辨率转换（1080p → 720p, 4K → 1080p）
-    const width = videoInfo.width || 1920;
-    const isStandardResolution = [1280, 1920, 2560, 3840].includes(width);
-
-    // 2. 常见编码（H.264, H.265）
-    const isCommonCodec = ['h264', 'hevc', 'h265'].includes(videoInfo.videoCodec.toLowerCase());
-
-    // 3. 平衡模式（不追求极致）
-    const isBalancedGoal = goal.target === 'balanced' || goal.target === 'speed';
-
-    // 4. 无特殊要求
-    const noSpecialRequirements = !goal.maxFileSize && !goal.targetQuality;
-
-    const isSimple = isStandardResolution && isCommonCodec && isBalancedGoal && noSpecialRequirements;
-
-    if (isSimple) {
-      log.info('简单场景：标准分辨率 + 常见编码 + 平衡模式');
-    }
-
-    return isSimple;
-  }
 }
 

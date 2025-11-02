@@ -165,82 +165,9 @@
 }
 
 // ========================================
-// 4. 按钮
+// 4. 按钮（使用全局样式）
 // ========================================
-
-%button-base {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: t.$spacing-1;
-  height: t.$button-height-md;
-  padding: 0 t.$spacing-4;
-  font-size: t.$font-size-sm;
-  font-weight: t.$font-weight-semibold;
-  font-family: t.$font-family-sans;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
-  border: none;
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  svg {
-    font-size: 12px;
-  }
-}
-
-.buttonPrimary {
-  @extend %button-base;
-  color: #FFFFFF;
-  background: #6B7280;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  
-  &:hover:not(:disabled) {
-    background: #4B5563;
-  }
-  
-  &:active:not(:disabled) {
-    background: #374151;
-    transform: scale(0.98);
-  }
-}
-
-.buttonSuccess {
-  @extend %button-base;
-  color: #FFFFFF;
-  background: #10B981;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  
-  &:hover:not(:disabled) {
-    background: #059669;
-  }
-  
-  &:active:not(:disabled) {
-    background: #047857;
-    transform: scale(0.98);
-  }
-}
-
-.buttonDanger {
-  @extend %button-base;
-  color: #FFFFFF;
-  background: #EF4444;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  
-  &:hover:not(:disabled) {
-    background: #DC2626;
-  }
-  
-  &:active:not(:disabled) {
-    background: #B91C1C;
-    transform: scale(0.98);
-  }
-}
+// 所有按钮样式已移至 src/renderer/styles/components/Button.module.scss
 
 // ========================================
 // 5. 日志列表

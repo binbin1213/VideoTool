@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Modal, Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { FaFileUpload, FaPlay, FaCog, FaEdit, FaSave, FaTrash, FaFile, FaFolderOpen } from 'react-icons/fa';
+import { FaFileUpload, FaPlay, FaCog, FaSave, FaTrash, FaFile, FaFolderOpen } from 'react-icons/fa';
 import styles from './SubtitleConvertTab.module.scss';
+import buttonStyles from '../../styles/components/Button.module.scss';
+import Switch from '../common/Switch';
 import {
   applyRegexRules,
   parseSRT,
@@ -358,28 +360,24 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
         <div className={styles.mainArea}>
           {/* 批量模式开关 */}
           <div className={styles.modeSwitch}>
-            <label className={styles.switchLabel}>
-              <span>
-                {batchMode ? <FaFolderOpen /> : <FaFile />}
-                {batchMode 
-                  ? (t('subtitleConvert.batchMode') || '批量转换模式（可选择多个文件）')
-                  : (t('subtitleConvert.singleMode') || '单文件转换模式')
-                }
-              </span>
-              <input
-                type="checkbox"
-                className={styles.switchInput}
-                checked={batchMode}
-                onChange={(e) => {
-                  setBatchMode(e.target.checked);
-                  setSelectedFile(null);
-                  setSelectedFiles([]);
-                  setResult(null);
-                  setLogs([]);
-                }}
-                disabled={converting}
-              />
-            </label>
+            <span className={styles.modeSwitchLabel}>
+              {batchMode ? <FaFolderOpen /> : <FaFile />}
+              {batchMode 
+                ? (t('subtitleConvert.batchMode') || '批量转换模式（可选择多个文件）')
+                : (t('subtitleConvert.singleMode') || '单文件转换模式')
+              }
+                </span>
+            <Switch
+              checked={batchMode}
+              onChange={(checked) => {
+                setBatchMode(checked);
+                setSelectedFile(null);
+                setSelectedFiles([]);
+                setResult(null);
+                setLogs([]);
+              }}
+              disabled={converting}
+            />
           </div>
 
           {/* 文件选择区域 */}
@@ -425,21 +423,21 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                 {t('subtitleConvert.fileList') || '文件列表'} ({selectedFiles.length}个)
               </div>
               <div className={styles.fileList}>
-                {selectedFiles.map((file, index) => (
-                  <div 
-                    key={index}
+              {selectedFiles.map((file, index) => (
+                <div 
+                  key={index}
                     className={`${styles.fileItem} ${index === currentFileIndex && converting ? styles.processing : ''}`}
-                  >
+                >
                     <span className={styles.fileIndex}>{index + 1}.</span>
                     <span className={styles.fileName}>{file.name}</span>
-                    {converting && index < currentFileIndex && (
+                  {converting && index < currentFileIndex && (
                       <span className={styles.fileStatus} style={{ color: 'var(--vt-color-semantic-success)' }}>✓</span>
-                    )}
-                    {converting && index === currentFileIndex && (
+                  )}
+                  {converting && index === currentFileIndex && (
                       <span className={styles.fileStatus} style={{ color: 'var(--vt-color-semantic-info)' }}>...</span>
-                    )}
-                  </div>
-                ))}
+                  )}
+                </div>
+              ))}
               </div>
             </div>
           )}
@@ -474,7 +472,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                     </select>
                     
                     <button
-                      className={styles.buttonSecondary}
+                      className={buttonStyles.buttonSecondary}
                       onClick={handleEditStyle}
                     >
                       {t('subtitleConvert.editStyle') || '编辑'}
@@ -482,7 +480,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                     
                     {!getPresetStyleNames().includes(selectedStyle) && (
                       <button
-                        className={`${styles.buttonDanger} ${styles.buttonSmall}`}
+                        className={`${buttonStyles.buttonDanger} ${buttonStyles.buttonSmall}`}
                         onClick={() => handleDeleteCustomStyle(selectedStyle)}
                       >
                         <FaTrash size={10} />
@@ -514,7 +512,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                   <span style={{ fontSize: '11px', color: 'var(--vt-color-text-tertiary)', marginLeft: '8px' }}>
                     {t('subtitleConvert.autoCleanTags') || '自动清理标签与标点'}
                   </span>
-                </div>
+                  </div>
               </div>
 
               <div className={styles.formRow}>
@@ -523,10 +521,10 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <label className={styles.checkbox}>
                       <input
-                        type="checkbox"
-                        checked={enableWatermark}
-                        onChange={(e) => setEnableWatermark(e.target.checked)}
-                      />
+                      type="checkbox"
+                      checked={enableWatermark}
+                      onChange={(e) => setEnableWatermark(e.target.checked)}
+                    />
                       <span>{t('subtitleConvert.enableWatermark') || '启用字幕水印'}</span>
                     </label>
                     {enableWatermark && (
@@ -561,7 +559,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
 
               <div className={styles.buttonGroup}>
                 <button
-                  className={`${styles.buttonPrimary} ${styles.buttonLarge}`}
+                  className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonLarge}`}
                   onClick={handleConvert}
                   disabled={(batchMode ? selectedFiles.length === 0 : !selectedFile) || converting}
                   style={{ flex: 1 }}
@@ -578,7 +576,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                   }
                 </button>
                 <button
-                  className={`${styles.buttonSecondary} ${styles.buttonSmall}`}
+                  className={buttonStyles.buttonSecondary}
                   onClick={handleClearAll}
                   disabled={converting || (batchMode ? selectedFiles.length === 0 : !selectedFile)}
                 >
@@ -928,8 +926,8 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                 <div 
                   className={styles.modalPreviewBox}
                   style={{ 
-                    alignItems: editingStyle.alignment <= 3 ? 'flex-end' : editingStyle.alignment <= 6 ? 'center' : 'flex-start',
-                    justifyContent: editingStyle.alignment % 3 === 1 ? 'flex-start' : editingStyle.alignment % 3 === 2 ? 'center' : 'flex-end'
+                  alignItems: editingStyle.alignment <= 3 ? 'flex-end' : editingStyle.alignment <= 6 ? 'center' : 'flex-start',
+                  justifyContent: editingStyle.alignment % 3 === 1 ? 'flex-start' : editingStyle.alignment % 3 === 2 ? 'center' : 'flex-end'
                   }}
                 >
                   <div style={{
@@ -957,10 +955,10 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <button className={`${styles.buttonSecondary} ${styles.buttonSmall}`} onClick={() => setShowStyleEditor(false)}>
+          <button className={buttonStyles.buttonSecondary} onClick={() => setShowStyleEditor(false)}>
             {t('common.cancel') || '取消'}
           </button>
-          <button className={`${styles.buttonPrimary} ${styles.buttonSmall}`} onClick={handleSaveCustomStyle}>
+          <button className={buttonStyles.buttonPrimary} onClick={handleSaveCustomStyle}>
             <FaSave style={{ marginRight: '4px' }} />
             {t('subtitleConvert.saveAsPreset') || '保存为预设'}
           </button>

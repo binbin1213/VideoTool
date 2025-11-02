@@ -1,0 +1,100 @@
+@use '../../../../../styles/tokens' as t;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-2;
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-primary);
+}
+
+.value {
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-brand-primary);
+}
+
+.select {
+  height: 36px;
+  padding: 0 t.$spacing-3;
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-primary);
+  background-color: #FFFFFF;
+  border: 1px solid var(--vt-color-border);
+  border-radius: t.$radius-sm;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: var(--vt-color-brand-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vt-color-brand-primary) 15%, transparent);
+  }
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #E5E7EB 0%, #E5E7EB 100%);
+  outline: none;
+  -webkit-appearance: none;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--vt-color-brand-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: var(--vt-color-brand-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+.sliderHint {
+  display: flex;
+  justify-content: space-between;
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+}
+

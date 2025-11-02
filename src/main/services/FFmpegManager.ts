@@ -97,7 +97,7 @@ export class FFmpegManager {
           
           // 只在冷却时间后记录日志，避免频繁记录
           if (shouldLog) {
-            log.info('找到本地 FFmpeg:', version);
+          log.info('找到本地 FFmpeg:', version);
           }
           
           this.ffmpegPath = localPath;
@@ -131,7 +131,7 @@ export class FFmpegManager {
           
           // 只在冷却时间后记录日志，避免频繁记录
           if (shouldLog) {
-            log.info(`找到系统 FFmpeg (${systemPath}):`, version);
+          log.info(`找到系统 FFmpeg (${systemPath}):`, version);
           }
           
           // 如果是绝对路径，直接使用；否则使用命令名
@@ -162,7 +162,7 @@ export class FFmpegManager {
           
           // 只在冷却时间后记录日志，避免频繁记录
           if (shouldLog) {
-            log.info('使用打包的 FFmpeg:', version);
+          log.info('使用打包的 FFmpeg:', version);
           }
 
           this.ffmpegPath = bundledFFmpeg.ffmpegPath;

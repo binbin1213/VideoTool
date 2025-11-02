@@ -4,7 +4,7 @@ import type { TranscodeConfig, VideoInfo } from '../../../types/transcode.types'
  * 优化目标
  */
 export interface OptimizationGoal {
-  target: 'quality' | 'size' | 'speed' | 'balanced';
+  target: 'quality' | 'size' | 'speed' | 'balanced' | 'mobile' | 'web' | 'archive' | 'compress' | 'fast' | 'custom';
   maxFileSize?: number; // MB
   targetQuality?: 'low' | 'medium' | 'high' | 'ultra';
   maxDuration?: number; // 秒（转码时间限制）

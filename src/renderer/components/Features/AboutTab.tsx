@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../store';
 import packageJson from '../../../../package.json';
 import styles from './AboutTab.module.scss';
+import buttonStyles from '../../styles/components/Button.module.scss';
 
 // IPC Renderer
 const ipcRenderer = (window as any).electron?.ipcRenderer;
@@ -160,16 +161,16 @@ function AboutTab() {
     <div className={styles.aboutContainer}>
       {/* 标题区域 */}
       <div className={styles.header}>
-        <h1 className={styles.title}>VideoTool</h1>
+        <h1 className={styles.title}>{t('about.title')}</h1>
         <p className={styles.subtitle}>
-          强大的跨平台视频处理工具 · 开源免费 · v{packageJson.version}
+          {t('about.subtitle', { version: packageJson.version })}
         </p>
       </div>
 
       {/* 偏好设置 */}
       <div className={styles.preferencesSection}>
         <h4 className={styles.preferencesSectionTitle}>
-          {t('preferences.title') || '偏好设置'}
+          {t('preferences.title')}
         </h4>
         
         {/* 主题切换 */}
@@ -177,10 +178,10 @@ function AboutTab() {
           <div className={styles.preferenceItemHeader}>
             <div className={styles.preferenceLabel}>
               <FaMoon style={{ color: 'var(--vt-color-brand-primary)' }} />
-              <span>{t('preferences.theme') || '主题模式'}</span>
+              <span>{t('preferences.theme')}</span>
             </div>
             <span className={styles.preferenceStatus}>
-              {t('preferences.current') || '当前'}: {effectiveTheme === 'light' ? '浅色' : '深色'}
+              {t('preferences.current')}: {effectiveTheme === 'light' ? t('preferences.theme_light') : t('preferences.theme_dark')}
             </span>
           </div>
           <div className={styles.segmentedControl}>
@@ -189,21 +190,21 @@ function AboutTab() {
               onClick={() => setTheme('light')}
             >
               <FaSun />
-              <span>{t('preferences.theme_light') || '浅色'}</span>
+              <span>{t('preferences.theme_light')}</span>
             </button>
             <button
               className={`${styles.segmentButton} ${theme === 'dark' ? styles.segmentButtonActive : ''}`}
               onClick={() => setTheme('dark')}
             >
               <FaMoon />
-              <span>{t('preferences.theme_dark') || '深色'}</span>
+              <span>{t('preferences.theme_dark')}</span>
             </button>
             <button
               className={`${styles.segmentButton} ${theme === 'system' ? styles.segmentButtonActive : ''}`}
               onClick={() => setTheme('system')}
             >
               <FaDesktop />
-              <span>{t('preferences.theme_system') || '跟随系统'}</span>
+              <span>{t('preferences.theme_system')}</span>
             </button>
           </div>
         </div>
@@ -212,7 +213,7 @@ function AboutTab() {
         <div className={styles.preferenceItem}>
           <div className={styles.preferenceLabel}>
             <FaLanguage style={{ color: 'var(--vt-color-brand-primary)' }} />
-            <span>{t('preferences.language') || '界面语言'}</span>
+            <span>{t('preferences.language')}</span>
           </div>
           <select 
             className={styles.select}
@@ -223,90 +224,93 @@ function AboutTab() {
             <option value="en-US">English</option>
           </select>
           <small className={styles.preferenceHint}>
-            {t('preferences.language_hint') || '提示：更改语言后部分界面会即时更新'}
+            {t('preferences.language_hint')}
           </small>
         </div>
       </div>
 
       {/* 软件介绍 */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>软件简介</h3>
+        <h3 className={styles.sectionTitle}>{t('about.introduction')}</h3>
         <p style={{ marginBottom: '12px', lineHeight: '1.6' }}>
-          <span className={styles.title} style={{ display: 'inline', fontSize: '18px', marginBottom: 0 }}>VideoTool</span> 是一款强大的跨平台视频处理工具，专注于提供简单、高效的视频处理解决方案。
+          <span className={styles.title} style={{ display: 'inline', fontSize: '18px', marginBottom: 0 }}>{t('about.title')}</span> {t('about.introText1')}
         </p>
         <p style={{ marginBottom: 0, lineHeight: '1.6', color: 'var(--vt-color-text-secondary)' }}>
-          支持字幕格式转换、音视频合并、字幕烧录等功能，让视频处理变得更加简单快捷。
+          {t('about.introText2')}
         </p>
       </div>
 
       {/* 更新检查 */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>软件更新</h3>
+        <h3 className={styles.sectionTitle}>{t('about.updateSection')}</h3>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <div>
-            <strong>当前版本:</strong> v{packageJson.version}
-          </div>
+        <div>
+            <strong>{t('about.currentVersion')}:</strong> v{packageJson.version}
+            </div>
           <button 
-            className={styles.buttonPrimary}
-            onClick={handleCheckForUpdates}
-            disabled={checking || downloading}
-          >
+            className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonSmall}`}
+              onClick={handleCheckForUpdates}
+              disabled={checking || downloading}
+            >
             <FaSync className={checking ? 'fa-spin' : ''} />
-            <span>{checking ? '检查中...' : '检查更新'}</span>
+            <span>{checking ? t('about.checking') : t('about.checkUpdate')}</span>
           </button>
-        </div>
+          </div>
 
-        {/* 更新消息 */}
-        {updateMessage && (
+          {/* 更新消息 */}
+          {updateMessage && (
           <div className={`${styles.alert} ${updateAvailable ? styles.alertSuccess : styles.alertInfo}`}>
             <div>{updateMessage}</div>
           </div>
-        )}
+          )}
 
-        {/* 下载进度 */}
-        {downloading && (
-          <div>
+          {/* 下载进度 */}
+          {downloading && (
+            <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <small>下载进度</small>
+              <small>{t('about.downloadProgress')}</small>
               <small className={styles.progressText}>
-                {downloadProgress}%
-                {downloadInfo && (
+                  {downloadProgress}%
+                  {downloadInfo && (
                   <span style={{ marginLeft: '8px', color: 'var(--vt-color-text-secondary)' }}>
-                    ({formatBytes(downloadInfo.transferred)} / {formatBytes(downloadInfo.total)})
-                  </span>
-                )}
-              </small>
-            </div>
+                      ({formatBytes(downloadInfo.transferred)} / {formatBytes(downloadInfo.total)})
+                    </span>
+                  )}
+                </small>
+              </div>
             <div className={styles.progressBar}>
               <div 
                 className={styles.progressFill}
                 style={{ width: `${downloadProgress}%` }}
               />
             </div>
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* 下载完成，等待安装 */}
-        {downloadProgress === 100 && !downloading && (
+          {/* 下载完成，等待安装 */}
+          {downloadProgress === 100 && !downloading && (
           <div style={{ textAlign: 'center', marginTop: '16px' }}>
-            <button className={styles.buttonPrimary} onClick={handleQuitAndInstall}>
+            <button 
+              className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonSmall}`}
+              onClick={handleQuitAndInstall}
+            >
               <FaCheckCircle />
-              <span>重启并安装更新</span>
+              <span>{t('about.quitAndInstall')}</span>
             </button>
-          </div>
-        )}
+            </div>
+          )}
       </div>
 
       {/* 更新提示模态框 */}
       <Modal show={showUpdateModal} onHide={() => setShowUpdateModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>发现新版本</Modal.Title>
+          <Modal.Title>{t('about.updateAvailable')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <h5>v{updateInfo?.version}</h5>
           {updateInfo?.releaseNotes && (
             <div className="mt-3">
-              <strong>更新内容:</strong>
+              <strong>{t('about.updateNotes')}:</strong>
               <div 
                 className="mt-2" 
                 style={{ 
@@ -323,59 +327,65 @@ function AboutTab() {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <button className={styles.buttonNeutral} onClick={() => setShowUpdateModal(false)}>
-            稍后更新
+          <button 
+            className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
+            onClick={() => setShowUpdateModal(false)}
+          >
+            {t('about.laterUpdate')}
           </button>
-          <button className={styles.buttonPrimary} onClick={handleDownloadUpdate}>
+          <button 
+            className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonSmall}`}
+            onClick={handleDownloadUpdate}
+          >
             <FaDownload />
-            <span>立即下载</span>
+            <span>{t('about.downloadNow')}</span>
           </button>
         </Modal.Footer>
       </Modal>
 
       {/* 主要功能 */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>主要功能</h3>
+        <h3 className={styles.sectionTitle}>{t('about.features')}</h3>
         <ul style={{ lineHeight: '1.6', color: 'var(--vt-color-text-primary)', margin: 0, paddingLeft: '20px' }}>
-          <li style={{ marginBottom: '8px' }}><strong>字幕格式转换</strong>：支持 SRT 转 ASS，智能清理HTML标签，格式化标点符号</li>
-          <li style={{ marginBottom: '8px' }}><strong>音视频合并</strong>：将音频和视频文件快速合并，支持硬件加速</li>
-          <li style={{ marginBottom: '8px' }}><strong>字幕烧录</strong>：将字幕永久嵌入视频文件</li>
-          <li style={{ marginBottom: '8px' }}><strong>批量处理</strong>：一次处理多个文件，提高工作效率（开发中）</li>
-          <li style={{ marginBottom: 0 }}><strong>视频转码</strong>：支持多种视频格式转换（开发中）</li>
-        </ul>
+          <li style={{ marginBottom: '8px' }}>{t('about.feature1')}</li>
+          <li style={{ marginBottom: '8px' }}>{t('about.feature2')}</li>
+          <li style={{ marginBottom: '8px' }}>{t('about.feature3')}</li>
+          <li style={{ marginBottom: '8px' }}>{t('about.feature4')}</li>
+          <li style={{ marginBottom: 0 }}>{t('about.feature5')}</li>
+          </ul>
       </div>
 
       {/* 技术特性 */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>技术特性</h3>
+        <h3 className={styles.sectionTitle}>{t('about.technicalFeatures')}</h3>
         <ul style={{ lineHeight: '1.6', color: 'var(--vt-color-text-primary)', margin: 0, paddingLeft: '20px' }}>
-          <li style={{ marginBottom: '8px' }}>基于 Electron + React + TypeScript 开发</li>
-          <li style={{ marginBottom: '8px' }}>跨平台支持：macOS、Windows、Linux</li>
-          <li style={{ marginBottom: '8px' }}>硬件加速：支持 VideoToolbox、NVENC、QSV</li>
-          <li style={{ marginBottom: '8px' }}>现代化 UI 设计，简洁易用</li>
-          <li style={{ marginBottom: 0 }}>基于 FFmpeg，强大稳定</li>
-        </ul>
+          <li style={{ marginBottom: '8px' }}>{t('about.tech1')}</li>
+          <li style={{ marginBottom: '8px' }}>{t('about.tech2')}</li>
+          <li style={{ marginBottom: '8px' }}>{t('about.tech3')}</li>
+          <li style={{ marginBottom: '8px' }}>{t('about.tech4')}</li>
+          <li style={{ marginBottom: 0 }}>{t('about.tech5')}</li>
+          </ul>
       </div>
 
       {/* 版权信息 */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>开源协议</h3>
+        <h3 className={styles.sectionTitle}>{t('about.license')}</h3>
         <p style={{ marginBottom: '12px', fontWeight: 500 }}>
-          <strong>开源免费</strong> - MIT License
-        </p>
+          <strong>{t('about.licenseTitle')}</strong>
+          </p>
         <p style={{ marginBottom: 0, color: 'var(--vt-color-text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
-          本软件采用 MIT 开源协议，完全免费使用。您可以自由使用、修改和分发本软件。
-        </p>
+          {t('about.licenseText')}
+          </p>
       </div>
 
       {/* 联系方式 */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>联系方式</h3>
+        <h3 className={styles.sectionTitle}>{t('about.contact')}</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <FaGithub size={20} style={{ color: 'var(--vt-color-text-primary)', flexShrink: 0 }} />
             <div>
-              <div style={{ fontWeight: 600, marginBottom: '4px' }}>GitHub</div>
+              <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('about.github')}</div>
               <a 
                 href="https://github.com/binbin1213/VideoTool" 
                 target="_blank" 
@@ -393,7 +403,7 @@ function AboutTab() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <FaEnvelope size={20} style={{ color: 'var(--vt-color-brand-primary)', flexShrink: 0 }} />
             <div>
-              <div style={{ fontWeight: 600, marginBottom: '4px' }}>电子邮件</div>
+              <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('about.email')}</div>
               <a 
                 href="mailto:piaozhitian@gmail.com"
                 style={{ 
@@ -417,10 +427,10 @@ function AboutTab() {
         fontSize: '14px' 
       }}>
         <p style={{ marginBottom: '4px' }}>
-          Copyright © 2025 Binbin. All rights reserved.
+          {t('about.copyright')}
         </p>
         <p style={{ marginBottom: 0 }}>
-          Made in China
+          {t('about.madeIn')}
         </p>
       </div>
     </div>

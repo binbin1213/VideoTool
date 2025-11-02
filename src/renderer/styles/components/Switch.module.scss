@@ -1,0 +1,165 @@
+// Mac 风格开关组件样式
+// 统一的开关样式，适用于所有页面
+
+@use '../tokens.scss' as t;
+
+// ========================================
+// Mac 风格开关（Toggle Switch）
+// ========================================
+
+.switchContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$spacing-3;
+  user-select: none;
+  cursor: pointer;
+}
+
+// 隐藏原生 checkbox
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+// 开关轨道（背景）
+.switchTrack {
+  position: relative;
+  width: 40px;      // 缩小宽度
+  height: 24px;     // 缩小高度
+  background-color: #D1D1D6; // 更深的灰色（Mac 原生色）
+  border-radius: 24px; // 完全圆润的胶囊形状
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  flex-shrink: 0;
+  
+  // 添加内阴影，模拟 Mac 风格的深度
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+}
+
+// 开关滑块（圆形按钮）
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;    // 缩小滑块
+  height: 20px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // 更强的阴影，让白色更突出
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 3px 1px rgba(0, 0, 0, 0.06),
+    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+// 启用状态
+.switchInput:checked + .switchTrack {
+  background-color: #007AFF; // Mac 系统蓝
+  
+  .switchThumb {
+    transform: translateX(16px); // 向右滑动（调整距离）
+  }
+}
+
+// 禁用状态
+.switchInput:disabled + .switchTrack {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// 悬停效果（仅在非禁用状态）
+.switchInput:not(:disabled) + .switchTrack:hover {
+  // Mac 风格：悬停时稍微变亮
+  filter: brightness(1.05);
+}
+
+// 焦点状态（键盘导航）
+.switchInput:focus-visible + .switchTrack {
+  outline: 2px solid #007AFF;
+  outline-offset: 2px;
+}
+
+// 开关标签文字
+.switchLabel {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-primary);
+  cursor: pointer;
+}
+
+// 禁用时的标签样式
+.switchInput:disabled ~ .switchLabel {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// ========================================
+// 开关尺寸变体
+// ========================================
+
+// 小尺寸开关
+.switchSmall {
+  .switchTrack {
+    width: 34px;
+    height: 20px;
+    border-radius: 20px;
+  }
+  
+  .switchThumb {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .switchInput:checked + .switchTrack .switchThumb {
+    transform: translateX(14px);
+  }
+}
+
+// 大尺寸开关
+.switchLarge {
+  .switchTrack {
+    width: 48px;
+    height: 28px;
+    border-radius: 28px;
+  }
+  
+  .switchThumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .switchInput:checked + .switchTrack .switchThumb {
+    transform: translateX(20px);
+  }
+}
+
+// ========================================
+// 开关颜色变体
+// ========================================
+
+// 成功色（绿色）
+.switchSuccess {
+  .switchInput:checked + .switchTrack {
+    background-color: #34C759; // Mac 系统绿
+  }
+}
+
+// 警告色（橙色）
+.switchWarning {
+  .switchInput:checked + .switchTrack {
+    background-color: #FF9500; // Mac 系统橙
+  }
+}
+
+// 危险色（红色）
+.switchDanger {
+  .switchInput:checked + .switchTrack {
+    background-color: #FF3B30; // Mac 系统红
+  }
+}
+

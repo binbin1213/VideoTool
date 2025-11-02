@@ -1,0 +1,729 @@
+// ==========================================================================
+// SubtitleBurnTab 样式 (字幕烧录)
+// ==========================================================================
+
+@use '../../styles/tokens' as t;
+
+// ========================================
+// 1. 容器和布局
+// ========================================
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #F5F5F5; // 浅灰色背景
+  user-select: none; // 禁止选中文字
+  -webkit-user-select: none; // Safari
+}
+
+.header {
+  padding: t.$spacing-4 t.$spacing-6;
+  border-bottom: 1px solid var(--vt-color-border);
+  background-color: transparent; // 透明背景
+  -webkit-app-region: drag;
+  user-select: none;
+  
+  h2 {
+    margin: 0;
+    font-size: t.$font-size-lg;
+    font-weight: t.$font-weight-semibold;
+    color: var(--vt-color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: t.$spacing-2;
+    
+    svg {
+      color: var(--vt-color-brand-primary);
+      font-size: t.$font-size-base;
+      opacity: 0.8;
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  gap: t.$spacing-4;
+  padding: t.$spacing-4;
+  min-width: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.mainArea {
+  flex: 1;
+  min-width: 420px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.infoArea {
+  flex: 0 0 200px;
+  width: 200px;
+  min-height: 0;
+  font-size: t.$font-size-xs;
+  padding: t.$spacing-3;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-md;
+  border: 1px solid var(--vt-color-border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-self: stretch;
+  
+  h6 {
+    font-size: t.$font-size-sm;
+    font-weight: t.$font-weight-bold;
+    color: var(--vt-color-text-primary);
+    margin-bottom: t.$spacing-2;
+    margin-top: 0;
+  }
+  
+  ol, ul {
+    font-size: t.$font-size-xs;
+    padding-left: 18px;
+    margin-bottom: t.$spacing-3;
+    color: var(--vt-color-text-secondary);
+    line-height: 1.6;
+    
+    li {
+      margin-bottom: t.$spacing-1;
+    }
+  }
+  
+  hr {
+    margin: t.$spacing-2 0;
+    border: none;
+    border-top: 1px solid var(--vt-color-border);
+  }
+  
+  p {
+    font-size: t.$font-size-xs;
+    margin-bottom: t.$spacing-2;
+    line-height: 1.5;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  strong {
+    color: var(--vt-color-text-primary);
+    font-weight: t.$font-weight-semibold;
+  }
+}
+
+// ========================================
+// 2. 区块和标题
+// ========================================
+
+.section {
+  margin-bottom: t.$spacing-3;
+  background-color: transparent;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+  flex-shrink: 0;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-bold;
+  color: var(--vt-color-text-primary);
+  margin-bottom: t.$spacing-3;
+  padding: 0 t.$spacing-1;
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  
+  svg {
+    font-size: t.$font-size-base;
+    color: var(--vt-color-brand-primary);
+  }
+}
+
+// ========================================
+// 3. 文件选择区
+// ========================================
+
+.fileSection {
+  padding: t.$spacing-4;
+  background: var(--vt-color-bg);
+  border-radius: t.$radius-md;
+  border: 1px solid var(--vt-color-border);
+  margin-bottom: t.$spacing-3;
+}
+
+.fileSectionTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0 0 t.$spacing-3 0;
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  margin-bottom: t.$spacing-2;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.fileLabel {
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-primary);
+  min-width: 42px;
+  display: flex;
+  align-items: center;
+  height: 28px;
+}
+
+.fileInfo {
+  flex: 1;
+  min-width: 0;
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  
+  strong {
+    color: var(--vt-color-text-primary);
+    font-weight: t.$font-weight-medium;
+  }
+}
+
+.fileInfoEmpty {
+  color: var(--vt-color-text-tertiary);
+}
+
+.fileDetails {
+  margin-left: 56px;
+  margin-top: t.$spacing-1;
+  padding: t.$spacing-2 t.$spacing-3;
+  background: var(--vt-color-bg);
+  border-radius: t.$radius-sm;
+  border: 1px solid var(--vt-color-border);
+  display: inline-block;
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  
+  span + span {
+    margin-left: t.$spacing-3;
+  }
+}
+
+.subtitleFileList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: t.$spacing-2;
+  align-items: center;
+  max-height: 80px;
+  overflow-y: auto;
+  padding: t.$spacing-1;
+}
+
+.subtitleTag {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$spacing-1;
+  padding: 4px t.$spacing-2;
+  background: var(--vt-color-surface);
+  border-radius: t.$radius-sm;
+  font-size: 10px;
+}
+
+.langCode {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--vt-color-brand-primary);
+  color: #fff;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: t.$font-weight-medium;
+}
+
+.langName {
+  color: var(--vt-color-text-secondary);
+}
+
+.fileCount {
+  margin-left: 56px;
+  margin-top: t.$spacing-1;
+  font-size: 11px;
+  color: var(--vt-color-text-tertiary);
+}
+
+// ========================================
+// 4. 配置区块
+// ========================================
+
+.configSection {
+  padding: t.$spacing-4;
+  background: var(--vt-color-bg);
+  border-radius: t.$radius-md;
+  border: 1px solid var(--vt-color-border);
+  margin-bottom: t.$spacing-3;
+}
+
+.configSectionTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0 0 t.$spacing-3 0;
+}
+
+.switchField {
+  margin-bottom: t.$spacing-3;
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  margin-bottom: t.$spacing-2;
+}
+
+// ========================================
+// 5. 表单控件
+// ========================================
+
+.formGroup {
+  margin-bottom: t.$spacing-3;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-primary);
+  margin-bottom: t.$spacing-2;
+  
+  svg {
+    font-size: t.$font-size-sm;
+    color: var(--vt-color-brand-primary);
+  }
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  margin-bottom: t.$spacing-2;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formText {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  margin-top: t.$spacing-1;
+  line-height: 1.5;
+}
+
+.formField {
+  margin-bottom: t.$spacing-3;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formControl {
+  flex: 1;
+}
+
+.fieldHelp {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-tertiary);
+  margin-top: t.$spacing-2;
+  line-height: 1.4;
+}
+
+// 滑块样式 - 简洁专业设计
+.range {
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  border-radius: t.$radius-pill;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  
+  // Webkit (Chrome, Safari, Edge) - 轨道
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: var(--vt-color-bg-secondary);
+    border-radius: t.$radius-pill;
+    border: 1px solid var(--vt-color-border);
+  }
+  
+  // Webkit - 滑块圆点
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--vt-color-brand-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    margin-top: -5px; // 居中对齐
+    transition: all 0.15s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+  
+  // Firefox - 轨道
+  &::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: var(--vt-color-bg-secondary);
+    border-radius: t.$radius-pill;
+    border: 1px solid var(--vt-color-border);
+  }
+  
+  // Firefox - 滑块圆点
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--vt-color-brand-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.15s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb {
+      cursor: not-allowed;
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+}
+
+// 选择框样式
+.select {
+  width: 100%;
+  padding: 0 32px 0 t.$spacing-3;
+  height: t.$input-height-md;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-family-sans;
+  color: var(--vt-color-text-primary);
+  background-color: #FFFFFF;
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
+      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
+      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+    </svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 18px 18px !important;
+  border: 1px solid #D1D1D6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  appearance: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  
+  &:hover:not(:disabled) {
+    border-color: #9CA3AF;
+    background-color: #FFFFFF !important;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--vt-color-brand-primary);
+    box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
+    background-color: #FFFFFF !important;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--vt-color-bg-secondary);
+  }
+}
+
+// ========================================
+// 6. 按钮组
+// ========================================
+
+.buttonGroup {
+  display: flex;
+  flex-direction: row;
+  gap: t.$spacing-3;
+  margin-top: t.$spacing-4;
+  
+  button {
+    flex: 0 1 auto; // 按钮根据内容自适应宽度
+  }
+}
+
+// ========================================
+// 7. 提示框
+// ========================================
+
+.alert {
+  padding: t.$spacing-3;
+  border-radius: t.$radius-md;
+  border: 1px solid;
+  margin-bottom: t.$spacing-3;
+  font-size: t.$font-size-xs;
+  line-height: 1.6;
+}
+
+.alertError {
+  background-color: #FEE2E2;
+  border-color: #FCA5A5;
+  color: #991B1B;
+}
+
+.alertWarning {
+  background-color: #FEF3C7;
+  border-color: #FCD34D;
+  color: #92400E;
+}
+
+.alertSuccess {
+  background-color: #D1FAE5;
+  border-color: #6EE7B7;
+  color: #065F46;
+}
+
+.alertInfo {
+  background-color: #DBEAFE;
+  border-color: #93C5FD;
+  color: #1E40AF;
+}
+
+.alertHeading {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  margin-bottom: t.$spacing-2;
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  
+  svg {
+    font-size: t.$font-size-base;
+  }
+}
+
+.alertText {
+  margin: 0;
+  color: inherit;
+}
+
+// ========================================
+// 8. 进度条
+// ========================================
+
+.progressSection {
+  margin-bottom: t.$spacing-3;
+}
+
+.progressTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin-bottom: t.$spacing-2;
+}
+
+.progressBar {
+  width: 100%;
+  position: relative;
+  height: 24px;
+  background-color: var(--vt-color-bg-secondary);
+  border-radius: t.$radius-pill;
+  overflow: hidden;
+  margin-bottom: t.$spacing-2;
+  border: 1px solid var(--vt-color-border);
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--vt-color-brand-primary);
+  border-radius: t.$radius-pill;
+  transition: width t.$motion-duration-normal t.$motion-easing-standard;
+}
+
+.progressLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--vt-color-text-primary);
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  z-index: 1;
+}
+
+.progressText {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  text-align: center;
+}
+
+// ========================================
+// 9. Badge
+// ========================================
+
+%badge-base {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px t.$spacing-2;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  border-radius: t.$radius-sm;
+  margin-left: t.$spacing-2;
+}
+
+.badgeSuccess {
+  @extend %badge-base;
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.badgePrimary {
+  @extend %badge-base;
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+// ========================================
+// 10. 开关样式（与模式切换统一）
+// ========================================
+
+.switchWrapper {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+}
+
+.switchLabel {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  color: var(--vt-color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+}
+
+// ========================================
+// 11. 高级设置折叠区
+// ========================================
+
+.advancedSection {
+  padding: t.$spacing-4;
+  background: var(--vt-color-bg);
+  border-radius: t.$radius-md;
+  border: 1px solid #DEE2E6;
+  margin-bottom: t.$spacing-3;
+}
+
+.advancedTitle,
+.advancedSectionTitle {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0 0 t.$spacing-3 0;
+}
+
+// ========================================
+// 12. 侧边栏（功能说明）
+// ========================================
+
+.infoSection {
+  margin-bottom: t.$spacing-4;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.infoHeader {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  margin-bottom: t.$spacing-3;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-brand-primary);
+  
+  svg {
+    color: var(--vt-color-brand-primary);
+  }
+}
+
+.infoContent {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  line-height: 1.6;
+}
+
+.infoSubtitle {
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  margin: 0 0 t.$spacing-2 0;
+}
+
+.infoList {
+  margin: 0;
+  padding-left: t.$spacing-4;
+  list-style-type: disc;
+  
+  li {
+    margin-bottom: t.$spacing-1;
+    
+    strong {
+      color: var(--vt-color-text-primary);
+    }
+  }
+}
+
+.infoDivider {
+  height: 1px;
+  background: var(--vt-color-border);
+  margin: t.$spacing-3 0;
+}

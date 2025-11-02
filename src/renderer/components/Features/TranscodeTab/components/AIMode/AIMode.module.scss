@@ -1,0 +1,14 @@
+@use '../../../../../styles/tokens' as t;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-4;
+}
+
+.analyzeSection {
+  display: flex;
+  justify-content: center;
+  padding: t.$spacing-4 0;
+}
+

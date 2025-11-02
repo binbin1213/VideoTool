@@ -1,0 +1,166 @@
+// 全局统一按钮样式
+// 基于字幕转换页面的"编辑"按钮样式规范
+
+@use '../tokens.scss' as t;
+
+// ========================================
+// 按钮基础样式
+// ========================================
+
+%button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-2;
+  height: t.$button-height-md; // 32px
+  padding: 0 t.$spacing-4; // 16px
+  font-size: t.$font-size-sm; // 14px
+  font-weight: t.$font-weight-medium; // 500
+  font-family: t.$font-family-sans;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  border: none; // 统一无边框
+  border-radius: 6px; // 统一 6px 圆角
+  cursor: pointer;
+  user-select: none;
+  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--vt-color-focus);
+    outline-offset: 2px;
+  }
+  
+  svg {
+    font-size: t.$font-size-base;
+  }
+}
+
+// ========================================
+// 按钮类型
+// ========================================
+
+// 主要按钮（品牌色 - 用于主要操作）
+.buttonPrimary {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: var(--vt-color-brand-primary);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--vt-color-brand-primary) 90%, black);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active:not(:disabled) {
+    background: color-mix(in srgb, var(--vt-color-brand-primary) 80%, black);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+  }
+}
+
+// 次要按钮（深灰色 - 用于次要操作，如"编辑"、"浏览"等）
+.buttonSecondary {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: #6B7280; // neutral-500
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: #4B5563; // neutral-600
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active:not(:disabled) {
+    background: #374151; // neutral-700
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+  }
+}
+
+// 危险按钮（红色 - 用于删除、清空等危险操作）
+.buttonDanger {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: #EF4444; // red-500
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: #DC2626; // red-600
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active:not(:disabled) {
+    background: #B91C1C; // red-700
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+  }
+}
+
+// 成功按钮（绿色 - 用于确认、成功等操作）
+.buttonSuccess {
+  @extend %button-base;
+  color: #FFFFFF;
+  background: #10B981; // green-500
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  
+  &:hover:not(:disabled) {
+    background: #059669; // green-600
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active:not(:disabled) {
+    background: #047857; // green-700
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+  }
+}
+
+// ========================================
+// 按钮尺寸变体
+// ========================================
+
+// 小按钮
+.buttonSmall {
+  height: t.$button-height-sm; // 28px
+  padding: 0 t.$spacing-3; // 12px
+  font-size: t.$font-size-xs; // 12px
+  
+  svg {
+    font-size: t.$font-size-sm;
+  }
+}
+
+// 中等按钮（默认）
+.buttonMedium {
+  height: t.$button-height-md; // 32px
+  padding: 0 t.$spacing-4; // 16px
+  font-size: t.$font-size-sm; // 14px
+}
+
+// 大按钮
+.buttonLarge {
+  height: t.$button-height-lg; // 36px
+  padding: 0 t.$spacing-6; // 24px
+  font-size: t.$font-size-base; // 16px
+}
+
+// ========================================
+// 按钮宽度变体
+// ========================================
+
+// 全宽按钮
+.buttonBlock {
+  width: 100%;
+}
+
+// 最小宽度按钮（用于保持一致性）
+.buttonMinWidth {
+  min-width: 120px;
+}
+

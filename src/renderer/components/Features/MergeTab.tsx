@@ -12,6 +12,8 @@ import {
 import type { VideoInfo, AudioInfo, MergeProgress } from '../../../shared/types/merge.types';
 import type { TaskProgress } from '../../App';
 import styles from './MergeTab.module.scss';
+import buttonStyles from '../../styles/components/Button.module.scss';
+import Switch from '../common/Switch';
 
 const { ipcRenderer } = (window as any).electron;
 
@@ -19,9 +21,10 @@ interface MergeTabProps {
   addLog: (message: string, level: 'info' | 'success' | 'error' | 'warning') => void;
   taskProgress: TaskProgress;
   setTaskProgress: React.Dispatch<React.SetStateAction<TaskProgress>>;
+  ffmpegAvailable?: boolean;
 }
 
-function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
+function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = true }: MergeTabProps) {
   const { t } = useTranslation();
   const [videoFile, setVideoFile] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState<string | null>(null);
@@ -33,27 +36,9 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
   const [audioBitrate, setAudioBitrate] = useState('192k');
   const [useHardwareAccel, setUseHardwareAccel] = useState(false);
   const [hwaccel, setHwaccel] = useState<'videotoolbox' | 'nvenc' | 'qsv' | 'none'>('videotoolbox');
-  const [ffmpegAvailable, setFfmpegAvailable] = useState<boolean | null>(null);
 
-  // 检查 FFmpeg 是否可用
+  // 监听进度更新（使用全局状态）
   useEffect(() => {
-    const checkFFmpeg = async () => {
-      try {
-        const available = await ipcRenderer.invoke('check-ffmpeg');
-        setFfmpegAvailable(available);
-        if (available) {
-          addLocalLog(t('merge.ffmpegCheckPassed', 'FFmpeg check passed'), 'success');
-        } else {
-          addLocalLog(t('merge.ffmpegNotAvailable', 'FFmpeg not available'), 'error');
-        }
-      } catch (error) {
-        setFfmpegAvailable(false);
-        addLocalLog(t('merge.ffmpegCheckFailed', 'FFmpeg check failed'), 'error');
-      }
-    };
-    checkFFmpeg();
-
-    // 监听进度更新（使用全局状态）
     const progressHandler = (_event: any, progressData: MergeProgress) => {
       setTaskProgress({
         taskType: 'merge',
@@ -268,18 +253,18 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             </h3>
             <div className={styles.formRow}>
               <button
-                className={styles.buttonSecondary}
-                onClick={handleSelectVideo}
+                className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonMinWidth}`}
+                  onClick={handleSelectVideo}
                 disabled={taskProgress.isRunning}
-              >
+                >
                 {t('merge.browse')}
               </button>
               <div className={styles.fileInfo}>
-                {videoFile ? (
+                  {videoFile ? (
                   <span className={styles.fileName}>{videoFile.split(/[\\/]/).pop()}</span>
-                ) : (
+                  ) : (
                   <span className={styles.fileHint}>{t('merge.noVideoSelected')}</span>
-                )}
+                  )}
               </div>
             </div>
             {videoInfo && (
@@ -296,18 +281,18 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             </h3>
             <div className={styles.formRow}>
               <button
-                className={styles.buttonSecondary}
-                onClick={handleSelectAudio}
+                className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonMinWidth}`}
+                  onClick={handleSelectAudio}
                 disabled={taskProgress.isRunning}
-              >
+                >
                 {t('merge.browse')}
               </button>
               <div className={styles.fileInfo}>
-                {audioFile ? (
+                  {audioFile ? (
                   <span className={styles.fileName}>{audioFile.split(/[\\/]/).pop()}</span>
-                ) : (
+                  ) : (
                   <span className={styles.fileHint}>{t('merge.noAudioSelected')}</span>
-                )}
+                  )}
               </div>
             </div>
             {audioInfo && (
@@ -328,45 +313,45 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
               <label className={styles.formLabel}>{t('merge.videoCodec')}</label>
               <select
                 className={styles.select}
-                value={videoCodec}
-                onChange={(e) => setVideoCodec(e.target.value as any)}
-                disabled={taskProgress.isRunning}
-              >
+                          value={videoCodec}
+                          onChange={(e) => setVideoCodec(e.target.value as any)}
+                          disabled={taskProgress.isRunning}
+                        >
                 <option value="copy">{t('merge.copy')}</option>
                 <option value="libx264">H.264</option>
                 <option value="libx265">H.265</option>
               </select>
-            </div>
+                      </div>
 
             <div className={styles.formRow}>
               <label className={styles.formLabel}>{t('merge.audioCodec')}</label>
               <select
                 className={styles.select}
-                value={audioCodec}
-                onChange={(e) => setAudioCodec(e.target.value as any)}
-                disabled={taskProgress.isRunning}
-              >
+                          value={audioCodec}
+                          onChange={(e) => setAudioCodec(e.target.value as any)}
+                          disabled={taskProgress.isRunning}
+                        >
                 <option value="aac">AAC</option>
-                <option value="mp3">MP3</option>
+                          <option value="mp3">MP3</option>
                 <option value="copy">{t('merge.copy')}</option>
               </select>
-            </div>
+                    </div>
 
-            {audioCodec !== 'copy' && (
+              {audioCodec !== 'copy' && (
               <div className={styles.formRow}>
                 <label className={styles.formLabel}>{t('merge.audioBitrate')}</label>
                 <select
                   className={styles.select}
-                  value={audioBitrate}
-                  onChange={(e) => setAudioBitrate(e.target.value)}
-                  disabled={taskProgress.isRunning}
-                >
+                        value={audioBitrate}
+                        onChange={(e) => setAudioBitrate(e.target.value)}
+                        disabled={taskProgress.isRunning}
+                      >
                   <option value="128k">128 kbps</option>
                   <option value="192k">192 kbps</option>
                   <option value="256k">256 kbps</option>
                   <option value="320k">320 kbps</option>
                 </select>
-              </div>
+                  </div>
             )}
 
             {/* 硬件加速 */}
@@ -375,19 +360,12 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
                 <FaBolt />
                 {t('merge.hardwareAccel')}
               </label>
-              <div className={styles.switchWrapper}>
-                <input
-                  type="checkbox"
-                  id="merge-hwaccel"
-                  className={styles.switchInput}
-                  checked={useHardwareAccel}
-                  onChange={(e) => setUseHardwareAccel(e.target.checked)}
-                  disabled={taskProgress.isRunning || videoCodec === 'copy'}
-                />
-                <label htmlFor="merge-hwaccel" className={styles.switchLabel}>
-                  {t('merge.enable')}
-                </label>
-              </div>
+              <Switch
+                checked={useHardwareAccel}
+                onChange={setUseHardwareAccel}
+                disabled={taskProgress.isRunning || videoCodec === 'copy'}
+                label={t('merge.enable')}
+              />
             </div>
 
             {useHardwareAccel && videoCodec !== 'copy' && (
@@ -410,19 +388,19 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
           {/* 操作按钮 */}
           <div className={styles.buttonGroup}>
             <button
-              className={styles.buttonPrimaryLarge}
-              onClick={handleMerge}
-              disabled={!videoFile || !audioFile || taskProgress.isRunning || ffmpegAvailable === false}
-            >
+              className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonLarge} ${buttonStyles.buttonMinWidth}`}
+                  onClick={handleMerge}
+                  disabled={!videoFile || !audioFile || taskProgress.isRunning || ffmpegAvailable === false}
+                >
               {taskProgress.isRunning && taskProgress.taskType === 'merge' 
                 ? t('merge.merging') 
                 : t('merge.startMerge')}
             </button>
             <button
-              className={styles.buttonSecondary}
-              onClick={handleClearAll}
-              disabled={taskProgress.isRunning || (!videoFile && !audioFile)}
-            >
+              className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonLarge} ${buttonStyles.buttonMinWidth}`}
+                  onClick={handleClearAll}
+                  disabled={taskProgress.isRunning || (!videoFile && !audioFile)}
+                >
               {t('merge.clearAll')}
             </button>
           </div>
@@ -472,7 +450,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             <li>{t('merge.step3')}</li>
             <li>{t('merge.step4')}</li>
             <li>{t('merge.step5')}</li>
-          </ol>
+              </ol>
 
           <h6>{t('merge.guideNotes')}</h6>
           <ul>
@@ -480,7 +458,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress }: MergeTabProps) {
             <li>{t('merge.note2')}</li>
             <li>{t('merge.note3')}</li>
             <li>{t('merge.note4')}</li>
-          </ul>
+              </ul>
         </div>
       </div>
     </div>

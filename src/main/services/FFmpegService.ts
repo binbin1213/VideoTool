@@ -956,7 +956,7 @@ export class FFmpegService {
         } else {
           // 只在冷却时间后记录日志，避免频繁记录
           if (shouldLog) {
-            log.info('FFmpeg 可用');
+          log.info('FFmpeg 可用');
           }
           resolve(true);
         }

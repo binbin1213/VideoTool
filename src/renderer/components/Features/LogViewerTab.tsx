@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FaTrash, FaDownload, FaSearch, FaInfoCircle, FaSyncAlt } from 'react-icons/fa';
 import { LogEntry } from '../../App';
 import styles from './LogViewerTab.module.scss';
+import buttonStyles from '../../styles/components/Button.module.scss';
 
 interface LogViewerTabProps {
   logs: LogEntry[];
@@ -117,14 +118,14 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
       </div>
 
       <div className={styles.content}>
-        {/* 工具栏 */}
+            {/* 工具栏 */}
         <div className={styles.toolbar}>
           <div className={styles.toolbarLeft}>
             <select 
               className={styles.select}
-              value={filterLevel}
-              onChange={(e) => setFilterLevel(e.target.value)}
-            >
+                  value={filterLevel}
+                  onChange={(e) => setFilterLevel(e.target.value)}
+                >
               <option value="all">{t('logs.filterAll')}</option>
               <option value="info">{t('logs.filterInfo')}</option>
               <option value="success">{t('logs.filterSuccess')}</option>
@@ -134,65 +135,65 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
 
             <div className={styles.searchGroup}>
               <span className={styles.searchIcon}>
-                <FaSearch size={12} />
-              </span>
+                    <FaSearch size={12} />
+                  </span>
               <input
-                type="text"
+                    type="text"
                 className={styles.searchInput}
                 placeholder={t('logs.searchPlaceholder')}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
-            </div>
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                </div>
 
             <span className={styles.badge}>
-              {filteredLogs.length} / {allLogs.length}
+                  {filteredLogs.length} / {allLogs.length}
             </span>
-          </div>
+              </div>
 
           <div className={styles.toolbarRight}>
             <button 
-              className={styles.buttonSuccess}
-              onClick={loadSystemLogs}
-              disabled={loading}
-            >
+              className={buttonStyles.buttonSuccess}
+                  onClick={loadSystemLogs}
+                  disabled={loading}
+                >
               <FaSyncAlt />
               {loading ? t('logs.refreshing') : t('logs.refresh')}
             </button>
             <button 
-              className={styles.buttonPrimary}
-              onClick={handleExportLogs}
-            >
+              className={buttonStyles.buttonSecondary}
+                  onClick={handleExportLogs}
+                >
               <FaDownload />
               {t('logs.export')}
             </button>
             <button 
-              className={styles.buttonDanger}
-              onClick={handleClearLogs}
-            >
+              className={buttonStyles.buttonDanger}
+                  onClick={handleClearLogs}
+                >
               <FaTrash />
               {t('logs.clear')}
             </button>
-          </div>
-        </div>
+              </div>
+            </div>
 
-        {/* 日志列表 */}
+            {/* 日志列表 */}
         <div className={styles.logList} ref={logListRef}>
-          {filteredLogs.length === 0 ? (
+              {filteredLogs.length === 0 ? (
             <div className={styles.logEmpty}>
               <p>{t('logs.empty')}</p>
-            </div>
-          ) : (
-            filteredLogs.map((log, index) => (
+                </div>
+              ) : (
+                filteredLogs.map((log, index) => (
               <div key={index} className={styles.logItem}>
                 <span className={`${styles.logLevel} ${getLevelClass(log.level)}`}>
-                  [{log.level.toUpperCase()}]
-                </span>
+                      [{log.level.toUpperCase()}]
+                    </span>
                 <span className={styles.logTimestamp}>{log.timestamp}</span>
                 <span className={styles.logMessage}>{log.message}</span>
-              </div>
-            ))
-          )}
+                  </div>
+                ))
+              )}
         </div>
       </div>
     </div>
