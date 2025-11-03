@@ -9,6 +9,41 @@ interface BasicTabProps {
 export const BasicTab = ({ config, onChange }: BasicTabProps) => {
   const { t } = useTranslation();
 
+  // 根据音频编码器获取推荐的码率选项
+  const getAudioBitrateOptions = (codec: string) => {
+    switch (codec) {
+      case 'ac3':
+        return [
+          { value: '192k', label: '192 kbps', recommended: false },
+          { value: '256k', label: '256 kbps', recommended: false },
+          { value: '384k', label: '384 kbps', recommended: false },
+          { value: '448k', label: '448 kbps', recommended: false },
+          { value: '640k', label: '640 kbps', recommended: true }, // 5.1推荐
+        ];
+      case 'eac3':
+        return [
+          { value: '128k', label: '128 kbps', recommended: false },
+          { value: '192k', label: '192 kbps', recommended: false },
+          { value: '384k', label: '384 kbps', recommended: false },
+          { value: '768k', label: '768 kbps', recommended: true }, // 5.1推荐
+          { value: '1536k', label: '1536 kbps', recommended: false },
+        ];
+      default: // aac, mp3, opus, vorbis
+        return [
+          { value: '96k', label: '96 kbps', recommended: false },
+          { value: '128k', label: '128 kbps', recommended: true },
+          { value: '192k', label: '192 kbps', recommended: false },
+          { value: '256k', label: '256 kbps', recommended: false },
+          { value: '320k', label: '320 kbps', recommended: false },
+        ];
+    }
+  };
+
+  const audioBitrateOptions = getAudioBitrateOptions(config.audioCodec || 'aac');
+
+  // 判断是否显示声道选择（杜比格式需要）
+  const showChannelsOption = ['ac3', 'eac3'].includes(config.audioCodec || 'aac');
+
   return (
     <div className={styles.container}>
       {/* 格式 */}
@@ -94,6 +129,8 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
           onChange={(e) => onChange('audioCodec', e.target.value)}
         >
           <option value="aac">AAC</option>
+          <option value="ac3">Dolby Digital (AC-3)</option>
+          <option value="eac3">Dolby Digital Plus (E-AC-3)</option>
           <option value="mp3">MP3</option>
           <option value="opus">Opus</option>
           <option value="vorbis">Vorbis</option>
@@ -109,13 +146,29 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
           value={config.audioBitrate || '128k'}
           onChange={(e) => onChange('audioBitrate', e.target.value)}
         >
-          <option value="96k">96 kbps</option>
-          <option value="128k">128 kbps ({t('transcode.recommended2')})</option>
-          <option value="192k">192 kbps</option>
-          <option value="256k">256 kbps</option>
-          <option value="320k">320 kbps</option>
+          {audioBitrateOptions.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+              {option.recommended && ` (${t('transcode.recommended2')})`}
+            </option>
+          ))}
         </select>
       </div>
+
+      {/* 音频声道（杜比格式） */}
+      {showChannelsOption && (
+        <div className={styles.field}>
+          <label className={styles.label}>{t('transcode.audioChannels')}:</label>
+          <select
+            className={styles.select}
+            value={config.audioChannels || '2'}
+            onChange={(e) => onChange('audioChannels', e.target.value)}
+          >
+            <option value="2">2.0 ({t('transcode.stereo')})</option>
+            <option value="6">5.1 ({t('transcode.surround')})</option>
+          </select>
+        </div>
+      )}
     </div>
   );
 };
