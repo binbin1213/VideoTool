@@ -99,3 +99,54 @@
   color: var(--vt-color-text-secondary);
 }
 
+.input {
+  height: t.$button-height-sm;
+  padding: 0 t.$spacing-3;
+  font-size: t.$font-size-base;
+  color: var(--vt-color-text-primary);
+  background-color: #FFFFFF;
+  border: 1px solid var(--vt-color-border);
+  border-radius: t.$radius-sm;
+  outline: none;
+
+  &:focus {
+    border-color: var(--vt-color-brand-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vt-color-brand-primary) 15%, transparent);
+  }
+
+  &::placeholder {
+    color: var(--vt-color-text-tertiary);
+  }
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-primary);
+  cursor: pointer;
+  user-select: none;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--vt-color-brand-primary);
+  }
+
+  span {
+    line-height: 1;
+  }
+
+  &:hover {
+    color: var(--vt-color-text-secondary);
+  }
+}
+
+.hint {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-tertiary);
+  line-height: 1.4;
+}
+

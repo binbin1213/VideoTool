@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaTools, FaCog, FaImage, FaMagic, FaVolumeUp } from 'react-icons/fa';
 import { BasicTab } from './BasicTab';
+import { VideoTab } from './VideoTab';
 import styles from './ManualMode.module.scss';
 
 interface ManualModeProps {
@@ -67,10 +68,7 @@ export const ManualMode = ({ config, onConfigChange }: ManualModeProps) => {
           <BasicTab config={config} onChange={handleFieldChange} />
         )}
         {activeTab === 'video' && (
-          <div className={styles.placeholder}>
-            <FaImage size={48} />
-            <p>{t('transcode.videoParamsInDev')}</p>
-          </div>
+          <VideoTab config={config} onChange={handleFieldChange} />
         )}
         {activeTab === 'filters' && (
           <div className={styles.placeholder}>
