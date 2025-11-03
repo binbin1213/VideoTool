@@ -488,7 +488,26 @@
     "grayscale": "黑白",
     "negate": "负片",
     "sepia": "怀旧",
-    "filterHint": "滤镜效果会增加转码时间，建议按需使用"
+    "filterHint": "滤镜效果会增加转码时间，建议按需使用",
+    "volume": "音量",
+    "quieter": "更小",
+    "louder": "更大",
+    "audioDelay": "音频延迟",
+    "earlier": "提前",
+    "synchronized": "同步",
+    "later": "延后",
+    "sampleRate": "采样率",
+    "normalization": "音频标准化",
+    "peakNormalization": "峰值标准化",
+    "rmsNormalization": "RMS标准化",
+    "loudnessNormalization": "响度标准化",
+    "fade": "淡入淡出",
+    "fadeIn": "淡入",
+    "fadeOut": "淡出",
+    "seconds": "秒",
+    "compression": "动态范围压缩",
+    "compressionHint": "压缩动态范围，使音量更均衡",
+    "audioHint": "音频处理可能影响音质，建议保持原始设置或轻度调整"
   }
 }
 

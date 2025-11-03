@@ -4,6 +4,7 @@ import { FaTools, FaCog, FaImage, FaMagic, FaVolumeUp } from 'react-icons/fa';
 import { BasicTab } from './BasicTab';
 import { VideoTab } from './VideoTab';
 import { FiltersTab } from './FiltersTab';
+import { AudioTab } from './AudioTab';
 import styles from './ManualMode.module.scss';
 
 interface ManualModeProps {
@@ -75,10 +76,7 @@ export const ManualMode = ({ config, onConfigChange }: ManualModeProps) => {
           <FiltersTab config={config} onChange={handleFieldChange} />
         )}
         {activeTab === 'audio' && (
-          <div className={styles.placeholder}>
-            <FaVolumeUp size={48} />
-            <p>{t('transcode.audioParamsInDev')}</p>
-          </div>
+          <AudioTab config={config} onChange={handleFieldChange} />
         )}
         {activeTab === 'advanced' && (
           <div className={styles.placeholder}>

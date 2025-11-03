@@ -482,7 +482,26 @@
     "grayscale": "Grayscale",
     "negate": "Negate",
     "sepia": "Sepia",
-    "filterHint": "Filters will increase transcoding time, use as needed"
+    "filterHint": "Filters will increase transcoding time, use as needed",
+    "volume": "Volume",
+    "quieter": "Quieter",
+    "louder": "Louder",
+    "audioDelay": "Audio Delay",
+    "earlier": "Earlier",
+    "synchronized": "Synchronized",
+    "later": "Later",
+    "sampleRate": "Sample Rate",
+    "normalization": "Normalization",
+    "peakNormalization": "Peak Normalization",
+    "rmsNormalization": "RMS Normalization",
+    "loudnessNormalization": "Loudness Normalization",
+    "fade": "Fade",
+    "fadeIn": "Fade In",
+    "fadeOut": "Fade Out",
+    "seconds": "seconds",
+    "compression": "Dynamic Range Compression",
+    "compressionHint": "Compress dynamic range for more balanced volume",
+    "audioHint": "Audio processing may affect quality, keep original or light adjustments recommended"
   }
 }
 
