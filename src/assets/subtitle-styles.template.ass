@@ -15,10 +15,10 @@ Synch Point: 1
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: 双语 原文,Microsoft YaHei,70,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0.5,0,2,25,25,80,1
-Style: 双语 译文,Microsoft YaHei,90,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,90,1
-Style: 译文字幕 底部,Microsoft YaHei,90,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,90,1
-Style: 译文字幕 顶部,Microsoft YaHei,90,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,25,25,50,1
-Style: 注释 底部,Microsoft YaHei,65,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,50,1
-Style: 注释 顶部,Microsoft YaHei,65,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,25,25,50,1
+Style: 双语 原文,Microsoft YaHei,58,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0.5,0,2,25,25,55,1
+Style: 双语 译文,Microsoft YaHei,72,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,65,1
+Style: 译文字幕 底部,Microsoft YaHei,72,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,65,1
+Style: 译文字幕 顶部,Microsoft YaHei,72,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,25,25,50,1
+Style: 注释 底部,Microsoft YaHei,55,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,45,1
+Style: 注释 顶部,Microsoft YaHei,55,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,25,25,50,1
 
