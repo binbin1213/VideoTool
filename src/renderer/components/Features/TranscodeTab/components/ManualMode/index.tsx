@@ -5,6 +5,7 @@ import { BasicTab } from './BasicTab';
 import { VideoTab } from './VideoTab';
 import { FiltersTab } from './FiltersTab';
 import { AudioTab } from './AudioTab';
+import { AdvancedTab } from './AdvancedTab';
 import styles from './ManualMode.module.scss';
 
 interface ManualModeProps {
@@ -79,10 +80,7 @@ export const ManualMode = ({ config, onConfigChange }: ManualModeProps) => {
           <AudioTab config={config} onChange={handleFieldChange} />
         )}
         {activeTab === 'advanced' && (
-          <div className={styles.placeholder}>
-            <FaTools size={48} />
-            <p>{t('transcode.advancedInDev')}</p>
-          </div>
+          <AdvancedTab config={config} onChange={handleFieldChange} />
         )}
       </div>
     </div>
