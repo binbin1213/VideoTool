@@ -71,6 +71,21 @@ function TranscodeTab() {
     setAiEnabled(!!key); // 有API Key就启用AI
   };
 
+  const handleAcceptAISuggestion = async () => {
+    try {
+      const aiConfig = await applyAISuggestion();
+      if (aiConfig) {
+        // 将AI建议应用到转码配置
+        updateConfig(aiConfig);
+        // 切换到手动模式，让用户看到并可以微调参数
+        setMode('manual');
+        alert('AI方案已应用！已切换到手动模式，您可以查看和调整参数。');
+      }
+    } catch (error: any) {
+      alert(error.message || '应用AI方案失败');
+    }
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -126,7 +141,7 @@ function TranscodeTab() {
               onApiKeyChange={handleApiKeyChange}
               onTestConnection={testConnection}
               onAnalyze={analyzeVideo}
-              onAcceptSuggestion={applyAISuggestion}
+              onAcceptSuggestion={handleAcceptAISuggestion}
               onSwitchToManual={() => setMode('manual')}
             />
           ) : (
