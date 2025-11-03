@@ -15,7 +15,7 @@ ASS (Advanced SubStation Alpha) 是一种功能强大的字幕格式，支持丰
 
 | 文件 | 位置 | 用途 |
 |------|------|------|
-| **字幕样式.txt** | `字幕/字幕样式.txt` | ASS 样式模板文件 |
+| **subtitle-styles.template.ass** | `docs/subtitle-styles.template.ass` | ASS 样式模板文件 ⭐ |
 | **subtitleConverter.ts** | `src/renderer/utils/subtitleConverter.ts` | 前端样式定义（代码） |
 | **ASSGenerator.ts** | `src/main/utils/subtitle/ASSGenerator.ts` | 后端 ASS 生成器 |
 
@@ -394,7 +394,7 @@ const assContent = generateASS(
 
 ### 方法 1：修改模板文件
 
-编辑 `字幕/字幕样式.txt`：
+编辑 `docs/subtitle-styles.template.ass`：
 
 ```ini
 Style: 自定义样式,Microsoft YaHei,100,&H00FFFFFF,...

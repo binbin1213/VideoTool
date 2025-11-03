@@ -1,0 +1,23 @@
+[Script Info]
+; VideoTool ASS 字幕样式模板
+; 版本: v2.0
+; 最后更新: 2025-11-03
+; 说明: 适用于 1080p (1920x1080) 分辨率视频
+Title: VideoTool Subtitle Styles
+ScriptType: v4.00+
+Collisions: Normal
+WrapStyle: 0
+PlayResX: 1920
+PlayResY: 1080
+ScaledBorderAndShadow: no
+Synch Point: 1
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: 双语 原文,Microsoft YaHei,70,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0.5,0,2,25,25,80,1
+Style: 双语 译文,Microsoft YaHei,90,&H00FFFFFF,&H004E4E4E,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,90,1
+Style: 译文字幕 底部,Microsoft YaHei,90,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,90,1
+Style: 译文字幕 顶部,Microsoft YaHei,90,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,25,25,50,1
+Style: 注释 底部,Microsoft YaHei,65,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,2,25,25,50,1
+Style: 注释 顶部,Microsoft YaHei,65,&H00FFFFFF,&H00535353,&H00000000,&H00000000,1,0,0,0,100,100,1,0,1,0.5,0,8,25,25,50,1
+
