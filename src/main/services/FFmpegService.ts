@@ -234,6 +234,29 @@ export class FFmpegService {
           bitDepth = 12;
         }
 
+        // 提取所有音频轨道
+        const audioTracks = metadata.streams
+          .filter((s) => s.codec_type === 'audio')
+          .map((stream, idx) => ({
+            index: stream.index || idx,
+            codec: stream.codec_name || 'unknown',
+            language: stream.tags?.language || undefined,
+            channels: stream.channels || undefined,
+            sampleRate: stream.sample_rate || undefined,
+          }));
+
+        // 提取所有字幕轨道
+        const subtitleTracks = metadata.streams
+          .filter((s) => s.codec_type === 'subtitle')
+          .map((stream, idx) => ({
+            index: stream.index || idx,
+            codec: stream.codec_name || 'unknown',
+            language: stream.tags?.language || undefined,
+            title: stream.tags?.title || undefined,
+            forced: stream.disposition?.forced === 1,
+            default: stream.disposition?.default === 1,
+          }));
+
         const info: VideoInfo = {
           // ===== 基础信息 =====
           duration: metadata.format.duration || 0,
@@ -263,9 +286,14 @@ export class FFmpegService {
           channels: audioStream?.channels || undefined,
           channelLayout: audioStream?.channel_layout || undefined,
           audioBitDepth: audioStream?.bits_per_sample || undefined,
+
+          // ===== 轨道信息 =====
+          audioTracks: audioTracks.length > 0 ? audioTracks : undefined,
+          subtitleTracks: subtitleTracks.length > 0 ? subtitleTracks : undefined,
         };
 
         log.info('视频信息:', info);
+        log.info(`发现 ${audioTracks.length} 个音频轨道, ${subtitleTracks.length} 个字幕轨道`);
         resolve(info);
       });
     });

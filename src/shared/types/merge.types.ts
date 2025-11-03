@@ -59,6 +59,23 @@ export interface VideoInfo {
   channels?: number;
   channelLayout?: string;
   audioBitDepth?: number;
+
+  // ===== 轨道信息 =====
+  audioTracks?: Array<{
+    index: number;
+    codec: string;
+    language?: string;
+    channels?: number;
+    sampleRate?: number;
+  }>;
+  subtitleTracks?: Array<{
+    index: number;
+    codec: string;
+    language?: string;
+    title?: string;
+    forced?: boolean;
+    default?: boolean;
+  }>;
 }
 
 export interface AudioInfo {

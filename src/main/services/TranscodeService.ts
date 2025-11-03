@@ -43,6 +43,29 @@ export class TranscodeService {
           log.warn('视频流缺少宽高信息，尝试从其他流获取');
         }
 
+        // 提取所有音频轨道
+        const audioTracks = metadata.streams
+          .filter((s) => s.codec_type === 'audio')
+          .map((stream, idx) => ({
+            index: stream.index || idx,
+            codec: stream.codec_name || 'unknown',
+            language: stream.tags?.language || undefined,
+            channels: stream.channels || undefined,
+            sampleRate: stream.sample_rate || undefined,
+          }));
+
+        // 提取所有字幕轨道
+        const subtitleTracks = metadata.streams
+          .filter((s) => s.codec_type === 'subtitle')
+          .map((stream, idx) => ({
+            index: stream.index || idx,
+            codec: stream.codec_name || 'unknown',
+            language: stream.tags?.language || undefined,
+            title: stream.tags?.title || undefined,
+            forced: stream.disposition?.forced === 1,
+            default: stream.disposition?.default === 1,
+          }));
+
         const info: VideoInfo = {
           duration: metadata.format.duration || 0,
           width,
@@ -53,9 +76,12 @@ export class TranscodeService {
           bitrate: metadata.format.bit_rate || 0,
           size: metadata.format.size || 0,
           formatName: metadata.format.format_name || 'unknown',
+          audioTracks: audioTracks.length > 0 ? audioTracks : undefined,
+          subtitleTracks: subtitleTracks.length > 0 ? subtitleTracks : undefined,
         };
 
         log.info('视频信息:', info);
+        log.info(`发现 ${audioTracks.length} 个音频轨道, ${subtitleTracks.length} 个字幕轨道`);
         resolve(info);
       });
     });

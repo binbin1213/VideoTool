@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import styles from './SceneSelector.module.scss';
+import basicStyles from '../ManualMode/BasicTab.module.scss';
 
 interface SceneSelectorProps {
   selectedScene: string;
@@ -19,21 +19,25 @@ const SCENES = [
 export const SceneSelector = ({ selectedScene, onSelectScene, disabled }: SceneSelectorProps) => {
   const { t } = useTranslation();
 
+  const currentScene = SCENES.find((s) => s.id === selectedScene);
+
   return (
-    <div className={styles.container}>
-      <div className={styles.title}>{t('transcode.selectScene')}</div>
-      <div className={styles.grid}>
+    <div className={basicStyles.field}>
+      <label className={basicStyles.label}>{t('transcode.selectScene')}</label>
+      <select
+        className={basicStyles.select}
+        value={selectedScene}
+        onChange={(e) => onSelectScene(e.target.value)}
+        disabled={disabled}
+      >
         {SCENES.map((scene) => (
-          <button
-            key={scene.id}
-            className={`${styles.sceneCard} ${selectedScene === scene.id ? styles.active : ''}`}
-            onClick={() => onSelectScene(scene.id)}
-            disabled={disabled}
-          >
-            <div className={styles.name}>{t(`transcode.${scene.name}`)}</div>
-            <div className={styles.desc}>{t(`transcode.${scene.desc}`)}</div>
-          </button>
+          <option key={scene.id} value={scene.id}>
+            {t(`transcode.${scene.name}`)} - {t(`transcode.${scene.desc}`)}
+          </option>
         ))}
+      </select>
+      <div className={basicStyles.hint} style={{ marginTop: '4px' }}>
+        {currentScene && t(`transcode.${currentScene.desc}`)}
       </div>
     </div>
   );

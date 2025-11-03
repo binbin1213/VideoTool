@@ -447,6 +447,7 @@
     "cinematic": "电影",
     "custom": "自定义",
     "customFramerate": "自定义帧率",
+    "framerate": "帧率",
     "aspectRatio": "宽高比",
     "widescreen": "宽屏",
     "ultrawide": "超宽屏",
@@ -460,6 +461,7 @@
     "flip": "翻转",
     "horizontal": "水平",
     "crop": "裁剪",
+    "cropPixels": "裁剪像素",
     "top": "上",
     "bottom": "下",
     "left": "左",
@@ -535,7 +537,21 @@
     "gopSizeHint": "关键帧间隔，留空使用默认值（通常为帧率×10）",
     "customParams": "自定义FFmpeg参数",
     "customParamsHint": "仅供高级用户使用，错误的参数可能导致转码失败",
-    "advancedWarning": "高级选项可能影响输出质量和兼容性，请谨慎使用"
+    "advancedWarning": "高级选项可能影响输出质量和兼容性，请谨慎使用",
+    "noAudioSelected": "未选择任何音轨，将使用第一音轨",
+    "subtitleSelectHint": "未选择任何字幕时将保留所有字幕",
+    "noVideoInfo": "请先选择视频文件并等待分析完成",
+    "analyzeHint": "系统需要先读取视频信息才能显示轨道列表",
+    "noSubtitles": "该视频没有内嵌字幕",
+    "noSubtitlesHint": "如果需要添加字幕，请使用字幕烧录功能",
+    "removeSubtitlesHint": "将移除视频中的所有字幕轨道",
+    "copySubtitlesHint": "保留视频中的字幕轨道，可选择保留哪些",
+    "selectSubtitles": "选择字幕轨道",
+    "selectAudioTracks": "选择音轨",
+    "audioSelectHint": "未选择任何音轨时将使用第一音轨",
+    "videoSubtitles": "视频中的字幕轨道：",
+    "h265Warning": "H.265 兼容性提醒",
+    "h265WarningDesc": "H.265 编码的视频文件可能无法在某些播放器（如系统自带的 QuickTime）中打开。建议使用 H.264 编码以获得更好的兼容性，或使用支持 H.265 的播放器（VLC、IINA 等）。"
   }
 }
 

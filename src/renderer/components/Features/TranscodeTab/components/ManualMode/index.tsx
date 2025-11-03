@@ -10,12 +10,16 @@ import styles from './ManualMode.module.scss';
 
 interface ManualModeProps {
   config: any;
+  videoInfo: any;
   onConfigChange: (config: any) => void;
 }
 
-export const ManualMode = ({ config, onConfigChange }: ManualModeProps) => {
+export const ManualMode = ({ config, videoInfo, onConfigChange }: ManualModeProps) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('basic');
+
+  // 调试：打印接收到的配置
+  console.log('🎨 ManualMode 接收到的配置:', config);
 
   const handleFieldChange = (field: string, value: any) => {
     onConfigChange({
@@ -80,7 +84,7 @@ export const ManualMode = ({ config, onConfigChange }: ManualModeProps) => {
           <AudioTab config={config} onChange={handleFieldChange} />
         )}
         {activeTab === 'advanced' && (
-          <AdvancedTab config={config} onChange={handleFieldChange} />
+          <AdvancedTab config={config} videoInfo={videoInfo} onChange={handleFieldChange} />
         )}
       </div>
     </div>

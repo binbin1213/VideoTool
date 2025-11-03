@@ -43,20 +43,36 @@ export const useTranscodeConfig = () => {
       throw new Error('请先选择输入文件和输出路径');
     }
 
+    // 创建进度监听器
+    const progressListener = (_: any, progressData: any) => {
+      setProgress(progressData.percent);
+    };
+
     try {
       setIsProcessing(true);
       setProgress(0);
+
+      // 处理分辨率格式转换（从字符串转为对象）
+      let resolution: any = config.resolution;
+      if (typeof resolution === 'string' && resolution !== 'original') {
+        const match = resolution.match(/^(\d+)x(\d+)$/);
+        if (match) {
+          resolution = {
+            width: parseInt(match[1]),
+            height: parseInt(match[2]),
+          };
+        }
+      }
 
       const fullConfig: TranscodeConfig = {
         inputPath,
         outputPath,
         ...config,
+        resolution,
       } as TranscodeConfig;
 
       // 监听进度
-      ipcRenderer.on('transcode-progress', (_: any, progressData: any) => {
-        setProgress(progressData.percent);
-      });
+      ipcRenderer.on('transcode-progress', progressListener);
 
       await ipcRenderer.invoke('start-transcode', fullConfig);
       setProgress(100);
@@ -64,9 +80,15 @@ export const useTranscodeConfig = () => {
       return true;
     } catch (error: any) {
       setIsProcessing(false);
+      setProgress(0);
       throw new Error(`转码失败: ${error.message}`);
     } finally {
-      ipcRenderer.removeAllListeners('transcode-progress');
+      // 移除监听器
+      try {
+        ipcRenderer.removeListener('transcode-progress', progressListener);
+      } catch (err) {
+        console.warn('移除监听器失败:', err);
+      }
     }
   };
 

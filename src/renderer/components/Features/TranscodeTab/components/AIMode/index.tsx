@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaRobot } from 'react-icons/fa';
 import buttonStyles from '../../../../../styles/components/Button.module.scss';
+import basicStyles from '../ManualMode/BasicTab.module.scss';
 import { SceneSelector } from './SceneSelector';
 import { AIConfig } from './AIConfig';
 import { AISuggestion } from './AISuggestion';
-import styles from './AIMode.module.scss';
 
 interface AIModeProps {
   videoInfo: any;
@@ -75,7 +75,7 @@ export const AIMode = ({
   };
 
   return (
-    <div className={styles.container}>
+    <div className={basicStyles.container}>
       {/* 场景选择 */}
       <SceneSelector
         selectedScene={selectedScene}
@@ -95,19 +95,20 @@ export const AIMode = ({
 
       {/* 分析按钮 */}
       {!aiSuggestion && (
-        <div className={styles.analyzeSection}>
+        <div style={{ marginTop: '16px' }}>
           <button
             className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonLarge}`}
             onClick={handleAnalyze}
             disabled={!videoInfo || analyzing}
+            style={{ width: '100%' }}
           >
             <FaRobot />
             {analyzing ? t('transcode.analyzing') : t('transcode.startAnalysis')}
           </button>
           {!apiKey && (
-            <p className={styles.hint}>
-              {t('transcode.noApiKeyHint') || '💡 未配置API Key时将使用规则引擎（快速、免费）'}
-            </p>
+            <div className={basicStyles.hint} style={{ marginTop: '8px' }}>
+              💡 {t('transcode.noApiKeyHint') || '未配置API Key时将使用规则引擎（快速、免费）'}
+            </div>
           )}
         </div>
       )}

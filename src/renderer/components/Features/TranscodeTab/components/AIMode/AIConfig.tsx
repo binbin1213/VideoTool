@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { FaCog, FaCheckCircle } from 'react-icons/fa';
-import buttonStyles from '../../../../../styles/components/Button.module.scss';
-import styles from './AIConfig.module.scss';
+import basicStyles from '../ManualMode/BasicTab.module.scss';
 
 interface AIConfigProps {
   platform: 'deepseek' | 'openai';
@@ -23,18 +21,13 @@ export const AIConfig = ({
   const { t } = useTranslation();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <FaCog />
-        <span>{t('transcode.aiConfig')}</span>
-      </div>
-
-      <div className={styles.content}>
-        {/* 平台选择 */}
-        <div className={styles.field}>
-          <label className={styles.label}>{t('transcode.aiPlatform')}:</label>
-          <div className={styles.radioGroup}>
-            <label className={styles.radio}>
+    <>
+      {/* 平台选择 + API Key输入框 */}
+      <div className={basicStyles.row}>
+        <div className={basicStyles.field}>
+          <label className={basicStyles.label}>{t('transcode.aiPlatform')}</label>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', height: '28px' }}>
+            <label className={basicStyles.checkbox}>
               <input
                 type="radio"
                 name="platform"
@@ -44,7 +37,7 @@ export const AIConfig = ({
               />
               <span>DeepSeek</span>
             </label>
-            <label className={styles.radio}>
+            <label className={basicStyles.checkbox}>
               <input
                 type="radio"
                 name="platform"
@@ -57,47 +50,71 @@ export const AIConfig = ({
           </div>
         </div>
 
-        {/* API Key */}
-        <div className={styles.field}>
-          <label className={styles.label}>{t('transcode.apiKey')}:</label>
-          <div className={styles.inputGroup}>
-            <input
-              type="password"
-              className={styles.input}
-              value={apiKey}
-              onChange={(e) => onApiKeyChange(e.target.value)}
-              placeholder={t('transcode.enterApiKey')}
-            />
-            <button
-              className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
-              onClick={onTestConnection}
-              disabled={!apiKey || testing}
-            >
-              <FaCheckCircle />
-              {testing ? t('transcode.testing') : t('transcode.testConnection')}
-            </button>
-          </div>
+        <div className={basicStyles.field}>
+          <label className={basicStyles.label}>{t('transcode.apiKey')}</label>
+          <input
+            type="password"
+            className={basicStyles.input}
+            value={apiKey}
+            onChange={(e) => onApiKeyChange(e.target.value)}
+            placeholder={t('transcode.enterApiKey')}
+            style={{ height: '28px' }}
+          />
         </div>
 
-        <div className={styles.hint}>
-          {platform === 'deepseek' ? (
-            <p>
-              {t('transcode.deepseekHint')}
-              <a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer">
-                https://platform.deepseek.com
-              </a>
-            </p>
-          ) : (
-            <p>
-              {t('transcode.openaiHint')}
-              <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer">
-                https://platform.openai.com
-              </a>
-            </p>
-          )}
+        <div className={basicStyles.field}>
+          <label className={basicStyles.label}>&nbsp;</label>
+          <button
+            onClick={onTestConnection}
+            disabled={!apiKey || testing}
+            style={{
+              padding: '0 16px',
+              backgroundColor: apiKey ? '#52c41a' : '#d9d9d9',
+              color: '#fff',
+              border: `1px solid ${apiKey ? '#52c41a' : '#d9d9d9'}`,
+              borderRadius: '4px',
+              cursor: apiKey ? 'pointer' : 'not-allowed',
+              fontSize: '13px',
+              width: '100%',
+              height: '28px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s',
+              boxSizing: 'border-box',
+              opacity: testing ? 0.6 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (apiKey && !testing) e.currentTarget.style.backgroundColor = '#73d13d';
+            }}
+            onMouseLeave={(e) => {
+              if (apiKey) e.currentTarget.style.backgroundColor = '#52c41a';
+            }}
+          >
+            {testing ? t('transcode.testing') : t('transcode.testConnection')}
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* 提示信息 */}
+      <div className={basicStyles.hint} style={{ marginTop: '4px' }}>
+        {platform === 'deepseek' ? (
+          <>
+            {t('transcode.deepseekHint')}
+            <a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '4px' }}>
+              https://platform.deepseek.com
+            </a>
+          </>
+        ) : (
+          <>
+            {t('transcode.openaiHint')}
+            <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '4px' }}>
+              https://platform.openai.com
+            </a>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

@@ -172,6 +172,82 @@
 }
 
 // ========================================
+// 转码控制区域
+// ========================================
+.transcodeControl {
+  margin-top: t.$spacing-4;
+  padding: t.$spacing-4;
+  background-color: #FFFFFF;
+  border: 1px solid var(--vt-color-border);
+  border-radius: t.$radius-lg;
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-3;
+}
+
+.startButton {
+  padding: t.$spacing-3 t.$spacing-6;
+  background: linear-gradient(135deg, var(--vt-color-brand-primary), #1E40AF);
+  color: #FFFFFF;
+  border: none;
+  border-radius: t.$radius-md;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.progressArea {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-3;
+}
+
+.progressBar {
+  flex: 1;
+  height: 24px;
+  background-color: #E5E7EB;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #059669);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: t.$spacing-2;
+}
+
+.progressText {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  min-width: 50px;
+  text-align: right;
+}
+
+// ========================================
 // 占位符（开发中）
 // ========================================
 .placeholder {

@@ -441,6 +441,7 @@
     "cinematic": "Cinematic",
     "custom": "Custom",
     "customFramerate": "Custom Framerate",
+    "framerate": "Framerate",
     "aspectRatio": "Aspect Ratio",
     "widescreen": "Widescreen",
     "ultrawide": "Ultrawide",
@@ -454,6 +455,7 @@
     "flip": "Flip",
     "horizontal": "Horizontal",
     "crop": "Crop",
+    "cropPixels": "Crop Pixels",
     "top": "Top",
     "bottom": "Bottom",
     "left": "Left",
@@ -529,7 +531,21 @@
     "gopSizeHint": "Keyframe interval, leave empty for default (usually framerate×10)",
     "customParams": "Custom FFmpeg Parameters",
     "customParamsHint": "For advanced users only, incorrect parameters may cause failure",
-    "advancedWarning": "Advanced options may affect output quality and compatibility, use with caution"
+    "advancedWarning": "Advanced options may affect output quality and compatibility, use with caution",
+    "noAudioSelected": "No audio tracks selected, will use first track",
+    "subtitleSelectHint": "All subtitles will be kept when none are selected",
+    "noVideoInfo": "Please select a video file and wait for analysis",
+    "analyzeHint": "System needs to read video information first",
+    "noSubtitles": "This video has no embedded subtitles",
+    "noSubtitlesHint": "Use subtitle burning feature if you need to add subtitles",
+    "removeSubtitlesHint": "Will remove all subtitle tracks from the video",
+    "copySubtitlesHint": "Keep subtitle tracks in the video, you can select which ones to keep",
+    "selectSubtitles": "Select Subtitle Tracks",
+    "selectAudioTracks": "Select Audio Tracks",
+    "audioSelectHint": "When no audio tracks are selected, the first track will be used",
+    "videoSubtitles": "Subtitle tracks in video:",
+    "h265Warning": "H.265 Compatibility Note",
+    "h265WarningDesc": "H.265 encoded videos may not open in some players (like QuickTime). Consider using H.264 encoding for better compatibility, or use H.265-compatible players (VLC, IINA, etc.)."
   }
 }
 

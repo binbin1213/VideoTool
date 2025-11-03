@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaFileVideo, FaRobot, FaTools } from 'react-icons/fa';
 import styles from './TranscodeTab.module.scss';
@@ -12,6 +12,7 @@ import { useAIOptimizer } from './hooks/useAIOptimizer';
 function TranscodeTab() {
   const { t } = useTranslation();
   const [mode, setMode] = useState<'ai' | 'manual'>('ai');
+  const pendingSwitchToManual = useRef(false);
 
   // Hooks
   const {
@@ -24,8 +25,11 @@ function TranscodeTab() {
   const {
     outputPath,
     config,
+    isProcessing,
+    progress,
     selectOutputPath,
     updateConfig,
+    startTranscode,
   } = useTranscodeConfig();
 
   const {
@@ -40,6 +44,25 @@ function TranscodeTab() {
     applyAISuggestion,
     testConnection,
   } = useAIOptimizer();
+
+  // 监听配置变化，当配置更新后切换到手动模式
+  useEffect(() => {
+    if (pendingSwitchToManual.current && config.resolution) {
+      console.log('🔄 配置已更新，准备切换模式');
+      console.log('📊 最新的 config:', config);
+      console.log('  - resolution:', config.resolution);
+      console.log('  - format:', config.format);
+      console.log('  - videoCodec:', config.videoCodec);
+      
+      pendingSwitchToManual.current = false;
+      setMode('manual');
+      console.log('✅ 已切换到手动模式');
+      
+      setTimeout(() => {
+        alert('AI方案已应用！您可以在手动模式中查看和调整参数。');
+      }, 100);
+    }
+  }, [config]);
 
   const handleSelectVideo = async () => {
     try {
@@ -71,17 +94,98 @@ function TranscodeTab() {
     setAiEnabled(!!key); // 有API Key就启用AI
   };
 
+  const handleStartTranscode = async () => {
+    if (!videoFile) {
+      alert('请先选择输入视频文件');
+      return;
+    }
+    if (!outputPath) {
+      alert('请先选择输出路径');
+      return;
+    }
+
+    try {
+      await startTranscode(videoFile);
+      alert('转码完成！');
+    } catch (error: any) {
+      alert(error.message || '转码失败');
+    }
+  };
+
   const handleAcceptAISuggestion = async () => {
     try {
       const aiConfig = await applyAISuggestion();
+      console.log('🤖 AI返回的原始配置:', aiConfig);
+      
       if (aiConfig) {
-        // 将AI建议应用到转码配置
-        updateConfig(aiConfig);
-        // 切换到手动模式，让用户看到并可以微调参数
-        setMode('manual');
-        alert('AI方案已应用！已切换到手动模式，您可以查看和调整参数。');
+        // 转换AI配置格式为手动模式配置格式
+        const manualConfig: any = {};
+
+        // 基础参数 - 直接映射
+        if (aiConfig.format) manualConfig.format = aiConfig.format;
+        if (aiConfig.videoCodec) manualConfig.videoCodec = aiConfig.videoCodec;
+        if (aiConfig.audioCodec) manualConfig.audioCodec = aiConfig.audioCodec;
+        if (aiConfig.crf !== undefined) manualConfig.crf = aiConfig.crf;
+        if (aiConfig.preset) manualConfig.preset = aiConfig.preset;
+
+        // 处理音频比特率 - 确保格式正确
+        if (aiConfig.audioBitrate) {
+          const bitrate = aiConfig.audioBitrate.toString();
+          // 确保有k后缀
+          manualConfig.audioBitrate = bitrate.includes('k') ? bitrate : `${bitrate}k`;
+        }
+
+        // 处理分辨率 - AI可能返回对象或字符串
+        if (aiConfig.resolution) {
+          if (typeof aiConfig.resolution === 'object' && aiConfig.resolution.width) {
+            // AI返回了对象 {width, height}
+            const { width, height } = aiConfig.resolution;
+            // 转换为 VideoTab 期望的格式 "widthxheight"
+            manualConfig.resolution = `${width}x${height}`;
+          } else if (aiConfig.resolution === 'original') {
+            // AI返回了 'original' 字符串
+            manualConfig.resolution = 'original';
+          } else {
+            // 其他字符串格式，尝试解析或直接使用
+            manualConfig.resolution = aiConfig.resolution;
+          }
+        } else {
+          // 如果AI没有返回分辨率，默认为原始
+          manualConfig.resolution = 'original';
+        }
+
+        // 处理帧率
+        if (aiConfig.framerate) {
+          manualConfig.framerate = aiConfig.framerate;
+        } else {
+          manualConfig.framerate = 'original';
+        }
+
+        // 其他可能的字段
+        if (aiConfig.audioChannels) {
+          manualConfig.audioChannels = aiConfig.audioChannels.toString();
+        }
+
+        console.log('📝 转换后的手动模式配置:', manualConfig);
+        console.log('📦 转换前的当前配置:', config);
+        console.log('🔍 详细字段对比:');
+        console.log('  - format:', aiConfig.format, '→', manualConfig.format);
+        console.log('  - videoCodec:', aiConfig.videoCodec, '→', manualConfig.videoCodec);
+        console.log('  - audioCodec:', aiConfig.audioCodec, '→', manualConfig.audioCodec);
+        console.log('  - crf:', aiConfig.crf, '→', manualConfig.crf);
+        console.log('  - preset:', aiConfig.preset, '→', manualConfig.preset);
+        console.log('  - resolution:', aiConfig.resolution, '→', manualConfig.resolution);
+        console.log('  - audioBitrate:', aiConfig.audioBitrate, '→', manualConfig.audioBitrate);
+
+        // 设置待切换标记
+        pendingSwitchToManual.current = true;
+        console.log('🔄 准备更新配置并切换模式...');
+        
+        // 应用配置（useEffect 会监听 config 变化并自动切换模式）
+        updateConfig(manualConfig);
       }
     } catch (error: any) {
+      console.error('❌ 应用AI方案失败:', error);
       alert(error.message || '应用AI方案失败');
     }
   };
@@ -145,10 +249,36 @@ function TranscodeTab() {
               onSwitchToManual={() => setMode('manual')}
             />
           ) : (
-            <ManualMode
-              config={config}
-              onConfigChange={updateConfig}
-            />
+            <>
+              <ManualMode
+                config={config}
+                videoInfo={videoInfo}
+                onConfigChange={updateConfig}
+              />
+              
+              {/* 转码控制区域 */}
+              <div className={styles.transcodeControl}>
+                <button
+                  className={styles.startButton}
+                  onClick={handleStartTranscode}
+                  disabled={!videoFile || !outputPath || isProcessing}
+                >
+                  {isProcessing ? '转码中...' : '开始转码'}
+                </button>
+                
+                {isProcessing && (
+                  <div className={styles.progressArea}>
+                    <div className={styles.progressBar}>
+                      <div 
+                        className={styles.progressFill}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <span className={styles.progressText}>{progress.toFixed(1)}%</span>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
 
