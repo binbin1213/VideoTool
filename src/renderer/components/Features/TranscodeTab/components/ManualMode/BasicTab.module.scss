@@ -27,9 +27,10 @@
 }
 
 .select {
-  height: 36px;
+  height: t.$button-height-sm; // 28px，与按钮同高
   padding: 0 t.$spacing-3;
-  font-size: t.$font-size-sm;
+  font-size: t.$font-size-base; // 14px，与正文一致
+  font-weight: 400; // 正常字重
   color: var(--vt-color-text-primary);
   background-color: #FFFFFF;
   border: 1px solid var(--vt-color-border);

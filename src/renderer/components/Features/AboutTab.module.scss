@@ -163,13 +163,14 @@
 // ========================================
 .select {
   width: 100%;
-  height: t.$input-height-md;
+  height: t.$button-height-sm; // 28px，与按钮同高
   padding: 0 32px 0 t.$spacing-3;
   border: 1px solid var(--vt-color-border);
   border-radius: t.$radius-sm;
   background-color: #FFFFFF;
   color: var(--vt-color-text-primary);
-  font-size: t.$font-size-base;
+  font-size: t.$font-size-base; // 14px
+  font-weight: 400; // 正常字重
   line-height: t.$line-height-base;
   font-family: t.$font-family-sans;
   cursor: pointer;

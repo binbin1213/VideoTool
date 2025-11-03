@@ -444,8 +444,9 @@
 .select {
   width: 100%;
   padding: 0 32px 0 t.$spacing-3;
-  height: t.$input-height-md;
-  font-size: t.$font-size-sm;
+  height: t.$button-height-sm; // 28px，与按钮同高
+  font-size: t.$font-size-base; // 14px，与正文一致
+  font-weight: 400; // 正常字重
   font-family: t.$font-family-sans;
   color: var(--vt-color-text-primary);
   background-color: #FFFFFF;
