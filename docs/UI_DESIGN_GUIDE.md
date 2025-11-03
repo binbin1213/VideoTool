@@ -1,7 +1,7 @@
 # VideoTool UI 设计规范
 
 > 最后更新：2025-11-03  
-> 版本：v1.2.1
+> 版本：v1.3.0
 
 ---
 
@@ -70,6 +70,140 @@
 | `radius-sm` | 6px | 小组件（按钮、输入框、选择框） |
 | `radius-md` | 8px | 中等组件（卡片） |
 | `radius-lg` | 12px | 大组件（模态框） |
+| `radius-pill` | 999px | 胶囊形状（开关、标签） |
+
+### 阴影 (Shadows)
+
+| Token | 值 | 用途 |
+|-------|-----|------|
+| `shadow-none` | 0 0 0 rgba(0,0,0,0) | 无阴影 |
+| `shadow-sm` | 0 1px 2px rgba(0,0,0,0.12) | 轻微阴影（悬停卡片） |
+| `shadow-md` | 0 2px 8px rgba(0,0,0,0.16) | 中等阴影（下拉菜单） |
+| `shadow-lg` | 0 8px 24px rgba(0,0,0,0.18) | 大阴影（模态框） |
+
+**使用示例：**
+```scss
+// 卡片悬停效果
+.card:hover {
+  box-shadow: t.$shadow-md; // 0 2px 8px rgba(0,0,0,0.16)
+}
+```
+
+### 图标 (Icons)
+
+| Token | 值 | 用途 |
+|-------|-----|------|
+| `icon-size-sm` | 16px | 小图标（菜单、内联） |
+| `icon-size-md` | 20px | 中等图标（按钮） |
+| `icon-size-lg` | 24px | 大图标（标题、强调） |
+| `icon-size-xl` | 32px | 特大图标（空状态） |
+| `icon-stroke` | 1.5px | 线条粗细 |
+
+**使用规范：**
+- 侧边导航栏菜单图标：16px
+- 按钮内图标：20px
+- 空状态/说明图标：24-32px
+- 图标与文字间距：8px
+
+---
+
+## 🎬 动效规范
+
+### 动画时长 (Duration)
+
+| Token | 值 | 用途 |
+|-------|-----|------|
+| `motion-duration-fast` | 120ms | 快速响应（hover、focus） |
+| `motion-duration-normal` | 180ms | 标准动画（切换、展开） |
+| `motion-duration-slow` | 240ms | 慢速动画（页面过渡） |
+
+### 缓动函数 (Easing)
+
+| Token | 值 | 用途 |
+|-------|-----|------|
+| `motion-easing-standard` | cubic-bezier(0.2, 0, 0, 1) | 标准缓动（大多数动画） |
+| `motion-easing-decelerate` | cubic-bezier(0, 0, 0.2, 1) | 减速（进入动画） |
+| `motion-easing-accelerate` | cubic-bezier(0.3, 0, 1, 1) | 加速（退出动画） |
+
+### 状态透明度 (State Alpha)
+
+| 状态 | 透明度 | 用途 |
+|------|--------|------|
+| Hover | 0.04 (4%) | 悬停背景叠加 |
+| Pressed | 0.08 (8%) | 按下状态叠加 |
+| Selected | 0.12 (12%) | 选中状态背景 |
+| Disabled | 0.38 (38%) | 禁用状态透明度 |
+
+### 动画最佳实践
+
+**DO ✅**
+```scss
+// 使用设计Token
+.button {
+  transition: all t.$motion-duration-fast t.$motion-easing-standard;
+}
+
+// 悬停状态使用透明度叠加
+.card:hover {
+  background-color: rgba(0, 0, 0, t.$state-alpha-hover);
+}
+```
+
+**DON'T ❌**
+```scss
+// 不要硬编码时长
+.button {
+  transition: all 0.15s ease; // ❌
+}
+
+// 不要过长的动画
+.modal {
+  transition: all 500ms; // ❌ 太慢
+}
+```
+
+---
+
+## 📱 响应式设计
+
+### 断点 (Breakpoints)
+
+| 断点 | 值 | 说明 |
+|------|-----|------|
+| Compact | ≤ 1120px | 紧凑布局（小屏幕） |
+| Normal | 1120px - 1440px | 标准布局 |
+| Spacious | ≥ 1440px | 宽松布局（大屏幕） |
+
+### 布局网格
+
+| 属性 | 值 | 说明 |
+|------|-----|------|
+| `grid-base` | 8px | 基础网格单位（8pt网格） |
+| `window-padding` | 16px | 窗口内边距 |
+| `section-gap` | 24px | 区块间距 |
+| `max-content-width` | 1240px | 最大内容宽度 |
+
+### 响应式规则
+
+```scss
+// 紧凑布局（小屏幕）
+@media (max-width: t.$breakpoint-compact) {
+  .container {
+    padding: t.$spacing-3; // 12px
+  }
+  
+  .sidebar {
+    width: 60px; // 折叠侧边栏
+  }
+}
+
+// 宽松布局（大屏幕）
+@media (min-width: t.$breakpoint-spacious) {
+  .container {
+    padding: t.$spacing-6; // 24px
+  }
+}
+```
 
 ---
 
@@ -736,22 +870,61 @@
 
 ### 新组件开发
 
+**基础规范：**
 - [ ] 使用设计Token（字体、颜色、间距）
 - [ ] 按钮高度28px，字体14px，字重400
 - [ ] 选择框高度28px，字体14px，字重400
 - [ ] 输入框高度32px，字体14px
-- [ ] 圆角统一6px（小组件）
-- [ ] 实现hover、focus、disabled状态
+- [ ] 圆角统一6px（小组件）、8px（卡片）
+
+**动效规范：**
+- [ ] 使用标准动画时长（120ms/180ms/240ms）
+- [ ] 使用标准缓动函数（cubic-bezier）
+- [ ] hover状态使用4%透明度叠加
+- [ ] 过渡动画流畅自然
+
+**交互状态：**
+- [ ] 实现hover、focus、active、disabled状态
+- [ ] hover状态有视觉反馈（背景色/边框/阴影）
+- [ ] focus状态有明确的焦点环（2px外框）
+- [ ] disabled状态透明度38%
+
+**视觉规范：**
+- [ ] 适当使用阴影（sm/md/lg）
+- [ ] 图标大小正确（16/20/24/32px）
+- [ ] 图标与文字间距8px
 - [ ] 支持深色模式（使用CSS变量）
+
+**响应式：**
+- [ ] 在不同断点下布局合理
+- [ ] 小屏幕（≤1120px）布局紧凑
+- [ ] 大屏幕（≥1440px）布局宽松
 
 ### 组件审查
 
+**对齐与间距：**
 - [ ] 与相邻组件高度对齐
 - [ ] 字体大小与周围文字一致
-- [ ] 内边距、外边距使用Token
+- [ ] 内边距、外边距使用Token（8的倍数）
+- [ ] 组件间距合理（通常12px或16px）
+
+**交互反馈：**
 - [ ] 交互反馈清晰（hover、active）
 - [ ] 禁用状态视觉明确
-- [ ] 响应式布局适配
+- [ ] 加载状态有提示
+- [ ] 错误状态有红色标识
+
+**代码质量：**
+- [ ] 避免硬编码颜色、尺寸
+- [ ] 使用SCSS变量和mixins
+- [ ] 代码结构清晰，注释完整
+- [ ] 符合BEM命名规范
+
+**无障碍性：**
+- [ ] 支持键盘导航（Tab键）
+- [ ] 有适当的ARIA标签
+- [ ] 颜色对比度符合WCAG标准
+- [ ] 可用屏幕阅读器访问
 
 ---
 
@@ -771,6 +944,31 @@
 ---
 
 ## 🔄 变更历史
+
+### v1.3.0 (2025-11-03) - 补充核心规范
+
+**重大补充：**
+- ✅ **动效规范**：动画时长、缓动函数、状态透明度
+- ✅ **阴影规范**：4级阴影定义（none/sm/md/lg）
+- ✅ **图标规范**：4种尺寸（16/20/24/32px）、线条粗细
+- ✅ **响应式设计**：断点定义、布局网格、响应式规则
+
+**新增设计Token：**
+- 动画时长：fast (120ms) / normal (180ms) / slow (240ms)
+- 缓动函数：standard / decelerate / accelerate
+- 状态透明度：hover (4%) / pressed (8%) / selected (12%) / disabled (38%)
+- 阴影：shadow-sm / shadow-md / shadow-lg
+- 图标尺寸：16px (菜单) / 20px (按钮) / 24px (标题) / 32px (空状态)
+- 响应式断点：Compact (≤1120px) / Spacious (≥1440px)
+- 布局网格：8px基础单位、1240px最大宽度
+
+**最佳实践：**
+- 动画最佳实践（DO/DON'T示例）
+- 响应式布局代码示例
+
+**覆盖率：**
+✅ tokens.scss中所有设计Token已全部文档化
+✅ 从基础到高级，覆盖完整设计系统
 
 ### v1.2.1 (2025-11-03) - 文档补充
 
@@ -859,5 +1057,5 @@
 ---
 
 **最后更新：2025-11-03**  
-**文档版本：v1.2.1**
+**文档版本：v1.3.0**
 
