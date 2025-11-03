@@ -449,9 +449,9 @@
 
 // Select 下拉框
 .select {
-  height: t.$button-height-md;
+  height: t.$button-height-sm; // 改为小尺寸，更紧凑
   padding: 0 32px 0 t.$spacing-3;
-  font-size: t.$font-size-sm;
+  font-size: t.$font-size-base; // 与正文字体一致
   font-family: t.$font-family-sans;
   color: var(--vt-color-text-primary);
   background-color: #F5F5F5 !important;
