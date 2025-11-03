@@ -110,11 +110,63 @@ ScaledBorderAndShadow: ${this.options.scaledBorderAndShadow ? 'yes' : 'no'}
   }
 
   /**
-   * 转义文本
+   * 转义文本并处理注释样式
    */
   private escapeText(text: string): string {
-    // 将 \n 替换为 ASS 的换行符 \N
-    return text.replace(/\n/g, '\\N');
+    // 1. 将 \n 替换为 ASS 的换行符 \N
+    let result = text.replace(/\n/g, '\\N');
+    
+    // 2. 自动为注释添加样式覆盖标签
+    result = this.applyAnnotationStyles(result);
+    
+    return result;
+  }
+
+  /**
+   * 自动为注释文本添加ASS样式覆盖标签
+   * @param text 字幕文本
+   * @returns 处理后的文本
+   */
+  private applyAnnotationStyles(text: string): string {
+    // 匹配（注：xxx）格式的注释
+    // 支持中文括号和英文括号
+    const annotationPattern = /([（(]注[：:][^）)]+[）)])/g;
+    
+    // 根据分辨率确定注释字号
+    // 4K (2160p) = 110, 1080p = 55
+    const videoHeight = this.options.resolution.height;
+    const annotationFontSize = videoHeight >= 2000 ? 110 : 55;
+    
+    // 注释样式覆盖标签
+    // \fs = 字号
+    // \i1 = 斜体
+    // \c&HCCCCCC& = 浅灰色
+    const styleOverride = `{\\fs${annotationFontSize}\\i1\\c&HCCCCCC&}`;
+    const resetTag = '{\\r}';
+    
+    let result = text;
+    
+    // 检查是否包含注释
+    if (annotationPattern.test(text)) {
+      // 重置正则状态
+      annotationPattern.lastIndex = 0;
+      
+      result = text.replace(annotationPattern, (match, _p1, offset) => {
+        // 检查注释后是否还有内容（排除空白字符）
+        const afterMatch = text.substring(offset + match.length).trim();
+        const hasContentAfter = afterMatch.length > 0;
+        
+        // 只在注释后还有内容时才添加重置标签
+        if (hasContentAfter) {
+          return `${styleOverride}${match}${resetTag}`;
+        } else {
+          // 注释在末尾，不需要重置标签
+          return `${styleOverride}${match}`;
+        }
+      });
+    }
+    
+    return result;
   }
 
   /**

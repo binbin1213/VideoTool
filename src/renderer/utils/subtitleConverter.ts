@@ -75,6 +75,53 @@ export function applyRegexRules(text: string, rules: RegexRule[]): string {
 }
 
 /**
+ * 自动为注释文本添加ASS样式覆盖标签
+ * @param text 字幕文本
+ * @param videoHeight 视频高度（用于确定字号）
+ * @returns 处理后的文本
+ */
+export function applyAnnotationStyles(text: string, videoHeight?: number): string {
+  // 匹配（注：xxx）格式的注释
+  // 支持中文括号和英文括号
+  const annotationPattern = /([（(]注[：:][^）)]+[）)])/g;
+  
+  // 根据分辨率确定注释字号
+  // 4K (2160p) = 110, 1080p = 55
+  const annotationFontSize = videoHeight && videoHeight >= 2000 ? 110 : 55;
+  
+  // 注释样式覆盖标签
+  // \fs = 字号
+  // \i1 = 斜体
+  // \c&HCCCCCC& = 浅灰色
+  const styleOverride = `{\\fs${annotationFontSize}\\i1\\c&HCCCCCC&}`;
+  const resetTag = '{\\r}';
+  
+  let result = text;
+  
+  // 检查是否包含注释
+  if (annotationPattern.test(text)) {
+    // 重置正则状态
+    annotationPattern.lastIndex = 0;
+    
+    result = text.replace(annotationPattern, (match, _p1, offset) => {
+      // 检查注释后是否还有内容（排除空白字符）
+      const afterMatch = text.substring(offset + match.length).trim();
+      const hasContentAfter = afterMatch.length > 0;
+      
+      // 只在注释后还有内容时才添加重置标签
+      if (hasContentAfter) {
+        return `${styleOverride}${match}${resetTag}`;
+      } else {
+        // 注释在末尾，不需要重置标签
+        return `${styleOverride}${match}`;
+      }
+    });
+  }
+  
+  return result;
+}
+
+/**
  * 解析SRT字幕
  */
 export function parseSRT(content: string): SRTSubtitle[] {
@@ -213,7 +260,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   for (const subtitle of subtitles) {
     const start = convertTimeFormat(subtitle.startTime);
     const end = convertTimeFormat(subtitle.endTime);
-    const text = subtitle.text.replace(/\n/g, '\\N');
+    
+    // 1. 转换换行符
+    let text = subtitle.text.replace(/\n/g, '\\N');
+    
+    // 2. 自动处理注释样式（传入视频高度以适配分辨率）
+    text = applyAnnotationStyles(text, videoHeight);
     
     content += `Dialogue: 0,${start},${end},${styleName},,0,0,0,,${text}\n`;
   }
