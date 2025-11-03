@@ -464,7 +464,31 @@
     "bottom": "下",
     "left": "左",
     "right": "右",
-    "cropHint": "裁剪像素数（上、下、左、右）"
+    "cropHint": "裁剪像素数（上、下、左、右）",
+    "brightness": "亮度",
+    "darker": "更暗",
+    "brighter": "更亮",
+    "contrast": "对比度",
+    "lower": "降低",
+    "higher": "提高",
+    "saturation": "饱和度",
+    "desaturated": "低饱和",
+    "vibrant": "鲜艳",
+    "hue": "色相",
+    "gamma": "伽马",
+    "normal": "正常",
+    "sharpen": "锐化",
+    "none": "无",
+    "light": "轻度",
+    "medium": "中度",
+    "strong": "强烈",
+    "denoise": "降噪",
+    "blur": "模糊",
+    "specialEffects": "特殊效果",
+    "grayscale": "黑白",
+    "negate": "负片",
+    "sepia": "怀旧",
+    "filterHint": "滤镜效果会增加转码时间，建议按需使用"
   }
 }
 

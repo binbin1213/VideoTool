@@ -458,7 +458,31 @@
     "bottom": "Bottom",
     "left": "Left",
     "right": "Right",
-    "cropHint": "Crop pixels (top, bottom, left, right)"
+    "cropHint": "Crop pixels (top, bottom, left, right)",
+    "brightness": "Brightness",
+    "darker": "Darker",
+    "brighter": "Brighter",
+    "contrast": "Contrast",
+    "lower": "Lower",
+    "higher": "Higher",
+    "saturation": "Saturation",
+    "desaturated": "Desaturated",
+    "vibrant": "Vibrant",
+    "hue": "Hue",
+    "gamma": "Gamma",
+    "normal": "Normal",
+    "sharpen": "Sharpen",
+    "none": "None",
+    "light": "Light",
+    "medium": "Medium",
+    "strong": "Strong",
+    "denoise": "Denoise",
+    "blur": "Blur",
+    "specialEffects": "Special Effects",
+    "grayscale": "Grayscale",
+    "negate": "Negate",
+    "sepia": "Sepia",
+    "filterHint": "Filters will increase transcoding time, use as needed"
   }
 }
 
