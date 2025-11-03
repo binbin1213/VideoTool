@@ -27,25 +27,18 @@
 | **[UI_DESIGN_GUIDE.md](./UI_DESIGN_GUIDE.md)** | **UI设计规范** - 13类组件、动效、响应式 | 开发任何UI时必读 ⭐⭐⭐ |
 | **[NEW_FEATURE_GUIDE.md](./NEW_FEATURE_GUIDE.md)** | **新功能开发指南** - 完整开发流程 | 新增功能页面时必读 ⭐⭐⭐ |
 
-### 专项功能文档
+### 技术文档
 
 | 文档 | 说明 | 何时使用 |
 |------|------|----------|
-| [TRANSCODE_DESIGN.md](./TRANSCODE_DESIGN.md) | 视频转码功能设计 | 了解转码功能架构 |
-| [VIDEO_TRANSCODE_SUMMARY.md](./VIDEO_TRANSCODE_SUMMARY.md) | 视频转码总结 | 转码功能参考 |
+| [SUBTITLE_REGEX_RULES.md](./SUBTITLE_REGEX_RULES.md) | 字幕正则替换规则说明 | 了解字幕转换规则 |
 
-### 部署文档
+### 部署配置文档
 
 | 文档 | 说明 | 何时使用 |
 |------|------|----------|
 | [UPDATE_SERVER_SETUP.md](./UPDATE_SERVER_SETUP.md) | 自动更新服务器配置 | 配置应用自动更新 |
 | [OSS_QUICK_SETUP.md](./OSS_QUICK_SETUP.md) | OSS存储快速配置 | 配置云存储 |
-
-### 历史参考文档
-
-| 文档 | 说明 | 状态 |
-|------|------|------|
-| [UIDesignSpec.md](./UIDesignSpec.md) | 旧版UI规范 | ⚠️ 已过时，请使用 UI_DESIGN_GUIDE.md |
 
 ---
 
@@ -56,43 +49,7 @@
 | 文档 | 说明 |
 |------|------|
 | [README.md](../README.md) | 项目总览 |
-| [VideoTool-中文.md](../VideoTool-中文.md) | 中文说明 |
-| [CHANGELOG.md](../CHANGELOG.md) | 变更日志 |
-| [PROJECT_STATUS.md](../PROJECT_STATUS.md) | 项目状态 |
-
-### 快速开始
-
-| 文档 | 说明 |
-|------|------|
-| [QUICK_START.md](../QUICK_START.md) | 快速开始指南 |
-| [DEV_PROCESS_GUIDE.md](../DEV_PROCESS_GUIDE.md) | 开发进程管理（清理残留进程） |
-
-### 测试文档
-
-| 文档 | 说明 |
-|------|------|
-| [TESTING_GUIDE.md](../TESTING_GUIDE.md) | 测试指南 |
-
-### 迁移文档
-
-| 文档 | 说明 | 状态 |
-|------|------|------|
-| [字幕转换Tab迁移指南.md](../字幕转换Tab迁移指南.md) | 字幕转换功能迁移详细过程 | ✅ 完成，可作参考 |
-| [UI迁移路线图.md](../UI迁移路线图.md) | UI升级路线图 | 📝 规划文档 |
-| [UI_UPGRADE_GUIDE.md](../UI_UPGRADE_GUIDE.md) | UI升级指南 | 📝 升级参考 |
-
-### 主题文档
-
-| 文档 | 说明 |
-|------|------|
-| [黑白灰主题方案.md](../黑白灰主题方案.md) | 主题色彩方案 |
-
-### 发布文档
-
-| 文档 | 说明 |
-|------|------|
-| [RELEASE.md](../RELEASE.md) | 发布流程 |
-| [RELEASE_NOTES_v1.1.0-dev.md](../RELEASE_NOTES_v1.1.0-dev.md) | 发布说明 |
+| [LICENSE](../LICENSE) | 开源许可证（MIT） |
 
 ---
 
@@ -103,7 +60,6 @@
 #### 开发新功能页面
 1. ✅ 先读：[NEW_FEATURE_GUIDE.md](./NEW_FEATURE_GUIDE.md)
 2. ✅ 再读：[UI_DESIGN_GUIDE.md](./UI_DESIGN_GUIDE.md)
-3. 📖 参考：[字幕转换Tab迁移指南.md](../字幕转换Tab迁移指南.md)
 
 #### 设计UI组件
 1. ✅ 查阅：[UI_DESIGN_GUIDE.md](./UI_DESIGN_GUIDE.md)
@@ -112,22 +68,21 @@
    - 动效规范
    - 响应式设计
 
+#### 了解字幕转换规则
+1. 📖 阅读：[SUBTITLE_REGEX_RULES.md](./SUBTITLE_REGEX_RULES.md)
+   - 7条正则替换规则
+   - 详细示例和说明
+   - 技术实现代码
+
 #### 实现FFmpeg功能
-1. 📖 参考：[TRANSCODE_DESIGN.md](./TRANSCODE_DESIGN.md)
-2. 📖 查看：`src/main/services/FFmpegService.ts`
-3. 📖 示例：`src/main/ipc/subtitle-convert.handlers.ts`
+1. 📖 查看：`src/main/services/FFmpegService.ts`
+2. 📖 示例：`src/main/ipc/subtitle-convert.handlers.ts`
 
 #### 配置自动更新
 1. 📖 阅读：[UPDATE_SERVER_SETUP.md](./UPDATE_SERVER_SETUP.md)
 
-#### 调试进程问题
-1. 📖 阅读：[DEV_PROCESS_GUIDE.md](../DEV_PROCESS_GUIDE.md)
-
-#### 测试功能
-1. 📖 阅读：[TESTING_GUIDE.md](../TESTING_GUIDE.md)
-
-#### 发布新版本
-1. 📖 阅读：[RELEASE.md](../RELEASE.md)
+#### 配置云存储
+1. 📖 阅读：[OSS_QUICK_SETUP.md](./OSS_QUICK_SETUP.md)
 
 ---
 
@@ -185,12 +140,13 @@
 - [NEW_FEATURE_GUIDE.md](./NEW_FEATURE_GUIDE.md) 中的"开发检查清单"
 - [UI_DESIGN_GUIDE.md](./UI_DESIGN_GUIDE.md) 中的"实施检查清单"
 
-### Q: 旧文档还需要看吗？
+### Q: 文档目录有多少个文档？
 
 **A:** 
-- ✅ **必读**：`NEW_FEATURE_GUIDE.md` + `UI_DESIGN_GUIDE.md`
-- ⚠️ **已过时**：`UIDesignSpec.md`（已被 `UI_DESIGN_GUIDE.md` 取代）
-- 📖 **可参考**：其他文档按需查阅
+- ✅ **核心开发文档**：2份（必读）
+- 📖 **技术文档**：1份
+- ⚙️ **部署配置文档**：2份
+- 📄 **总计**：5份精简文档
 
 ---
 
@@ -220,9 +176,17 @@
 
 ## 📊 文档统计
 
+**docs/ 目录：**
 - 📄 核心开发文档：**2份**（必读）
-- 📄 专项功能文档：2份
-- 📄 部署文档：2份
-- 📄 总文档数：**20+ 份**
+- 📄 技术文档：**1份**
+- 📄 部署配置文档：**2份**
+- 📄 docs/ 总计：**5份**
+
+**根目录：**
+- 📄 README.md + LICENSE：**2份**
+
+**整体统计：**
+- 📄 项目总文档数：**7份**（从53份精简到7份）
+- 📉 文档精简率：**87%**
 - ✅ 新功能开发覆盖率：**100%**
 
