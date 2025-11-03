@@ -35,6 +35,7 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
   const [result, setResult] = useState<{ success: boolean; message: string; outputPath?: string } | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [selectedStyle, setSelectedStyle] = useState('译文字幕 底部');
+  const [targetResolution, setTargetResolution] = useState<'1080p' | '4k'>('1080p'); // 目标分辨率
   const [regexRules, setRegexRules] = useState<any[]>([]);
   const [applyRegex, setApplyRegex] = useState(true);
   const [enableWatermark, setEnableWatermark] = useState(false);
@@ -213,8 +214,12 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
         position: watermarkPosition
       } : undefined;
       
-      const assContent = generateASS(processedSubtitles, selectedStyle, watermark);
+      // 根据目标分辨率选择 videoHeight 参数
+      const videoHeight = targetResolution === '4k' ? 2160 : 1080;
+      
+      const assContent = generateASS(processedSubtitles, selectedStyle, watermark, undefined, videoHeight);
       addLocalLog(`使用样式: ${selectedStyle}`, 'info');
+      addLocalLog(`目标分辨率: ${targetResolution === '4k' ? '4K (2160p)' : '1080p'}`, 'info');
       if (watermark) {
         addLocalLog(`已添加水印: ${watermarkText} (位置: ${watermarkPosition})`, 'info');
       }
@@ -493,6 +498,38 @@ function SubtitleConvertTab({ addLog }: SubtitleConvertTabProps) {
                       ) : (
                         <span className={`${styles.badge} ${styles.badgeCustom}`}>{t('subtitleConvert.custom') || '自定义'}</span>
                       )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 目标分辨率选择 */}
+              <div className={styles.formRow}>
+                <label className={styles.formLabel}>{t('subtitleConvert.targetResolution') || '目标分辨率'}:</label>
+                <div className={styles.formControl}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <label className={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name="targetResolution"
+                        value="1080p"
+                        checked={targetResolution === '1080p'}
+                        onChange={(e) => setTargetResolution(e.target.value as '1080p' | '4k')}
+                      />
+                      <span>1080p</span>
+                    </label>
+                    <label className={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name="targetResolution"
+                        value="4k"
+                        checked={targetResolution === '4k'}
+                        onChange={(e) => setTargetResolution(e.target.value as '1080p' | '4k')}
+                      />
+                      <span>4K (2160p)</span>
+                    </label>
+                    <span style={{ fontSize: '12px', color: 'var(--vt-color-text-tertiary)', marginLeft: '8px' }}>
+                      💡 {t('subtitleConvert.resolutionHint') || '根据目标视频分辨率选择，4K视频字幕字号更大'}
                     </span>
                   </div>
                 </div>

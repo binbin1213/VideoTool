@@ -139,6 +139,8 @@
     "fileList": "文件列表",
     "settings": "转换设置",
     "styleTemplate": "ASS样式模板",
+    "targetResolution": "目标分辨率",
+    "resolutionHint": "根据目标视频分辨率选择，4K视频字幕字号更大",
     "cleaningRules": "清理规则",
     "applyRules": "应用 ({{count}})",
     "autoCleanTags": "自动清理标签与标点",

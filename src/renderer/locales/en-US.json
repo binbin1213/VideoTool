@@ -139,6 +139,8 @@
     "fileList": "File List",
     "settings": "Conversion Settings",
     "styleTemplate": "ASS Style Template",
+    "targetResolution": "Target Resolution",
+    "resolutionHint": "Select based on target video resolution, 4K uses larger font size",
     "cleaningRules": "Cleaning Rules",
     "applyRules": "Apply ({{count}})",
     "autoCleanTags": "Auto Clean Tags & Punctuation",
