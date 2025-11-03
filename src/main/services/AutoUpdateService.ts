@@ -180,15 +180,20 @@ export class AutoUpdateService {
       return;
     }
 
-    try {
-      // 延迟 3 秒后检查，避免启动时卡顿
-      setTimeout(async () => {
-        log.info('应用启动，自动检查更新...');
-        await this.checkForUpdates();
-      }, 3000);
-    } catch (error) {
-      log.error('启动时检查更新失败:', error);
-    }
+    // 临时禁用启动时自动检查（避免OSS未配置时的错误）
+    // 用户可以在"关于"页面手动检查更新
+    log.info('启动时自动更新检查已禁用，可在关于页面手动检查');
+    return;
+
+    // try {
+    //   // 延迟 3 秒后检查，避免启动时卡顿
+    //   setTimeout(async () => {
+    //     log.info('应用启动，自动检查更新...');
+    //     await this.checkForUpdates();
+    //   }, 3000);
+    // } catch (error) {
+    //   log.error('启动时检查更新失败:', error);
+    // }
   }
 }
 
