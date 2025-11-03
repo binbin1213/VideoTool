@@ -12,10 +12,10 @@
   align-items: center;
   justify-content: center;
   gap: t.$spacing-2;
-  height: t.$button-height-md; // 32px
-  padding: 0 t.$spacing-4; // 16px
-  font-size: t.$font-size-sm; // 14px
-  font-weight: t.$font-weight-medium; // 500
+  height: t.$button-height-sm; // 28px，与选择框同高
+  padding: 0 t.$spacing-3; // 12px，更紧凑
+  font-size: t.$font-size-base; // 14px，与正文一致
+  font-weight: 400; // 400，正常字重
   font-family: t.$font-family-sans;
   line-height: 1;
   text-align: center;
@@ -136,11 +136,11 @@
   }
 }
 
-// 中等按钮（默认）
+// 中等按钮（默认）- 现在与选择框同高
 .buttonMedium {
-  height: t.$button-height-md; // 32px
-  padding: 0 t.$spacing-4; // 16px
-  font-size: t.$font-size-sm; // 14px
+  height: t.$button-height-sm; // 28px，与选择框同高
+  padding: 0 t.$spacing-3; // 12px
+  font-size: t.$font-size-base; // 14px，与正文一致
 }
 
 // 大按钮
