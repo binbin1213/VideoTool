@@ -10,13 +10,14 @@
   },
   "copyright": "Copyright © 2025 Binbin. All rights reserved.",
   "license": "MIT",
+  "type": "module",
   "private": true,
   "scripts": {
-    "dev": "node scripts/dev-safe.js",
+    "dev": "node scripts/dev-safe.cjs",
     "dev:concurrent": "concurrently \"pnpm:dev:renderer\" \"pnpm:dev:main\" -k -r --kill-others",
     "dev:renderer": "vite",
     "dev:main": "cross-env NODE_ENV=development electron .",
-    "kill-dev": "node scripts/kill-dev.js",
+    "kill-dev": "node scripts/kill-dev.cjs",
     "build": "pnpm run build:renderer && pnpm run build:main",
     "build:renderer": "vite build",
     "build:main": "tsc --build tsconfig.main.json",
@@ -84,7 +85,7 @@
   "build": {
     "appId": "com.videotool.app",
     "productName": "VideoTool",
-    "afterPack": "scripts/afterPack.js",
+    "afterPack": "scripts/afterPack.cjs",
     "generateUpdatesFilesForAllChannels": false,
     "directories": {
       "output": "release",
