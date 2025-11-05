@@ -33,14 +33,14 @@
 
 ## 功能特性
 
-- **字幕格式转换** - SRT→ASS 智能转换，支持批量转换，可自定义样式和水印
-- **多轨道字幕封装** - 软字幕支持同时封装多个语言字幕轨道，自动识别语言代码
-- **字幕烧录** - 将字幕永久嵌入视频，支持 ASS/SRT 格式，硬/软字幕双模式
-- **音视频合并** - 支持硬件加速，快速合并音频和视频文件  
-- **样式编辑器** - 实时预览ASS字幕样式，支持自定义预设保存
-- **自动化 FFmpeg** - 一键安装 FFmpeg，无需手动配置
+- **字幕格式转换** - SRT/ASS/VTT 三种格式互转，支持批量转换，可自定义样式模板
+- **视频转码** - 支持 MP4/MKV/AVI 等格式，AI 智能推荐参数，多轨道音频/字幕处理
+- **字幕烧录** - 硬字幕（永久嵌入）和软字幕（封装到 MKV）双模式，支持 ASS/SRT/VTT 格式
+- **音视频合并** - 支持硬件加速（VideoToolbox/NVENC/QSV），快速合并音频和视频文件  
+- **样式编辑器** - 实时预览 ASS 字幕样式，支持自定义预设保存和导出
+- **自动化 FFmpeg** - 一键安装 FFmpeg，自动配置，无需手动设置
 - **跨平台支持** - macOS（Intel + Apple Silicon）、Windows
-- **现代化界面** - 简洁美观的用户界面，操作流畅
+- **现代化界面** - 简洁美观的用户界面，支持亮色/暗色主题，中英文双语
 
 > 更多功能正在开发中，敬请期待！查看 [项目状态](https://github.com/binbin1213/VideoTool/wiki/Project-Status) 了解详情
 
@@ -100,8 +100,8 @@ pnpm build:all
 本项目配置了 GitHub Actions 自动构建。创建 Git Tag 即可触发自动构建和发布：
 
 ```bash
-git tag v1.0.2
-git push origin v1.0.2
+git tag v1.3.0
+git push origin v1.3.0
 ```
 
 > 详细的发布流程和配置说明请查看 [发布流程 Wiki](https://github.com/binbin1213/VideoTool/wiki/Release-Process)
