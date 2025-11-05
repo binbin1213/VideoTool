@@ -1,16 +1,13 @@
 @use '../../../../../styles/tokens' as t;
 
 .container {
-  background-color: #FFFFFF;
-  border: 1px solid var(--vt-color-border);
-  border-radius: t.$radius-lg;
-  overflow: hidden;
+  // 去掉边框和背景色，保持简洁 ✅
+  padding: 0;
 }
 
 .header {
-  padding: t.$spacing-3 t.$spacing-4;
-  background-color: #F9FAFB;
-  border-bottom: 1px solid var(--vt-color-border);
+  padding: 0;
+  margin-bottom: t.$spacing-3;
   display: flex;
   align-items: center;
   gap: t.$spacing-2;
@@ -20,7 +17,7 @@
 }
 
 .content {
-  padding: t.$spacing-4;
+  padding: 0;
 }
 
 .field {
@@ -68,7 +65,7 @@
   padding: 0 t.$spacing-3;
   font-size: t.$font-size-sm;
   color: var(--vt-color-text-primary);
-  background-color: #FFFFFF;
+  background-color: var(--vt-color-surface-elev1); // 使用主题变量 ✅
   border: 1px solid var(--vt-color-border);
   border-radius: t.$radius-sm;
   outline: none;
@@ -85,9 +82,7 @@
 
 .hint {
   margin-top: t.$spacing-3;
-  padding: t.$spacing-3;
-  background-color: #F9FAFB;
-  border-radius: t.$radius-sm;
+  padding: 0;
   font-size: t.$font-size-xs;
   line-height: 1.6;
   color: var(--vt-color-text-secondary);

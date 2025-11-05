@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #F5F5F5; // 浅灰色背景
+  background-color: var(--vt-color-surface); // 使用主题变量 ✅
   user-select: none; // 禁止选中文字
   -webkit-user-select: none; // Safari
 }
@@ -73,84 +73,42 @@
 // ========================================
 // 3. 表单控件
 // ========================================
-
-.select {
-  height: t.$button-height-sm; // 28px，与按钮同高
-  padding: 0 32px 0 t.$spacing-3;
-  font-size: t.$font-size-base; // 14px，与正文一致
-  font-weight: 400; // 正常字重
-  font-family: t.$font-family-sans;
-  color: var(--vt-color-text-primary);
-  background-color: #F5F5F5 !important;
-  border: 1px solid #D1D1D6;
-  border-radius: 6px;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  background-image: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
-      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
-      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-    </svg>") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 6px center !important;
-  background-size: 18px 18px !important;
-  
-  &:hover:not(:disabled) {
-    border-color: #B8B8BD;
-    background-color: #EBEBEB !important;
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: var(--vt-color-focus);
-    background-color: #F5F5F5 !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent), 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-}
+// Select 样式已移至全局统一文件 Select.module.scss ✅
 
 .searchGroup {
   display: flex;
   align-items: center;
-  width: 250px;
+  width: 180px; // 缩小宽度，更紧凑 ✅
 }
 
 .searchIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 t.$spacing-3;
-  height: t.$button-height-md;
-  background-color: #FFFFFF;
-  border: 1px solid #D1D1D6;
-  border-right: none;
-  border-radius: 6px 0 0 6px;
-  color: var(--vt-color-text-tertiary);
+  display: none; // 隐藏搜索图标区域，简化界面 ✅
 }
 
 .searchInput {
   flex: 1;
-  height: t.$button-height-md;
+  height: t.$button-height-sm; // 改为 28px，与 select 一致 ✅
   padding: 0 t.$spacing-3;
-  font-size: t.$font-size-sm;
-  font-family: t.$font-family-sans;
+  font-size: t.$font-size-base; // 改为 14px ✅
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   color: var(--vt-color-text-primary);
-  background-color: #FFFFFF;
-  border: 1px solid #D1D1D6;
-  border-radius: 0 6px 6px 0;
+  background-color: var(--vt-color-surface-elev1) !important; // 使用主题变量 ✅
+  border: none !important; // 无边框 ✅
+  border-radius: 6px !important; // 统一圆角 ✅
   outline: none;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  box-shadow: none !important; // 默认无阴影 ✅
   
   &::placeholder {
     color: var(--vt-color-text-tertiary);
   }
   
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important; // 悬停时出现阴影 ✅
+  }
+  
   &:focus {
-    border-color: var(--vt-color-focus);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent);
+    background-color: var(--vt-color-surface) !important; // 使用主题变量 ✅
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 2px 4px rgba(0, 0, 0, 0.15) !important;
   }
 }
 
@@ -177,7 +135,7 @@
 .logList {
   flex: 1;
   overflow-y: auto;
-  background-color: #FFFFFF;
+  background-color: var(--vt-color-surface-elev1); // 使用主题变量 ✅
   border: 1px solid #D1D1D6;
   border-radius: 6px;
   padding: t.$spacing-3;

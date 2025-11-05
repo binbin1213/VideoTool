@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  FaVideo, 
-  FaMusic, 
-  FaPlay, 
-  FaCog, 
-  FaCheckCircle,
-  FaTimesCircle,
-  FaBolt
-} from 'react-icons/fa';
 import type { VideoInfo, AudioInfo, MergeProgress } from '../../../shared/types/merge.types';
 import type { TaskProgress } from '../../App';
 import styles from './MergeTab.module.scss';
 import buttonStyles from '../../styles/components/Button.module.scss';
-import Switch from '../common/Switch';
+import selectStyles from '../../styles/components/Select.module.scss';
+import Switch from '../Common/Switch';
 
 const { ipcRenderer } = (window as any).electron;
 
@@ -32,12 +24,12 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
   const [audioInfo, setAudioInfo] = useState<AudioInfo | null>(null);
   const [result, setResult] = useState<{ success: boolean; message: string; outputPath?: string } | null>(null);
   const [videoCodec, setVideoCodec] = useState<'copy' | 'libx264' | 'libx265'>('copy');
-  const [audioCodec, setAudioCodec] = useState<'aac' | 'mp3' | 'copy'>('aac');
+  const [audioCodec, setAudioCodec] = useState<'aac' | 'mp3' | 'copy'>('copy');
   const [audioBitrate, setAudioBitrate] = useState('192k');
   const [useHardwareAccel, setUseHardwareAccel] = useState(false);
   const [hwaccel, setHwaccel] = useState<'videotoolbox' | 'nvenc' | 'qsv' | 'none'>('videotoolbox');
 
-  // 监听进度更新（使用全局状态）
+  // 监听进度更新
   useEffect(() => {
     const progressHandler = (_event: any, progressData: MergeProgress) => {
       setTaskProgress({
@@ -55,7 +47,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
     return () => {
       ipcRenderer.removeListener('merge-progress', progressHandler);
     };
-  }, [setTaskProgress]);
+  }, [setTaskProgress, t]);
 
   const addLocalLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     addLog(message, type);
@@ -69,7 +61,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
         setResult(null);
         addLocalLog(`${t('merge.selectVideo', 'Select video')}: ${filePath}`, 'info');
 
-        // 获取视频信息
         const info = await ipcRenderer.invoke('get-video-info', filePath);
         if (info) {
           setVideoInfo(info);
@@ -89,7 +80,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
         setResult(null);
         addLocalLog(`${t('merge.selectAudio', 'Select audio')}: ${filePath}`, 'info');
 
-        // 获取音频信息
         const info = await ipcRenderer.invoke('get-audio-info', filePath);
         if (info) {
           setAudioInfo(info);
@@ -107,7 +97,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
       return;
     }
 
-    // 更新全局状态
     setTaskProgress({
       taskType: 'merge',
       isRunning: true,
@@ -119,7 +108,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
     try {
       addLocalLog(t('merge.startMerging', 'Starting merge'), 'info');
 
-      // 选择输出路径
       const videoFileName = videoFile.split(/[\\/]/).pop() || 'output.mp4';
       const defaultFileName = videoFileName.replace(/\.[^.]+$/, '_merged.mp4');
       const outputPath = await ipcRenderer.invoke('select-output-path', defaultFileName);
@@ -140,7 +128,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
         addLocalLog(`${t('merge.hardwareAccel', 'Hardware Acceleration')}: ${hwaccel.toUpperCase()}`, 'info');
       }
 
-      // 调用合并
       const result = await ipcRenderer.invoke('merge-audio-video', {
         videoPath: videoFile,
         audioPath: audioFile,
@@ -220,12 +207,9 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
 
   return (
     <div className={styles.container}>
-      {/* 标题栏（支持拖拽） */}
+      {/* 标题栏 */}
       <div className={styles.header}>
-        <h2>
-          <FaPlay />
-          {t('merge.title')}
-        </h2>
+        <h2>{t('merge.title')}</h2>
       </div>
 
       {/* 内容区 */}
@@ -236,7 +220,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
           {ffmpegAvailable === false && (
             <div className={`${styles.alert} ${styles.alertError}`}>
               <div className={styles.alertHeading}>
-                <FaTimesCircle />
                 {t('merge.ffmpegNotAvailable')}
               </div>
               <p className={styles.alertText}>
@@ -246,18 +229,13 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
           )}
 
           {/* 文件选择区 */}
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>
-              <FaVideo />
-              {t('merge.videoFile')}
-            </h3>
-            <div className={styles.formRow}>
+          <div className={styles.fileRow}>
               <button
-                className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonMinWidth}`}
+                className={buttonStyles.buttonSecondary}
                   onClick={handleSelectVideo}
                 disabled={taskProgress.isRunning}
                 >
-                {t('merge.browse')}
+              {t('merge.selectVideo') || '选择视频'}
               </button>
               <div className={styles.fileInfo}>
                   {videoFile ? (
@@ -272,20 +250,14 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
                 {videoInfo.width}×{videoInfo.height} · {videoInfo.codec} · {videoInfo.fps.toFixed(2)}fps · {formatDuration(videoInfo.duration)} · {formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}
               </div>
             )}
-          </div>
 
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>
-              <FaMusic />
-              {t('merge.audioFile')}
-            </h3>
-            <div className={styles.formRow}>
+          <div className={styles.fileRow}>
               <button
-                className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonMinWidth}`}
+                className={buttonStyles.buttonSecondary}
                   onClick={handleSelectAudio}
                 disabled={taskProgress.isRunning}
                 >
-                {t('merge.browse')}
+              {t('merge.selectAudio') || '选择音频'}
               </button>
               <div className={styles.fileInfo}>
                   {audioFile ? (
@@ -300,19 +272,17 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
                 {audioInfo.codec} · {Math.round(audioInfo.bitrate / 1000)}kbps · {audioInfo.sampleRate}Hz · {audioInfo.channels}声道 · {formatDuration(audioInfo.duration)}
               </div>
             )}
-          </div>
 
           {/* 编码设置 */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>
-              <FaCog />
               {t('merge.videoSettings')} / {t('merge.audioSettings')}
             </h3>
 
             <div className={styles.formRow}>
               <label className={styles.formLabel}>{t('merge.videoCodec')}</label>
               <select
-                className={styles.select}
+                className={selectStyles.select}
                           value={videoCodec}
                           onChange={(e) => setVideoCodec(e.target.value as any)}
                           disabled={taskProgress.isRunning}
@@ -326,7 +296,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
             <div className={styles.formRow}>
               <label className={styles.formLabel}>{t('merge.audioCodec')}</label>
               <select
-                className={styles.select}
+                className={selectStyles.select}
                           value={audioCodec}
                           onChange={(e) => setAudioCodec(e.target.value as any)}
                           disabled={taskProgress.isRunning}
@@ -341,7 +311,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
               <div className={styles.formRow}>
                 <label className={styles.formLabel}>{t('merge.audioBitrate')}</label>
                 <select
-                  className={styles.select}
+                  className={selectStyles.select}
                         value={audioBitrate}
                         onChange={(e) => setAudioBitrate(e.target.value)}
                         disabled={taskProgress.isRunning}
@@ -354,10 +324,8 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
                   </div>
             )}
 
-            {/* 硬件加速 */}
             <div className={styles.formRow}>
               <label className={styles.formLabel}>
-                <FaBolt />
                 {t('merge.hardwareAccel')}
               </label>
               <Switch
@@ -372,7 +340,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
               <div className={styles.formRow}>
                 <label className={styles.formLabel}>{t('merge.accelerationType')}</label>
                 <select
-                  className={styles.select}
+                  className={selectStyles.select}
                   value={hwaccel}
                   onChange={(e) => setHwaccel(e.target.value as any)}
                   disabled={taskProgress.isRunning}
@@ -388,7 +356,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
           {/* 操作按钮 */}
           <div className={styles.buttonGroup}>
             <button
-              className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonLarge} ${buttonStyles.buttonMinWidth}`}
+              className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonLarge}`}
                   onClick={handleMerge}
                   disabled={!videoFile || !audioFile || taskProgress.isRunning || ffmpegAvailable === false}
                 >
@@ -397,7 +365,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
                 : t('merge.startMerge')}
             </button>
             <button
-              className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonLarge} ${buttonStyles.buttonMinWidth}`}
+              className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonLarge}`}
                   onClick={handleClearAll}
                   disabled={taskProgress.isRunning || (!videoFile && !audioFile)}
                 >
@@ -407,7 +375,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
 
           {/* 合并进度 */}
           {taskProgress.isRunning && taskProgress.taskType === 'merge' && (
-            <div className={styles.section}>
+            <div className={styles.progressSection}>
               <div className={styles.progressBar}>
                 <div 
                   className={styles.progressFill} 
@@ -424,7 +392,6 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
           {result && (
             <div className={`${styles.alert} ${result.success ? styles.alertSuccess : styles.alertError}`}>
               <div className={styles.alertHeading}>
-                {result.success ? <FaCheckCircle /> : <FaTimesCircle />}
                 {result.success ? t('merge.mergeSuccess') : t('merge.mergeFailed')}
               </div>
               <p className={styles.alertText}>{result.message}</p>
@@ -439,9 +406,7 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
 
         {/* 侧边栏 */}
         <div className={styles.infoArea}>
-          <h6>
-            {t('merge.guideTitle')}
-          </h6>
+          <h6>{t('merge.guideTitle')}</h6>
 
           <h6>{t('merge.guideSteps')}</h6>
           <ol>
@@ -466,4 +431,3 @@ function MergeTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailable = tru
 }
 
 export default MergeTab;
-

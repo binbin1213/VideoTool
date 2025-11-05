@@ -1,10 +1,8 @@
 @use '../../../../../styles/tokens' as t;
 
 .container {
-  background-color: #FFFFFF;
-  border: 1px solid var(--vt-color-border);
-  border-radius: t.$radius-lg;
-  padding: t.$spacing-4;
+  // 去掉边框和背景色，保持简洁 ✅
+  padding: 0;
 }
 
 .title {
@@ -25,21 +23,23 @@
   flex-direction: column;
   align-items: center;
   padding: t.$spacing-4;
-  border: 2px solid var(--vt-color-border);
-  border-radius: t.$radius-md;
-  background-color: #FFFFFF;
+  border: 0.5px solid rgba(0, 0, 0, 0.12); // 更细的边框 ✅
+  border-radius: 8px;
+  background-color: #FFFFFF; // 白色背景 ✅
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); // 轻微阴影 ✅
 
   &:hover:not(:disabled) {
     border-color: var(--vt-color-brand-primary);
-    background-color: color-mix(in srgb, var(--vt-color-brand-primary) 5%, #FFFFFF);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); // hover 时增加阴影 ✅
   }
 
   &.active {
     border-color: var(--vt-color-brand-primary);
-    background-color: color-mix(in srgb, var(--vt-color-brand-primary) 10%, #FFFFFF);
+    border-width: 1.5px; // 激活时边框更明显 ✅
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.15); // 品牌色阴影 ✅
   }
 
   &:disabled {

@@ -25,6 +25,16 @@ interface SRTSubtitle {
   text: string;
 }
 
+// 通用字幕接口（用于格式转换）
+export interface Subtitle {
+  index: number;
+  startTime: string; // 统一格式: HH:MM:SS.mmm
+  endTime: string;   // 统一格式: HH:MM:SS.mmm
+  text: string;
+}
+
+export type SubtitleFormat = 'srt' | 'ass' | 'vtt';
+
 interface ASSStyleParams {
   name: string;
   fontname: string;
@@ -127,7 +137,8 @@ export function applyAnnotationStyles(text: string, videoHeight?: number): strin
 export function parseSRT(content: string): SRTSubtitle[] {
   const subtitles: SRTSubtitle[] = [];
   
-  content = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  // 移除 BOM 和统一换行符
+  content = content.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const blocks = content.split(/\n\n+/);
   
   for (const block of blocks) {
@@ -161,11 +172,11 @@ export function parseSRT(content: string): SRTSubtitle[] {
  * @param watermark 水印配置（可选）
  * @param customStyleParams 自定义样式参数（可选）
  * @param videoHeight 视频高度（像素，可选）- 用于自动选择 1080p/4K 模板
- * @returns ASS 格式字幕内容
+ * @returns UTF-8 编码的 ASS 格式字幕内容
  */
 export function generateASS(
   subtitles: SRTSubtitle[], 
-  styleName: string = '译文字幕 底部',
+  styleName: string = '电影字幕 底部', // 使用模板中的默认样式 ✅
   watermark?: { text: string; position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' },
   customStyleParams?: ASSStyleParams,
   videoHeight?: number
@@ -198,12 +209,12 @@ Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour,
     content += styleParamsToString(customStyleParams) + '\n';
   } else {
     // 从选中的模板中获取样式
-    const style = selectedStyles[styleName] || selectedStyles['译文字幕 底部'];
+    const style = selectedStyles[styleName] || selectedStyles['电影字幕 底部']; // 使用模板中的默认样式 ✅
     if (style) {
       content += styleParamsToString(style) + '\n';
     } else {
       // 降级：使用默认 1080p 样式
-      const defaultStyle = PRESET_STYLES['译文字幕 底部'];
+      const defaultStyle = PRESET_STYLES['电影字幕 底部']; // 使用模板中的默认样式 ✅
       content += styleParamsToString(defaultStyle) + '\n';
     }
   }
@@ -430,5 +441,282 @@ export function getStyleParams(name: string): ASSStyleParams | undefined {
  */
 export function styleParamsToString(style: ASSStyleParams): string {
   return `Style: ${style.name},${style.fontname},${style.fontsize},${style.primaryColour},${style.secondaryColour},${style.outlineColour},${style.backColour},${style.bold},${style.italic},${style.underline},${style.strikeOut},${style.scaleX},${style.scaleY},${style.spacing},${style.angle},${style.borderStyle},${style.outline},${style.shadow},${style.alignment},${style.marginL},${style.marginR},${style.marginV},${style.encoding},${style.lineSpacing}`;
+}
+
+// ========================================
+// 多格式支持：VTT 和 ASS 解析/生成
+// ========================================
+
+/**
+ * 解析 VTT 字幕文件
+ */
+export function parseVTT(content: string): Subtitle[] {
+  const subtitles: Subtitle[] = [];
+  
+  // 移除 BOM 和统一换行符
+  content = content.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  
+  // 移除 WEBVTT 头部和样式/注释块
+  const lines = content.split('\n');
+  let inCueBlock = false;
+  let currentCue: {index: number; time?: string; text: string[]} = {index: 0, text: []};
+  let cueIndex = 1;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // 跳过 WEBVTT 头部
+    if (line.startsWith('WEBVTT') || line.startsWith('NOTE') || line.startsWith('STYLE')) {
+      continue;
+    }
+    
+    // 检测时间行 (HH:MM:SS.mmm --> HH:MM:SS.mmm)
+    const timeMatch = line.match(/^(\d{2}:\d{2}:\d{2}\.\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}\.\d{3})/);
+    
+    if (timeMatch) {
+      // 保存上一个 cue
+      if (currentCue.time && currentCue.text.length > 0) {
+        const [startTime, endTime] = currentCue.time.split(' --> ');
+        subtitles.push({
+          index: currentCue.index,
+          startTime: startTime.trim(),
+          endTime: endTime.trim(),
+          text: currentCue.text.join('\n')
+        });
+      }
+      
+      // 开始新的 cue
+      currentCue = {
+        index: cueIndex++,
+        time: line,
+        text: []
+      };
+      inCueBlock = true;
+    } else if (line === '' && inCueBlock) {
+      // 空行表示 cue 结束
+      if (currentCue.time && currentCue.text.length > 0) {
+        const [startTime, endTime] = currentCue.time.split(' --> ');
+        subtitles.push({
+          index: currentCue.index,
+          startTime: startTime.trim(),
+          endTime: endTime.trim(),
+          text: currentCue.text.join('\n')
+        });
+        currentCue = {index: 0, text: []};
+      }
+      inCueBlock = false;
+    } else if (inCueBlock && line !== '' && !line.match(/^\d+$/)) {
+      // cue 文本内容（跳过可能的 cue 标识符数字）
+      currentCue.text.push(line);
+    }
+  }
+  
+  // 处理最后一个 cue
+  if (currentCue.time && currentCue.text.length > 0) {
+    const [startTime, endTime] = currentCue.time.split(' --> ');
+    subtitles.push({
+      index: currentCue.index,
+      startTime: startTime.trim(),
+      endTime: endTime.trim(),
+      text: currentCue.text.join('\n')
+    });
+  }
+  
+  return subtitles;
+}
+
+/**
+ * 解析 ASS 字幕文件（提取纯文本）
+ */
+export function parseASS(content: string): Subtitle[] {
+  const subtitles: Subtitle[] = [];
+  
+  // 移除 BOM 和统一换行符
+  content = content.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  
+  const lines = content.split('\n');
+  let inEvents = false;
+  let index = 1;
+  
+  for (const line of lines) {
+    const trimmed = line.trim();
+    
+    // 检测 Events 部分
+    if (trimmed === '[Events]') {
+      inEvents = true;
+      continue;
+    }
+    
+    // 如果进入新的部分，退出 Events
+    if (trimmed.startsWith('[') && trimmed !== '[Events]') {
+      inEvents = false;
+      continue;
+    }
+    
+    // 解析 Dialogue 行
+    if (inEvents && trimmed.startsWith('Dialogue:')) {
+      try {
+        // 格式: Dialogue: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+        const parts = trimmed.substring(9).split(','); // 去掉 "Dialogue:"
+        
+        if (parts.length >= 10) {
+          const startTime = parts[1].trim();
+          const endTime = parts[2].trim();
+          const text = parts.slice(9).join(',').trim(); // Text 可能包含逗号
+          
+          // 移除 ASS 样式标签 (如 {\xxx})
+          const cleanText = text.replace(/\{[^}]*\}/g, '');
+          
+          if (cleanText) {
+            subtitles.push({
+              index: index++,
+              startTime: convertASSTimeToStandard(startTime),
+              endTime: convertASSTimeToStandard(endTime),
+              text: cleanText
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing ASS dialogue line:', error);
+      }
+    }
+  }
+  
+  return subtitles;
+}
+
+/**
+ * 生成 VTT 字幕文件
+ * @returns UTF-8 编码的 VTT 内容
+ */
+export function generateVTT(subtitles: Subtitle[]): string {
+  let content = 'WEBVTT\n\n';
+  
+  for (const sub of subtitles) {
+    content += `${sub.index}\n`;
+    content += `${sub.startTime} --> ${sub.endTime}\n`;
+    content += `${sub.text}\n\n`;
+  }
+  
+  return content;
+}
+
+/**
+ * 生成 SRT 字幕文件
+ * @returns UTF-8 编码的 SRT 内容
+ */
+export function generateSRT(subtitles: Subtitle[]): string {
+  let content = '';
+  
+  for (const sub of subtitles) {
+    // 将时间格式转换为 SRT 格式 (HH:MM:SS,mmm)
+    const startTime = sub.startTime.replace('.', ',');
+    const endTime = sub.endTime.replace('.', ',');
+    
+    content += `${sub.index}\n`;
+    content += `${startTime} --> ${endTime}\n`;
+    content += `${sub.text}\n\n`;
+  }
+  
+  return content;
+}
+
+/**
+ * ASS 时间格式转标准格式
+ * ASS: H:MM:SS.CC (小时可能是一位数，厘秒两位)
+ * 标准: HH:MM:SS.mmm
+ */
+function convertASSTimeToStandard(assTime: string): string {
+  const match = assTime.match(/^(\d{1,2}):(\d{2}):(\d{2})\.(\d{2})$/);
+  if (!match) return assTime;
+  
+  const hours = match[1].padStart(2, '0');
+  const minutes = match[2];
+  const seconds = match[3];
+  const centiseconds = match[4];
+  const milliseconds = (parseInt(centiseconds) * 10).toString().padStart(3, '0');
+  
+  return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+}
+
+/**
+ * 统一字幕转换函数
+ * @param content 输入字幕内容（UTF-8 编码）
+ * @param inputFormat 输入格式
+ * @param outputFormat 输出格式
+ * @param options 转换选项（用于输出 ASS）
+ * @returns UTF-8 编码的输出字幕内容
+ */
+export function convertSubtitle(
+  content: string,
+  inputFormat: SubtitleFormat,
+  outputFormat: SubtitleFormat,
+  options?: {
+    styleName?: string;
+    watermark?: { text: string; position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' };
+    customStyleParams?: ASSStyleParams;
+    videoHeight?: number;
+    regexRules?: RegexRule[];
+    applyRegex?: boolean;
+  }
+): string {
+  // 1. 解析输入格式到通用格式
+  let subtitles: Subtitle[];
+  
+  switch (inputFormat) {
+    case 'srt': {
+      const srtSubs = parseSRT(content);
+      subtitles = srtSubs.map(s => ({
+        index: s.index,
+        startTime: s.startTime.replace(',', '.'), // SRT 使用逗号，转为点
+        endTime: s.endTime.replace(',', '.'),
+        text: s.text
+      }));
+      break;
+    }
+    case 'vtt':
+      subtitles = parseVTT(content);
+      break;
+    case 'ass':
+      subtitles = parseASS(content);
+      break;
+    default:
+      throw new Error(`Unsupported input format: ${inputFormat}`);
+  }
+  
+  // 2. 应用正则规则（如果启用且提供）
+  if (options?.applyRegex && options?.regexRules) {
+    subtitles = subtitles.map(sub => ({
+      ...sub,
+      text: applyRegexRules(sub.text, options.regexRules!)
+    }));
+  }
+  
+  // 3. 转换为输出格式
+  switch (outputFormat) {
+    case 'srt':
+      return generateSRT(subtitles);
+    case 'vtt':
+      return generateVTT(subtitles);
+    case 'ass': {
+      // 转换为 SRTSubtitle 格式（generateASS 需要）
+      const srtSubs: SRTSubtitle[] = subtitles.map(s => ({
+        index: s.index,
+        startTime: s.startTime.replace('.', ','), // ASS 生成函数内部处理时间格式
+        endTime: s.endTime.replace('.', ','),
+        text: options?.videoHeight ? applyAnnotationStyles(s.text, options.videoHeight) : s.text
+      }));
+      
+      return generateASS(
+        srtSubs,
+        options?.styleName || '电影字幕 底部',
+        options?.watermark,
+        options?.customStyleParams,
+        options?.videoHeight
+      );
+    }
+    default:
+      throw new Error(`Unsupported output format: ${outputFormat}`);
+  }
 }
 

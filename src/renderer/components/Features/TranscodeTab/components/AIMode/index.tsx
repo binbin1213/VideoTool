@@ -100,7 +100,6 @@ export const AIMode = ({
             className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonLarge}`}
             onClick={handleAnalyze}
             disabled={!videoInfo || analyzing}
-            style={{ width: '100%' }}
           >
             <FaRobot />
             {analyzing ? t('transcode.analyzing') : t('transcode.startAnalysis')}

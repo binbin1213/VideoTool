@@ -6,7 +6,6 @@ import SubtitleConvertTab from './components/Features/SubtitleConvertTab';
 import MergeTab from './components/Features/MergeTab';
 import TranscodeTab from './components/Features/TranscodeTab';
 import SubtitleBurnTab from './components/Features/SubtitleBurnTab';
-// import BatchTab from './components/Features/BatchTab'; // ✨ 初期暂不开发，已隐藏
 import LogViewerTab from './components/Features/LogViewerTab';
 import AboutTab from './components/Features/AboutTab';
 import { useStore } from './store';
@@ -14,7 +13,7 @@ import './styles/App.scss';
 
 const { ipcRenderer } = (window as any).electron;
 
-type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | /* 'batch' | */ 'logs' | 'about'; // ✨ batch 已隐藏
+type TabType = 'subtitle-convert' | 'merge' | 'transcode' | 'subtitle-burn' | 'logs' | 'about';
 
 export interface LogEntry {
   timestamp: string;
@@ -173,8 +172,6 @@ function App() {
         return <AboutTab />;
       case 'transcode':
         return <TranscodeTab />;
-      // case 'batch':
-      //   return <BatchTab />; // ✨ 初期暂不开发，已隐藏
       default:
         return <div className="p-4"><h3>欢迎使用 VideoTool</h3></div>;
     }

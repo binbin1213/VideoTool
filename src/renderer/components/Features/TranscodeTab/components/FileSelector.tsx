@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { FaFileVideo, FaFolderOpen } from 'react-icons/fa';
 import buttonStyles from '../../../../styles/components/Button.module.scss';
 import styles from './FileSelector.module.scss';
 import type { VideoInfo } from '../../../../../types/transcode.types';
@@ -44,18 +43,13 @@ export const FileSelector = ({
     <div className={styles.container}>
       {/* 输入视频 */}
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>
-          <FaFileVideo />
-          <span>{t('transcode.inputVideo') || '输入视频'}</span>
-        </div>
         <div className={styles.fileRow}>
           <button
-            className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
+            className={buttonStyles.buttonSecondary}
             onClick={onSelectVideo}
             disabled={loading}
           >
-            <FaFolderOpen />
-            {t('transcode.browse') || '浏览'}
+            {t('transcode.selectVideo') || '选择视频'}
           </button>
           <div className={styles.fileInfo}>
             {loading ? (
@@ -97,18 +91,13 @@ export const FileSelector = ({
 
       {/* 输出路径 */}
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>
-          <FaFolderOpen />
-          <span>{t('transcode.outputPath') || '输出路径'}</span>
-        </div>
         <div className={styles.fileRow}>
           <button
-            className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
+            className={buttonStyles.buttonSecondary}
             onClick={onSelectOutput}
             disabled={!videoFile}
           >
-            <FaFolderOpen />
-            {t('transcode.saveAs') || '另存为'}
+            {t('transcode.outputPath') || '输出路径'}
           </button>
           <div className={styles.fileInfo}>
             {outputPath ? (

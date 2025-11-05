@@ -1,33 +1,33 @@
 // 全局统一按钮样式
-// 基于字幕转换页面的"编辑"按钮样式规范
+// macOS 风格设计
 
 @use '../tokens.scss' as t;
 
 // ========================================
-// 按钮基础样式
+// 按钮基础样式 - macOS 风格
 // ========================================
 
 %button-base {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: t.$spacing-2;
-  height: t.$button-height-sm; // 28px，与选择框同高
-  padding: 0 t.$spacing-3; // 12px，更紧凑
-  font-size: t.$font-size-base; // 14px，与正文一致
-  font-weight: 400; // 400，正常字重
-  font-family: t.$font-family-sans;
+  gap: 6px;
+  height: 28px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
-  border: none; // 统一无边框
-  border-radius: 6px; // 统一 6px 圆角
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
   user-select: none;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
   
@@ -37,7 +37,7 @@
   }
   
   svg {
-    font-size: t.$font-size-base;
+    font-size: 12px;
   }
 }
 
@@ -45,109 +45,113 @@
 // 按钮类型
 // ========================================
 
-// 主要按钮（品牌色 - 用于主要操作）
+// 主要按钮（蓝色 - 用于主要操作）- macOS 风格
 .buttonPrimary {
   @extend %button-base;
   color: #FFFFFF;
-  background: var(--vt-color-brand-primary);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  background-color: #007AFF;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
   
   &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--vt-color-brand-primary) 90%, black);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+    background-color: #0071E8;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
   }
   
   &:active:not(:disabled) {
-    background: color-mix(in srgb, var(--vt-color-brand-primary) 80%, black);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    background-color: #0068D1;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12);
     transform: scale(0.98);
   }
 }
 
-// 次要按钮（深灰色 - 用于次要操作，如"编辑"、"浏览"等）
+// 次要按钮（白底黑字 - 用于次要操作，如"编辑"、"浏览"等）- macOS 风格
 .buttonSecondary {
   @extend %button-base;
-  color: #FFFFFF;
-  background: #6B7280; // neutral-500
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  color: var(--vt-color-text-primary);
+  background-color: var(--vt-color-bg);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
   
   &:hover:not(:disabled) {
-    background: #4B5563; // neutral-600
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+    background-color: var(--vt-color-bg);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.3);
   }
   
   &:active:not(:disabled) {
-    background: #374151; // neutral-700
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    background-color: var(--vt-color-bg);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.18);
     transform: scale(0.98);
   }
 }
 
-// 危险按钮（红色 - 用于删除、清空等危险操作）
+// 危险按钮（白底红字 - 用于删除、清空等危险操作）- macOS 风格
 .buttonDanger {
   @extend %button-base;
-  color: #FFFFFF;
-  background: #EF4444; // red-500
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  color: #DC3545;
+  background-color: var(--vt-color-bg);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
   
   &:hover:not(:disabled) {
-    background: #DC2626; // red-600
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+    background-color: #FFF5F5;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
   }
   
   &:active:not(:disabled) {
-    background: #B91C1C; // red-700
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    background-color: #FFEBEB;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12);
     transform: scale(0.98);
   }
 }
 
-// 成功按钮（绿色 - 用于确认、成功等操作）
+// 成功按钮（白底绿字 - 用于确认、成功等操作）- macOS 风格
 .buttonSuccess {
   @extend %button-base;
-  color: #FFFFFF;
-  background: #10B981; // green-500
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  color: #28A745;
+  background-color: var(--vt-color-bg);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
   
   &:hover:not(:disabled) {
-    background: #059669; // green-600
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+    background-color: #F5FFF5;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
   }
   
   &:active:not(:disabled) {
-    background: #047857; // green-700
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    background-color: #EBFFEB;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12);
     transform: scale(0.98);
   }
 }
 
 // ========================================
-// 按钮尺寸变体
+// 按钮尺寸变体 - macOS 风格
 // ========================================
 
 // 小按钮
 .buttonSmall {
-  height: t.$button-height-sm; // 28px
-  padding: 0 t.$spacing-3; // 12px
-  font-size: t.$font-size-xs; // 12px
+  height: 24px;
+  padding: 0 10px;
+  font-size: 12px;
   
   svg {
-    font-size: t.$font-size-sm;
+    font-size: 11px;
   }
 }
 
-// 中等按钮（默认）- 现在与选择框同高
+// 中等按钮（默认）
 .buttonMedium {
-  height: t.$button-height-sm; // 28px，与选择框同高
-  padding: 0 t.$spacing-3; // 12px
-  font-size: t.$font-size-base; // 14px，与正文一致
+  height: 28px;
+  padding: 0 14px;
+  font-size: 13px;
 }
 
 // 大按钮
 .buttonLarge {
-  height: t.$button-height-lg; // 36px
-  padding: 0 t.$spacing-6; // 24px
-  font-size: t.$font-size-base; // 16px
+  height: 32px;
+  padding: 0 18px;
+  font-size: 14px;
+  
+  svg {
+    font-size: 13px;
+  }
 }
 
 // ========================================
@@ -159,8 +163,6 @@
   width: 100%;
 }
 
-// 最小宽度按钮（用于保持一致性）
-.buttonMinWidth {
-  min-width: 120px;
-}
+// 注意：macOS 风格的按钮默认宽度自适应内容
+// 按钮宽度由 padding (0 14px) + 文字内容 自动决定 ✅
 

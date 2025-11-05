@@ -51,7 +51,7 @@
 // ========================================
 .sidebar-col {
   width: 180px;
-  background-color: transparent;
+  background-color: var(--vt-color-surface); // 与右侧内容区保持一致 ✅
   border-right: 1px solid var(--vt-color-border);
   overflow: hidden;
   height: 100vh;
@@ -61,7 +61,7 @@
 
 .content-col {
   flex: 1;
-  background-color: #F5F5F5; // 灰色背景，与各页面的白色卡片形成对比
+  background-color: var(--vt-color-surface); // 页面背景（浅灰/深灰），与卡片区分 ✅
   overflow: hidden;
   height: 100vh;
   padding: 0 !important;
@@ -78,13 +78,13 @@
   
   // Logo 区域
   .sidebar-logo {
-    padding: 46px 8px t.$spacing-4 20px;
+    padding: 46px 16px 16px 16px; // 优化左右对称，底部增加 ✅
     display: flex;
     align-items: center;
     gap: 10px;
     border-bottom: 1px solid var(--vt-color-border);
     margin: 0;
-    margin-bottom: t.$spacing-2;
+    margin-bottom: 12px; // 增加到 12px，与第一个菜单项间距更合理 ✅
     -webkit-app-region: drag; // 允许拖动窗口
     user-select: none;
     
@@ -106,35 +106,68 @@
     }
   }
   
-  // 导航项
+  // 导航项 - macOS 风格：左侧指示条 + 浅色背景 ✅
   .sidebar-item {
-    padding: 8px 12px;
-    margin: 0 8px 3px 16px;
-    border-radius: 6px;
+    width: calc(100% - 16px); // 左右各留 8px 间距 ✅
+    display: flex;
+    align-items: center;
+    justify-content: center; // 文字居中对齐 ✅
+    padding: 11px 16px; // 稍微增加上下 padding，更舒适 ✅
+    margin: 0 8px 4px 8px; // 底部间距增加到 4px，更透气 ✅
+    border-radius: 6px; // 圆角 6px，精致感 ✅
+    border: none;
+    background-color: transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
-    color: #343a40;
+    transition: all 0.15s ease; // 缩短动画时间，更灵敏 ✅
+    color: var(--vt-color-text-secondary); // 使用主题变量 ✅
     text-decoration: none;
-    font-size: 16px;
+    font-size: 16px; // 更大的字体 ✅
+    font-weight: 500; // 加粗字重 ✅
+    line-height: 1.2; // 统一行高 ✅
+    text-align: left;
+    position: relative; // 为左侧指示条定位 ✅
     
     &:hover {
-      background-color: #e9ecef;
-      color: #212529;
+      background-color: color-mix(in srgb, var(--vt-color-text-primary) 5%, transparent) !important; // 使用主题变量 ✅
+      color: var(--vt-color-text-primary) !important;
     }
     
-    // 激活状态
+    // 激活状态 - 浅蓝色背景 + 蓝色文字 + 左侧指示条 ✅
     &.active {
-      background-color: #0d6efd;
-      color: #ffffff;
-      font-weight: 500;
+      background-color: rgba(102, 126, 234, 0.12) !important; // 浅蓝色背景 ✅
+      color: var(--vt-color-brand-primary) !important; // 蓝色文字 ✅
+      font-weight: 600; // 激活状态更粗 ✅
+      
+      // 左侧蓝色指示条 ✅
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3.5px; // 稍微加粗到 3.5px ✅
+        height: 70%; // 增加高度到 70% ✅
+        background-color: var(--vt-color-brand-primary);
+        border-radius: 0 2px 2px 0;
+      }
       
       &:hover {
-        background-color: #0b5ed7;
+        background-color: rgba(102, 126, 234, 0.18) !important; // hover 时稍微深一点 ✅
+        color: var(--vt-color-brand-primary) !important;
       }
     }
     
     svg {
       font-size: 16px;
     }
+  }
+  
+  // 分隔线样式 ✅
+  .sidebar-divider {
+    border: none;
+    height: 1px;
+    background-color: var(--vt-color-border);
+    margin: 12px 8px; // 上下 12px，左右 8px 与菜单项对齐 ✅
+    opacity: 0.6; // 稍微淡化，不要太突兀 ✅
   }
 }

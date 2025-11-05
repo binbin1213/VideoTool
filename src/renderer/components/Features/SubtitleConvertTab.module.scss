@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #F5F5F5; // 浅灰色背景
+  background-color: var(--vt-color-surface); // 使用主题变量 ✅
   user-select: none; // 禁止选中文字
   -webkit-user-select: none; // Safari
 }
@@ -68,7 +68,6 @@
   padding: t.$spacing-3;
   background-color: var(--vt-color-bg-secondary);
   border-radius: t.$radius-md;
-  border: 1px solid var(--vt-color-border);
   overflow-y: auto; // 侧边栏可以滚动，内容太多时
   overflow-x: hidden;
   align-self: stretch; // 拉伸以填充父容器高度
@@ -94,9 +93,9 @@
   }
   
   hr {
-    margin: t.$spacing-2 0;
+    margin: t.$spacing-3 0;
     border: none;
-    border-top: 1px solid var(--vt-color-border);
+    border-top: 1px solid rgba(0, 0, 0, 0.35);
   }
   
   p {
@@ -175,8 +174,8 @@
   appearance: none;
   width: 44px;
   height: 24px;
-  background-color: #9CA3AF;
-  border: 2px solid #9CA3AF;
+  background-color: var(--vt-color-text-secondary); // 使用主题变量 ✅
+  border: 2px solid var(--vt-color-text-secondary); // 使用主题变量 ✅
   border-radius: 12px;
   position: relative;
   cursor: pointer;
@@ -198,8 +197,9 @@
   }
   
   &:hover:not(:disabled) {
-    background-color: #6B7280;
-    border-color: #6B7280;
+    background-color: var(--vt-color-text-primary); // 使用主题变量 ✅
+    border-color: var(--vt-color-text-primary); // 使用主题变量 ✅
+    opacity: 0.8;
   }
   
   &:checked {
@@ -265,21 +265,27 @@
   align-items: center;
   justify-content: center;
   padding: t.$spacing-6 t.$spacing-4;
-  border: 2px dashed var(--vt-color-border);
   border-radius: t.$radius-md;
-  background-color: #FFFFFF; // 白色背景
+  background-color: var(--vt-color-bg-secondary);
   cursor: pointer;
   transition: all t.$motion-duration-normal t.$motion-easing-standard;
   flex-shrink: 0; // 不压缩文件选择器
   
   &:hover {
-    border-color: var(--vt-color-brand-primary);
-    background-color: var(--vt-color-bg-secondary);
+    background-color: var(--vt-color-bg);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
   }
   
   &:active {
     transform: scale(0.99);
   }
+}
+
+.fileSelectorDragging {
+  background-color: rgba(102, 126, 234, 0.08);
+  border: 2px dashed var(--vt-color-brand-primary);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
 .fileIcon {
@@ -448,7 +454,7 @@
   font-size: t.$font-size-sm;
   font-family: t.$font-family-sans;
   color: var(--vt-color-text-primary);
-  background-color: var(--vt-color-control-bg);
+  background-color: var(--vt-color-surface-elev1); // 使用主题变量 ✅
   border: 1.5px solid var(--vt-color-border);
   border-radius: t.$radius-sm;
   transition: all t.$motion-duration-normal t.$motion-easing-standard;
@@ -473,49 +479,7 @@
   }
 }
 
-// Select 下拉框
-.select {
-  height: t.$button-height-sm; // 改为小尺寸，更紧凑
-  padding: 0 32px 0 t.$spacing-3;
-  font-size: t.$font-size-base; // 与正文字体一致
-  font-weight: 400; // 正常字重，不加粗
-  font-family: t.$font-family-sans;
-  color: var(--vt-color-text-primary);
-  background-color: #F5F5F5 !important;
-  border: 1px solid #D1D1D6;
-  border-radius: 6px;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  background-image: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
-      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
-      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-    </svg>") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 6px center !important;
-  background-size: 18px 18px !important;
-  
-  &:hover:not(:disabled) {
-    border-color: #B8B8BD;
-    background-color: #EBEBEB !important;
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: var(--vt-color-focus);
-    background-color: #F5F5F5 !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent), 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
+// Select 下拉框样式已移至全局统一文件 Select.module.scss ✅
 
 // Checkbox 复选框
 .checkbox {
@@ -659,8 +623,8 @@
 
 // 信息提示（黑白灰配色）
 .alertInfo {
-  background-color: #E5E7EB; // 浅灰色背景
-  border-color: #9CA3AF; // 灰色边框
+  background-color: var(--vt-color-surface); // 使用主题变量 ✅
+  border-color: var(--vt-color-border); // 使用主题变量 ✅
   color: var(--vt-color-text-primary); // 主要文字颜色
   
   .alertHeading {
@@ -713,17 +677,27 @@
 .previewBox {
   position: relative;
   width: 100%;
-  min-height: 80px;
-  height: 100px;
-  background: #FFFFFF !important; // 白色背景
-  border: 1px solid var(--vt-color-border);
+  min-height: 140px;
+  background: var(--vt-color-bg-secondary) !important;
   border-radius: t.$radius-sm;
-  overflow: hidden;
+  overflow: hidden; // 防止内容溢出 ✅
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding: t.$spacing-2;
+  justify-content: center; // 居中对齐 ✅
+  padding: t.$spacing-4;
+  container-type: inline-size; // 启用容器查询 ✅
+  
+  // 预览内容响应式字体大小 ✅
+  > div {
+    max-width: 100%;
+    text-align: center;
+    
+    // 覆盖内联样式的字体大小，使用容器查询单位 ✅
+    font-size: clamp(16px, 5cqw, 48px) !important;
+    white-space: normal;
+    word-break: keep-all;
+  }
 }
 
 // Modal中的预览容器
@@ -745,13 +719,26 @@
 .modalPreviewBox {
   position: relative;
   width: 100%;
-  height: 120px;
-  background: #FFFFFF !important; // 白色背景
+  min-height: 180px;
+  background: var(--vt-color-surface-elev1) !important; // 使用主题变量 ✅
   border: 1px solid var(--vt-color-border);
   border-radius: t.$radius-sm;
-  overflow: hidden;
+  overflow: hidden; // 防止内容溢出 ✅
   display: flex;
-  padding: t.$spacing-3;
+  flex-direction: column;
+  // alignItems 和 justifyContent 将通过 inline style 动态设置，以支持不同的对齐方式 ✅
+  padding: t.$spacing-4;
+  container-type: inline-size; // 启用容器查询 ✅
+  
+  // 预览内容响应式字体大小 ✅
+  > div {
+    max-width: 100%;
+    
+    // 覆盖内联样式的字体大小，使用容器查询单位 ✅
+    font-size: clamp(20px, 6cqw, 56px) !important;
+    white-space: normal;
+    word-break: keep-all;
+  }
 }
 
 .modalPreviewNote {
@@ -785,20 +772,21 @@
 :global(.modal-content) {
   user-select: none !important; // 禁止选中文字
   -webkit-user-select: none !important; // Safari
+  background-color: var(--vt-color-surface) !important; // 与页面背景统一 ✅
 }
 
 :global(.modal-body) {
-  background-color: #F5F5F5 !important; // 灰色背景
+  background-color: var(--vt-color-surface) !important; // 与页面背景统一 ✅
 }
 
 :global(.modal-header) {
-  background-color: #F5F5F5 !important; // 灰色背景
+  background-color: var(--vt-color-surface) !important; // 与页面背景统一 ✅
   border-bottom: 1px solid var(--vt-color-border) !important;
   padding: t.$spacing-4 t.$spacing-6 !important;
 }
 
 :global(.modal-footer) {
-  background-color: #F5F5F5 !important; // 灰色背景
+  background-color: var(--vt-color-surface) !important; // 与页面背景统一 ✅
   border-top: 1px solid var(--vt-color-border) !important;
 }
 
@@ -819,7 +807,7 @@
   }
 }
 
-// 确保 Modal 内的 select 也有箭头图标，并且背景是白色
+// 确保 Modal 内的 select 也有箭头图标
 :global(.modal) .select {
   background-image: url("data:image/svg+xml;utf8,\
     <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
@@ -830,7 +818,6 @@
   background-repeat: no-repeat !important;
   background-position: right 6px center !important;
   background-size: 18px 18px !important;
-  background-color: #FFFFFF !important; // 白色背景
 }
 
 .previewText {

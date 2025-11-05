@@ -1,0 +1,109 @@
+// ==========================================================================
+// Select 下拉框组件样式 - 全局统一定义
+// ==========================================================================
+
+@use '../tokens.scss' as t;
+
+// ========================================
+// 基础 Select 样式
+// ========================================
+
+%select-base {
+  width: auto; // 自适应宽度 ✅
+  min-width: 100px; // 最小宽度 ✅
+  height: t.$button-height-sm; // 28px，与按钮同高
+  padding: 0 32px 0 t.$spacing-3; // 右侧留出箭头空间
+  font-size: t.$font-size-base; // 14px
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  color: var(--vt-color-text-primary);
+  background-color: transparent; // 默认透明背景 ✅
+  border: 1px solid transparent; // 默认透明边框 ✅
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease; // 添加过渡动画
+  
+  // 移除默认样式
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  // 蓝色上下箭头，靠右对齐 ✅
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'>\
+      <path d='M4 6 L8 2 L12 6' stroke='%23667eea' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+      <path d='M4 10 L8 14 L12 10' stroke='%23667eea' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
+    </svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center; // 靠右对齐 ✅
+  background-size: 16px 16px;
+  
+  // Hover 状态 - 悬停时显示边框 ✅
+  &:hover:not(:disabled) {
+    background-color: var(--vt-color-bg);
+    border-color: var(--vt-color-border);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+  }
+  
+  // Focus 状态 - 仅移除默认轮廓，不改变外观
+  &:focus {
+    outline: none;
+  }
+  
+  // Focus + Hover 状态 - 聚焦时悬浮才显示样式
+  &:focus:hover:not(:disabled) {
+    background-color: var(--vt-color-bg);
+    border-color: var(--vt-color-border);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+  }
+  
+  // Disabled 状态
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: transparent;
+  }
+}
+
+// ========================================
+// Select 尺寸变体
+// ========================================
+
+// 默认尺寸（与按钮 Small 尺寸一致）
+.select {
+  @extend %select-base;
+}
+
+// 小尺寸
+.selectSmall {
+  @extend %select-base;
+  height: 24px;
+  padding: 0 28px 0 t.$spacing-2;
+  font-size: t.$font-size-sm;
+  min-width: 80px;
+  
+  background-size: 14px 14px !important;
+  background-position: right 6px center !important;
+}
+
+// 大尺寸
+.selectLarge {
+  @extend %select-base;
+  height: 36px;
+  padding: 0 36px 0 t.$spacing-4;
+  font-size: t.$font-size-lg;
+  min-width: 120px;
+  
+  background-size: 18px 18px !important;
+  background-position: right 10px center !important;
+}
+
+// ========================================
+// 宽度控制（如需要全宽）
+// ========================================
+
+.selectFull {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+

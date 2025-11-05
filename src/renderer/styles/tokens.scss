@@ -35,10 +35,10 @@ $font-weight-bold: 700;
 // 颜色 (Colors)
 // ============================================
 
-// 品牌色（黑白灰配色）
-$color-brand-primary: #4B5563;      // 中灰色（neutral.600）
-$color-brand-primary-600: #374151;  // neutral.700
-$color-brand-primary-700: #1F2937;  // neutral.800
+// 品牌色（蓝紫色）
+$color-brand-primary: #667eea;      // 蓝紫色（主色）
+$color-brand-primary-600: #5568d3;  // 蓝紫色（稍深）
+$color-brand-primary-700: #4c52bb;  // 蓝紫色（更深）
 
 // 中性色
 $color-neutral-0: #FFFFFF;
@@ -59,25 +59,25 @@ $color-semantic-success: #2EAE4E;
 $color-semantic-warning: #F59E0B;
 $color-semantic-danger: #E5484D;
 
-// 浅色主题 (Light Theme)
+// 浅色主题 (Light Theme) - macOS 风格
 $color-light-bg: #FFFFFF;
-$color-light-surface: #F9FAFB;
-$color-light-surface-elev1: #FFFFFF;
+$color-light-surface: #E4E4E2;        // 浅灰色背景（页面底色）✅
+$color-light-surface-elev1: #D8D8D6;  // 更深的灰色（卡片颜色，比背景深）✅
 $color-light-text-primary: #111827;
 $color-light-text-secondary: #4B5563;
 $color-light-text-disabled: #9CA3AF;
-$color-light-border: #E5E7EB;
-$color-light-focus: #374151;  // 灰色 focus (neutral.700)
+$color-light-border: #C4C4C2;         // 边框色，稍浅一些以区分 ✅
+$color-light-focus: #374151;          // 灰色 focus (neutral.700)
 
-// 深色主题 (Dark Theme)
+// 深色主题 (Dark Theme) - macOS 风格
 $color-dark-bg: #0B0F14;
-$color-dark-surface: #121821;
-$color-dark-surface-elev1: #0F141C;
+$color-dark-surface: #1A1F2A;        // 深色背景（页面底色）✅
+$color-dark-surface-elev1: #232A3A;  // 稍亮的深色（卡片颜色，比背景亮）✅
 $color-dark-text-primary: #F3F4F6;
 $color-dark-text-secondary: #CBD5E1;
 $color-dark-text-disabled: #8B95A7;
-$color-dark-border: #2A2F3A;
-$color-dark-focus: #9CA3AF;  // 浅灰色 focus (neutral.400)
+$color-dark-border: #343A4A;         // 边框色，稍亮一些以区分 ✅
+$color-dark-focus: #9CA3AF;          // 浅灰色 focus (neutral.400)
 
 // 当前主题别名（默认浅色，通过 CSS 变量动态切换）
 $color-bg: $color-light-bg;

@@ -1,14 +1,4 @@
-import { Nav } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { 
-  FaExchangeAlt, 
-  FaFileVideo, 
-  FaClosedCaptioning, 
-  FaLanguage,
-  // FaLayerGroup, // ✨ BatchTab 已隐藏，不需要此图标
-  FaClipboardList,
-  FaInfoCircle
-} from 'react-icons/fa';
 import logoImage from '../../assets/logo.png';
 
 interface SidebarProps {
@@ -20,13 +10,12 @@ function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   const { t } = useTranslation();
   
   const menuItems = [
-    { id: 'subtitle-convert', icon: FaLanguage, label: t('sidebar.subtitle_convert') },
-    { id: 'merge', icon: FaExchangeAlt, label: t('sidebar.merge') },
-    { id: 'transcode', icon: FaFileVideo, label: t('sidebar.transcode') },
-    { id: 'subtitle-burn', icon: FaClosedCaptioning, label: t('sidebar.subtitle_burn') },
-    // { id: 'batch', icon: FaLayerGroup, label: t('sidebar.batch') }, // ✨ 初期暂不开发，已隐藏
-    { id: 'logs', icon: FaClipboardList, label: t('sidebar.logs'), divider: true },
-    { id: 'about', icon: FaInfoCircle, label: t('sidebar.about') },
+    { id: 'subtitle-convert', label: t('sidebar.subtitle_convert') },
+    { id: 'merge', label: t('sidebar.merge') },
+    { id: 'transcode', label: t('sidebar.transcode') },
+    { id: 'subtitle-burn', label: t('sidebar.subtitle_burn') },
+    { id: 'logs', label: t('sidebar.logs'), divider: true },
+    { id: 'about', label: t('sidebar.about') },
   ];
 
   return (
@@ -35,22 +24,22 @@ function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         <img src={logoImage} alt="VideoTool" />
         <span className="logo-text">VideoTool</span>
       </div>
-      <Nav className="flex-column" style={{ padding: 0 }}>
-        {menuItems.map((item) => (
-          <div key={item.id}>
-            {item.divider && <hr className="my-2" style={{ borderColor: '#dee2e6', margin: '8px 0' }} />}
-            <Nav.Link
-              onClick={() => onTabChange(item.id)}
-              className={`sidebar-item d-flex align-items-center ${
-                activeTab === item.id ? 'active' : ''
-              }`}
-            >
-              <item.icon className="me-2" />
-              <span>{item.label}</span>
-            </Nav.Link>
-          </div>
-        ))}
-      </Nav>
+      <nav style={{ padding: 0 }}>
+        {menuItems.map((item) => {
+          const isActive = activeTab === item.id;
+          return (
+            <div key={item.id}>
+              {item.divider && <hr className="sidebar-divider" />}
+              <button
+                onClick={() => onTabChange(item.id)}
+                className={`sidebar-item ${isActive ? 'active' : ''}`}
+              >
+                <span>{item.label}</span>
+              </button>
+            </div>
+          );
+        })}
+      </nav>
     </div>
   );
 }

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './BasicTab.module.scss';
+import selectStyles from '../../../../../styles/components/Select.module.scss';
 
 interface AdvancedTabProps {
   config: any;
   videoInfo: any;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string | Record<string, any>, value?: any) => void;
 }
 
 export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) => {
@@ -34,17 +35,19 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
   return (
     <div className={styles.container}>
       {/* 硬件加速 + 元数据 */}
-      <div className={styles.row}>
-        <div className={styles.field}>
+      <div className={styles.rowCompact}>
+        <div className={styles.fieldRow}>
           <label className={styles.label}>{t('transcode.hardwareAccel')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.hwaccel || 'none'}
             onChange={(e) => {
               const value = e.target.value;
-              onChange('hwaccel', value);
-              // 自动设置 useHardwareAccel 标志
-              onChange('useHardwareAccel', value !== 'none');
+              // 一次性更新两个相关字段（利用 ManualMode 的批量更新功能）
+              onChange({
+                hwaccel: value,
+                useHardwareAccel: value !== 'none'
+              });
             }}
           >
             <option value="none">{t('transcode.none')}</option>
@@ -56,10 +59,10 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
           </select>
         </div>
 
-        <div className={styles.field}>
+        <div className={styles.fieldRow}>
           <label className={styles.label}>{t('transcode.metadata')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.metadata || 'copy'}
             onChange={(e) => onChange('metadata', e.target.value)}
           >
@@ -69,144 +72,115 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
         </div>
       </div>
 
-      {/* 字幕处理 */}
-      <div className={styles.row}>
-        <div className={styles.field}>
+      {/* 字幕 + 音轨 */}
+      <div className={styles.rowCompact}>
+        <div className={styles.fieldRow}>
           <label className={styles.label}>
             {t('transcode.subtitles')}
             {videoInfo?.subtitleTracks && videoInfo.subtitleTracks.length > 0 && (
-              <span style={{ color: '#999', fontSize: '11px', marginLeft: '4px' }}>
+              <span style={{ color: 'var(--vt-color-text-secondary)', fontSize: '11px', marginLeft: '4px' }}> {/* 使用主题变量 ✅ */}
                 ({videoInfo.subtitleTracks.length}条)
               </span>
             )}
           </label>
-          <select
-            className={styles.select}
-            value={config.subtitles || 'copy'}
-            onChange={(e) => onChange('subtitles', e.target.value)}
-          >
-            <option value="copy">{t('transcode.copySubtitles')}</option>
-            <option value="remove">{t('transcode.removeSubtitles')}</option>
-            <option value="burn">{t('transcode.burnSubtitles')}</option>
-          </select>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <select
+              className={selectStyles.select}
+              value={config.subtitles || 'copy'}
+              onChange={(e) => onChange('subtitles', e.target.value)}
+            >
+              <option value="copy">{t('transcode.copySubtitles')}</option>
+              <option value="remove">{t('transcode.removeSubtitles')}</option>
+              <option value="burn">{t('transcode.burnSubtitles')}</option>
+            </select>
+            
+            {/* 字幕选择按钮 */}
+            {config.subtitles === 'copy' && videoInfo?.subtitleTracks && videoInfo.subtitleTracks.length > 0 && (
+              <button
+                onClick={() => setShowSubtitleModal(true)}
+                style={{
+                  padding: '0 16px',
+                  backgroundColor: '#1890ff',
+                  color: '#fff',
+                  border: '1px solid #1890ff',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  minWidth: '140px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#40a9ff'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1890ff'}
+              >
+                {t('transcode.selectSubtitles') || '选择字幕轨道'} ({(config.selectedSubtitleTracks || []).length || videoInfo.subtitleTracks.length}/{videoInfo.subtitleTracks.length})
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* 字幕选择按钮 */}
-        {config.subtitles === 'copy' && videoInfo?.subtitleTracks && videoInfo.subtitleTracks.length > 0 && (
-          <div className={styles.field}>
-            <label className={styles.label}>&nbsp;</label>
-            <button
-              onClick={() => setShowSubtitleModal(true)}
-              style={{
-                padding: '0 16px',
-                backgroundColor: '#1890ff',
-                color: '#fff',
-                border: '1px solid #1890ff',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                width: '100%',
-                height: '28px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s',
-                boxSizing: 'border-box'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#40a9ff'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1890ff'}
-            >
-              {t('transcode.selectSubtitles') || '选择字幕轨道'} ({(config.selectedSubtitleTracks || []).length || videoInfo.subtitleTracks.length}/{videoInfo.subtitleTracks.length})
-            </button>
-          </div>
-        )}
-      </div>
-
-
-      {/* 音轨处理 */}
-      <div className={styles.row}>
-        <div className={styles.field}>
+        <div className={styles.fieldRow}>
           <label className={styles.label}>
             {t('transcode.audioTracks')}
             {videoInfo?.audioTracks && videoInfo.audioTracks.length > 0 && (
-              <span style={{ color: '#999', fontSize: '11px', marginLeft: '4px' }}>
+              <span style={{ color: 'var(--vt-color-text-secondary)', fontSize: '11px', marginLeft: '4px' }}> {/* 使用主题变量 ✅ */}
                 ({videoInfo.audioTracks.length}个)
               </span>
             )}
           </label>
-          <select
-            className={styles.select}
-            value={config.audioTracks || 'all'}
-            onChange={(e) => onChange('audioTracks', e.target.value)}
-          >
-            <option value="all">{t('transcode.allTracks')}</option>
-            <option value="first">{t('transcode.firstTrack')}</option>
-            <option value="select">{t('transcode.selectTracks')}</option>
-          </select>
-        </div>
-
-        {/* 音轨选择按钮 */}
-        {config.audioTracks === 'select' && videoInfo?.audioTracks && videoInfo.audioTracks.length > 0 && (
-          <div className={styles.field}>
-            <label className={styles.label}>&nbsp;</label>
-            <button
-              onClick={() => setShowAudioModal(true)}
-              style={{
-                padding: '0 16px',
-                backgroundColor: '#1890ff',
-                color: '#fff',
-                border: '1px solid #1890ff',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                width: '100%',
-                height: '28px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s',
-                boxSizing: 'border-box'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#40a9ff'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1890ff'}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <select
+              className={selectStyles.select}
+              value={config.audioTracks || 'all'}
+              onChange={(e) => onChange('audioTracks', e.target.value)}
             >
-              {t('transcode.selectAudioTracks') || '选择音轨'} ({(config.selectedAudioTracks || []).length || videoInfo.audioTracks.length}/{videoInfo.audioTracks.length})
-            </button>
+              <option value="all">{t('transcode.allTracks')}</option>
+              <option value="first">{t('transcode.firstTrack')}</option>
+              <option value="select">{t('transcode.selectTracks')}</option>
+            </select>
+            
+            {/* 音轨选择按钮 */}
+            {config.audioTracks === 'select' && videoInfo?.audioTracks && videoInfo.audioTracks.length > 0 && (
+              <button
+                onClick={() => setShowAudioModal(true)}
+                style={{
+                  padding: '0 16px',
+                  backgroundColor: '#1890ff',
+                  color: '#fff',
+                  border: '1px solid #1890ff',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  minWidth: '120px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#40a9ff'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1890ff'}
+              >
+                {t('transcode.selectAudioTracks') || '选择音轨'} ({(config.selectedAudioTracks || []).length || videoInfo.audioTracks.length}/{videoInfo.audioTracks.length})
+              </button>
+            )}
           </div>
-        )}
-      </div>
-
-      {/* 快速开始 + 两遍编码 */}
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label className={styles.checkbox}>
-            <input
-              type="checkbox"
-              checked={config.fastStart || false}
-              onChange={(e) => onChange('fastStart', e.target.checked)}
-            />
-            <span>{t('transcode.enableFastStart')}</span>
-          </label>
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.checkbox}>
-            <input
-              type="checkbox"
-              checked={config.twoPass || false}
-              onChange={(e) => onChange('twoPass', e.target.checked)}
-            />
-            <span>{t('transcode.enableTwoPass')}</span>
-          </label>
         </div>
       </div>
 
       {/* 线程数 + GOP大小 */}
-      <div className={styles.row}>
-        <div className={styles.field}>
+      <div className={styles.rowCompact}>
+        <div className={styles.fieldRow}>
           <label className={styles.label}>{t('transcode.threads')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.threads || 'auto'}
             onChange={(e) => onChange('threads', e.target.value)}
           >
@@ -219,7 +193,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
           </select>
         </div>
 
-        <div className={styles.field}>
+        <div className={styles.fieldRow}>
           <label className={styles.label}>{t('transcode.gopSize')}:</label>
           <input
             type="number"
@@ -234,7 +208,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
       </div>
 
       {/* 自定义FFmpeg参数 */}
-      <div className={styles.field}>
+      <div className={styles.fieldRow}>
         <label className={styles.label}>{t('transcode.customParams')}:</label>
         <input
           type="text"
@@ -243,9 +217,27 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
           value={config.customParams || ''}
           onChange={(e) => onChange('customParams', e.target.value)}
         />
-        <div className={styles.hint} style={{ marginTop: '4px' }}>
-          ⚠️ {t('transcode.customParamsHint') || '仅供高级用户使用，错误的参数可能导致转码失败'}
-        </div>
+      </div>
+
+      {/* 快速开始 + 两遍编码 */}
+      <div className={styles.rowCompact}>
+        <label className={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={config.fastStart || false}
+            onChange={(e) => onChange('fastStart', e.target.checked)}
+          />
+          <span>{t('transcode.enableFastStart')}</span>
+        </label>
+
+        <label className={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={config.twoPass || false}
+            onChange={(e) => onChange('twoPass', e.target.checked)}
+          />
+          <span>{t('transcode.enableTwoPass')}</span>
+        </label>
       </div>
 
       {/* 字幕选择弹窗 */}
@@ -267,7 +259,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
         >
           <div
             style={{
-              backgroundColor: '#fff',
+              backgroundColor: 'var(--vt-color-surface-elev1)', // 使用主题变量 ✅
               borderRadius: '8px',
               padding: '20px',
               maxWidth: '800px',
@@ -290,7 +282,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
                   fontSize: '20px',
                   cursor: 'pointer',
                   padding: '4px 8px',
-                  color: '#999'
+                  color: 'var(--vt-color-text-secondary)' // 使用主题变量 ✅
                 }}
               >
                 ✕
@@ -299,25 +291,25 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
 
             {/* 字幕轨道表格 */}
             <div style={{ 
-              border: '1px solid #E5E5E5',
+              border: '1px solid var(--vt-color-border)', // 使用主题变量 ✅
               borderRadius: '4px',
               overflow: 'hidden'
             }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#F5F5F5' }}>
-                    <th style={{ padding: '8px 10px', textAlign: 'center', width: '50px', borderBottom: '1px solid #E5E5E5' }}>✓</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>轨道</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>语言</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>格式</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>标题</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'center', width: '80px', borderBottom: '1px solid #E5E5E5' }}>标记</th>
+                  <tr style={{ backgroundColor: 'var(--vt-color-surface)' }}> {/* 使用主题变量 ✅ */}
+                    <th style={{ padding: '8px 10px', textAlign: 'center', width: '50px', borderBottom: '1px solid var(--vt-color-border)' }}>✓</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>轨道</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>语言</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>格式</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>标题</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'center', width: '80px', borderBottom: '1px solid var(--vt-color-border)' }}>标记</th>
                   </tr>
                 </thead>
                 <tbody>
                   {videoInfo?.subtitleTracks?.map((track: any, idx: number) => (
-                    <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#FAFAFA' }}>
-                      <td style={{ padding: '8px 10px', textAlign: 'center', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>
+                    <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? 'var(--vt-color-surface-elev1)' : 'var(--vt-color-surface)' }}> {/* 使用主题变量 ✅ */}
+                      <td style={{ padding: '8px 10px', textAlign: 'center', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>
                         <input
                           type="checkbox"
                           checked={(config.selectedSubtitleTracks || []).includes(track.index)}
@@ -325,11 +317,11 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
                           style={{ cursor: 'pointer' }}
                         />
                       </td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>#{track.index + 1}</td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>{track.language || '-'}</td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>{track.codec?.toUpperCase()}</td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>{track.title || '-'}</td>
-                      <td style={{ padding: '8px 10px', textAlign: 'center', fontSize: '11px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>#{track.index + 1}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>{track.language || '-'}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>{track.codec?.toUpperCase()}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>{track.title || '-'}</td>
+                      <td style={{ padding: '8px 10px', textAlign: 'center', fontSize: '11px', borderBottom: idx === videoInfo.subtitleTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>
                         {track.forced && <span style={{ color: '#1890ff', marginRight: '4px' }}>强制</span>}
                         {track.default && <span style={{ color: '#52c41a' }}>默认</span>}
                         {!track.forced && !track.default && '-'}
@@ -341,7 +333,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
             </div>
 
             {/* 提示信息 */}
-            <div style={{ fontSize: '11px', color: '#666', marginTop: '12px', padding: '8px 12px', backgroundColor: '#F5F5F5', borderRadius: '4px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--vt-color-text-secondary)', marginTop: '12px', padding: '8px 12px', backgroundColor: 'var(--vt-color-surface)', borderRadius: '4px' }}> {/* 使用主题变量 ✅ */}
               💡 {t('transcode.subtitleSelectHint') || '未选择任何字幕时将保留所有字幕'}
             </div>
 
@@ -385,7 +377,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
         >
           <div
             style={{
-              backgroundColor: '#fff',
+              backgroundColor: 'var(--vt-color-surface-elev1)', // 使用主题变量 ✅
               borderRadius: '8px',
               padding: '20px',
               maxWidth: '800px',
@@ -408,7 +400,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
                   fontSize: '20px',
                   cursor: 'pointer',
                   padding: '4px 8px',
-                  color: '#999'
+                  color: 'var(--vt-color-text-secondary)' // 使用主题变量 ✅
                 }}
               >
                 ✕
@@ -417,25 +409,25 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
 
             {/* 音轨表格 */}
             <div style={{ 
-              border: '1px solid #E5E5E5',
+              border: '1px solid var(--vt-color-border)', // 使用主题变量 ✅
               borderRadius: '4px',
               overflow: 'hidden'
             }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#F5F5F5' }}>
-                    <th style={{ padding: '8px 10px', textAlign: 'center', width: '50px', borderBottom: '1px solid #E5E5E5' }}>✓</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>轨道</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>语言</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>编码</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>声道</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #E5E5E5' }}>采样率</th>
+                  <tr style={{ backgroundColor: 'var(--vt-color-surface)' }}> {/* 使用主题变量 ✅ */}
+                    <th style={{ padding: '8px 10px', textAlign: 'center', width: '50px', borderBottom: '1px solid var(--vt-color-border)' }}>✓</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>轨道</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>语言</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>编码</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>声道</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--vt-color-border)' }}>采样率</th>
                   </tr>
                 </thead>
                 <tbody>
                   {videoInfo?.audioTracks?.map((track: any, idx: number) => (
-                    <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#FAFAFA' }}>
-                      <td style={{ padding: '8px 10px', textAlign: 'center', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>
+                    <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? 'var(--vt-color-surface-elev1)' : 'var(--vt-color-surface)' }}> {/* 使用主题变量 ✅ */}
+                      <td style={{ padding: '8px 10px', textAlign: 'center', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>
                         <input
                           type="checkbox"
                           checked={(config.selectedAudioTracks || []).includes(track.index)}
@@ -443,13 +435,13 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
                           style={{ cursor: 'pointer' }}
                         />
                       </td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>#{track.index + 1}</td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>{track.language || '-'}</td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>{track.codec?.toUpperCase()}</td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>#{track.index + 1}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>{track.language || '-'}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>{track.codec?.toUpperCase()}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>
                         {track.channels === 6 ? '5.1' : track.channels === 2 ? '立体声' : track.channels === 1 ? '单声道' : track.channels || '-'}
                       </td>
-                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid #F0F0F0' }}>
+                      <td style={{ padding: '8px 10px', borderBottom: idx === videoInfo.audioTracks.length - 1 ? 'none' : '1px solid var(--vt-color-border)' }}>
                         {track.sampleRate ? `${(track.sampleRate / 1000).toFixed(1)} kHz` : '-'}
                       </td>
                     </tr>
@@ -459,7 +451,7 @@ export const AdvancedTab = ({ config, videoInfo, onChange }: AdvancedTabProps) =
             </div>
 
             {/* 提示信息 */}
-            <div style={{ fontSize: '11px', color: '#666', marginTop: '12px', padding: '8px 12px', backgroundColor: '#F5F5F5', borderRadius: '4px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--vt-color-text-secondary)', marginTop: '12px', padding: '8px 12px', backgroundColor: 'var(--vt-color-surface)', borderRadius: '4px' }}> {/* 使用主题变量 ✅ */}
               💡 {t('transcode.audioSelectHint') || '未选择任何音轨时将使用第一音轨'}
             </div>
 

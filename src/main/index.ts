@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage, Menu, type MenuItemConstructorOptions } from 'electron';
+import { app, BrowserWindow, nativeImage, Menu, shell, ipcMain, type MenuItemConstructorOptions } from 'electron';
 import path from 'path';
 import fs from 'fs-extra';
 import log from 'electron-log';
@@ -83,8 +83,8 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1120,
     height: 956,
-    minWidth: 900, // 最小宽度
-    minHeight: 700, // 最小高度
+    minWidth: 975, // 最小宽度（确保内容完整显示的最优值）
+    minHeight: 795, // 最小高度（确保内容完整显示的最优值）
     resizable: true, // 允许手动调整大小
     maximizable: true, // 允许最大化
     fullscreenable: true, // 允许全屏
@@ -106,8 +106,10 @@ async function createWindow() {
   // 窗口准备好后再显示
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
-    // 强制打开开发者工具用于调试
-    mainWindow?.webContents.openDevTools();
+    // 仅在开发环境打开开发者工具
+    if (isDev) {
+      mainWindow?.webContents.openDevTools();
+    }
   });
 
   // 加载应用
@@ -228,6 +230,17 @@ app.whenReady().then(async () => {
   registerSubtitleConvertHandlers();
   registerTranscodeHandlers();
   registerUpdateHandlers();
+  
+  // 注册打开外部链接的 handler
+  ipcMain.handle('open-external', async (_event, url: string) => {
+    try {
+      await shell.openExternal(url);
+      log.info('打开外部链接:', url);
+    } catch (error) {
+      log.error('打开外部链接失败:', error);
+      throw error;
+    }
+  });
   
   // 先创建窗口
   createWindow();

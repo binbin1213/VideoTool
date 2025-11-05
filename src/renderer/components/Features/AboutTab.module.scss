@@ -1,344 +1,301 @@
 @use '../../styles/tokens.scss' as t;
 
-.aboutContainer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: t.$spacing-4;
-  background-color: #F5F5F5;
-  min-height: 100vh;
-  user-select: none;
-  -webkit-user-select: none;
+// ========================================
+// 容器
+// ========================================
+.container {
+  max-width: 100%;
+  padding: t.$spacing-6 t.$spacing-8;
+  background-color: var(--vt-color-surface);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.header {
+// ========================================
+// 页面标题
+// ========================================
+.pageHeader {
   text-align: center;
-  margin-bottom: t.$spacing-4;
+  margin-bottom: t.$spacing-8;
   -webkit-app-region: drag;
-  user-select: none;
   cursor: move;
 }
 
-.title {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.pageTitle {
+  font-size: 28px; // 比 2xl 稍大，作为页面主标题
   font-weight: t.$font-weight-bold;
-  font-size: t.$font-size-2xl;
-  line-height: t.$line-height-2xl;
-  margin-bottom: t.$spacing-2;
+  color: var(--vt-color-text-primary);
+  margin: 0 0 t.$spacing-2 0;
 }
 
-.subtitle {
-  font-size: t.$font-size-sm;
-  line-height: t.$line-height-sm;
-  color: var(--vt-color-text-secondary);
-  margin-bottom: 0;
-}
-
-// ========================================
-// 偏好设置区域
-// ========================================
-.preferencesSection {
-  background-color: #FFFFFF;
-  padding: t.$spacing-5;
-  border-radius: t.$radius-lg;
-  border: 1px solid var(--vt-color-border);  // 改为细边框，使用灰色
-  margin-bottom: t.$spacing-6;
-}
-
-.preferencesSectionTitle {
-  font-size: t.$font-size-lg;
-  line-height: t.$line-height-lg;
-  font-weight: t.$font-weight-semibold;
-  color: var(--vt-color-text-primary);  // 改为黑色文字
-  margin-bottom: t.$spacing-4;
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
-}
-
-.preferenceItem {
-  margin-bottom: t.$spacing-4;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.preferenceItemHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: t.$spacing-2;
-}
-
-.preferenceLabel {
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
+.pageSubtitle {
   font-size: t.$font-size-base;
-  line-height: t.$line-height-base;
-  font-weight: t.$font-weight-medium;
-  color: var(--vt-color-text-primary);
-}
-
-.preferenceStatus {
-  font-size: t.$font-size-xs;
-  line-height: t.$line-height-xs;
   color: var(--vt-color-text-secondary);
-}
-
-.preferenceHint {
-  font-size: t.$font-size-xs;
-  line-height: t.$line-height-xs;
-  color: var(--vt-color-text-secondary);
-  margin-top: t.$spacing-1;
-  display: block;
+  margin: 0;
 }
 
 // ========================================
-// 按钮组（主题切换）- 遵循UI规范
+// 卡片网格
 // ========================================
-.segmentedControl {
-  display: flex;
-  width: 100%;
-  border-radius: t.$radius-md;
-  overflow: hidden;
-  gap: 1px;
-  background-color: var(--vt-color-border);
-}
-
-.segmentButton {
-  flex: 1;
-  height: t.$button-height-md;
-  padding: 0 t.$spacing-3;
-  border: none;
-  background-color: var(--vt-color-bg);
-  color: var(--vt-color-text-primary);
-  font-size: t.$font-size-base;
-  line-height: t.$line-height-base;
-  font-weight: t.$font-weight-medium;
-  cursor: pointer;
-  transition: background-color t.$motion-duration-normal t.$motion-easing-standard,
-              color t.$motion-duration-normal t.$motion-easing-standard;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: t.$spacing-1;
-
-  // Hover状态
-  &:hover:not(.segmentButtonActive):not(:disabled) {
-    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-hover * 100%), var(--vt-color-bg));
-  }
-
-  // Pressed状态
-  &:active:not(.segmentButtonActive):not(:disabled) {
-    background-color: color-mix(in srgb, var(--vt-color-text-primary) calc(t.$state-alpha-pressed * 100%), var(--vt-color-bg));
-  }
-
-  // 选中状态（黑白灰配色）
-  &.segmentButtonActive {
-    background-color: var(--vt-color-brand-primary);  // 中灰色背景 #4B5563
-    color: var(--vt-color-bg);  // 白色文字
-    font-weight: t.$font-weight-semibold;
-  }
-
-  // 禁用状态
-  &:disabled {
-    opacity: t.$state-opacity-disabled;
-    cursor: not-allowed;
-  }
-
-  // Focus状态
-  &:focus-visible {
-    outline: 2px solid var(--vt-color-focus);
-    outline-offset: -2px;
-    z-index: 1;
-  }
-}
-
-// ========================================
-// 下拉选择器（语言切换）- 遵循UI规范
-// ========================================
-.select {
-  width: 100%;
-  height: t.$button-height-sm; // 28px，与按钮同高
-  padding: 0 32px 0 t.$spacing-3;
-  border: 1px solid var(--vt-color-border);
-  border-radius: t.$radius-sm;
-  background-color: #FFFFFF;
-  color: var(--vt-color-text-primary);
-  font-size: t.$font-size-base; // 14px
-  font-weight: 400; // 正常字重
-  line-height: t.$line-height-base;
-  font-family: t.$font-family-sans;
-  cursor: pointer;
-  transition: border-color t.$motion-duration-fast t.$motion-easing-standard,
-              box-shadow t.$motion-duration-fast t.$motion-easing-standard;
-  appearance: none;
-  
-  // 添加下拉箭头图标
-  background-image: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
-      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
-      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-    </svg>") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 6px center !important;
-  background-size: 18px 18px !important;
-
-  // Hover状态
-  &:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--vt-color-brand-primary) 50%, var(--vt-color-border));
-  }
-
-  // Focus状态
-  &:focus {
-    outline: none;
-    border-color: var(--vt-color-focus);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vt-color-focus) 20%, transparent);
-  }
-
-  // 禁用状态
-  &:disabled {
-    opacity: t.$state-opacity-disabled;
-    cursor: not-allowed;
-  }
-}
-
-// ========================================
-// 软件介绍、功能特性等其他部分
-// ========================================
-.section {
-  background: #FFFFFF;
-  padding: t.$spacing-5;
-  border-radius: t.$radius-lg;
-  border: 1px solid var(--vt-color-border);
-  margin-bottom: t.$spacing-6;
-}
-
-.sectionTitle {
-  font-size: t.$font-size-xl;
-  line-height: t.$line-height-xl;
-  font-weight: t.$font-weight-semibold;
-  color: var(--vt-color-text-primary);
-  margin-bottom: t.$spacing-4;
-  padding-bottom: t.$spacing-3;
-  border-bottom: 2px solid var(--vt-color-border);
-}
-
-.featureGrid {
+.cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: t.$spacing-4;
-  margin-bottom: t.$spacing-4;
+  grid-template-columns: repeat(2, 1fr);
+  gap: t.$spacing-6;
+  margin-bottom: t.$spacing-6;
 }
 
-.featureItem {
+// ========================================
+// 卡片
+// ========================================
+.card {
+  background-color: var(--vt-color-bg);
+  border: none; // 移除边框
+  border-radius: t.$radius-lg;
+  padding: t.$spacing-6;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: t.$spacing-3;
+  position: relative;
+  min-height: 200px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08); // 右下方阴影
+
+  &:hover {
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.12); // 悬浮时增强阴影
+    transform: translateY(-2px);
+  }
+}
+
+// Logo 卡片特殊布局
+.logoCard {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-3;
+  flex: 1;
+}
+
+.logoImage {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.logoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logoTitle {
+  font-size: t.$font-size-xl;
+  font-weight: t.$font-weight-bold;
+  color: var(--vt-color-text-primary);
+  margin: 0;
+}
+
+.logoVersion {
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-secondary);
+  margin: 0;
+  font-family: t.$font-family-mono;
+}
+
+.cardTitle {
+  font-size: t.$font-size-xl;
+  font-weight: t.$font-weight-bold;
+  color: var(--vt-color-text-primary);
+  margin: 0;
+}
+
+.cardDescription {
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.cardBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: t.$spacing-1 t.$spacing-3;
+  background-color: var(--vt-color-brand-primary);
+  color: #fff;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  border-radius: t.$radius-pill;
+  align-self: flex-start;
+}
+
+// 技术特性列表
+.techList {
+  display: flex;
+  flex-direction: column;
   gap: t.$spacing-3;
 }
 
-.featureIcon {
-  flex-shrink: 0;
-  width: t.$icon-size-lg;
-  height: t.$icon-size-lg;
+.techItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: t.$font-size-sm;
+    font-weight: t.$font-weight-bold;
+    color: var(--vt-color-text-primary);
+  }
+
+  span {
+    font-size: t.$font-size-sm;
+    color: var(--vt-color-text-secondary);
+    line-height: 1.5;
+  }
+}
+
+// ========================================
+// 设置卡片
+// ========================================
+.cardSettings {
+  cursor: default;
+  
+  &:hover {
+    border-color: var(--vt-color-border);
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-3;
+  flex: 1;
+}
+
+.settingRow {
+  display: flex;
+  flex-direction: column;
+  gap: t.$spacing-2;
+}
+
+.settingLabel {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+}
+
+.themeButtons {
+  display: flex;
+  gap: t.$spacing-2;
+}
+
+.themeBtn {
+  flex: 1;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--vt-color-border); // 从 2px 减少到 1px
+  background-color: var(--vt-color-bg);
+  border-radius: t.$radius-md;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--vt-color-brand-primary);
-}
 
-.featureText {
-  flex: 1;
-  
-  .featureTitle {
-    font-size: t.$font-size-base;
-    line-height: t.$line-height-base;
-    font-weight: t.$font-weight-medium;
-    color: var(--vt-color-text-primary);
-    margin-bottom: t.$spacing-1;
+  &:hover {
+    border-color: var(--vt-color-brand-primary);
   }
-  
-  .featureDescription {
-    font-size: t.$font-size-sm;
-    line-height: t.$line-height-sm;
-    color: var(--vt-color-text-secondary);
+
+  &.active {
+    border-color: var(--vt-color-brand-primary);
+    background-color: rgba(102, 126, 234, 0.1);
   }
 }
 
-// ========================================
-// 按钮样式 - 使用全局 buttonStyles
-// ========================================
-// 已移除本地按钮样式定义，统一使用 ../../styles/components/Button.module.scss
-
-// ========================================
-// Alert消息框 - 黑白灰配色
-// ========================================
-.alert {
-  padding: t.$spacing-2 t.$spacing-3;
-  border-radius: t.$radius-sm;
-  margin-bottom: t.$spacing-4;
-  display: flex;
-  align-items: flex-start;
-  gap: t.$spacing-2;
-  font-size: t.$font-size-xs;
-  line-height: t.$line-height-xs;
-  background-color: #F9FAFB;
-  border: 1px solid #E5E7EB;
-  color: var(--vt-color-text-secondary);
-
-  &.alertInfo {
-    background-color: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    color: var(--vt-color-text-secondary);
-  }
-
-  &.alertSuccess {
-    background-color: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    color: var(--vt-color-text-secondary);
-  }
-
-  &.alertWarning {
-    background-color: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    color: var(--vt-color-text-secondary);
-  }
-
-  &.alertDanger {
-    background-color: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    color: var(--vt-color-text-secondary);
-  }
-}
-
-// ========================================
-// 进度条
-// ========================================
-.progressBar {
+.langSelect {
   width: 100%;
-  height: 4px;
-  background-color: var(--vt-color-border);
-  border-radius: t.$radius-pill;
-  overflow: hidden;
-  margin-bottom: t.$spacing-2;
+  height: 40px;
+  padding: 0 t.$spacing-3;
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-primary);
+  background-color: var(--vt-color-bg);
+  border: 1px solid var(--vt-color-border); // 从 2px 减少到 1px
+  border-radius: t.$radius-md;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--vt-color-brand-primary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--vt-color-brand-primary);
+  }
 }
 
-.progressFill {
-  height: 100%;
-  background-color: var(--vt-color-brand-primary);  // 中灰色进度条 #4B5563
-  transition: width t.$motion-duration-normal t.$motion-easing-standard;
+.updateBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-2;
+  width: 100%;
+  height: 40px;
+  padding: 0 t.$spacing-3;
+  background-color: var(--vt-color-brand-primary);
+  color: #fff;
+  border: none;
+  border-radius: t.$radius-md;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(102, 126, 234, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  svg {
+    font-size: 14px;
+  }
 }
 
-.progressText {
-  font-size: t.$font-size-xs;
-  line-height: t.$line-height-xs;
+// ========================================
+// 底部
+// ========================================
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$spacing-2;
+  padding: t.$spacing-5 0 0;
+  margin-top: auto;
   color: var(--vt-color-text-secondary);
-  font-family: t.$font-family-mono;
-  text-align: center;
+  font-size: t.$font-size-xs;
 }
 
+.footerLink {
+  background: none;
+  border: none;
+  color: var(--vt-color-brand-primary);
+  font-size: t.$font-size-xs;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+  
+  &:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+}

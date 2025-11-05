@@ -3,13 +3,22 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* 减小容器间距，更紧凑 */
+  gap: 16px; /* 增加容器间距，减少垂直拥挤感 ✅ */
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* 减小标签和控件间距 */
+  gap: 6px; /* 标签和控件间距适中 ✅ */
+  position: relative; /* 为刻度线定位 ✅ */
+}
+
+// 左右布局的字段（标签在左，控件在右）- 用于节省垂直空间 ✅
+.fieldRow {
+  display: grid;
+  grid-template-columns: 120px 1fr; // 增加标签宽度以容纳长文本 ✅
+  gap: 8px; // 减小间距，让控件离标签更近 ✅
+  align-items: center;
 }
 
 .row {
@@ -17,6 +26,14 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
   align-items: end;
+}
+
+// 用于两列布局的行，每个字段都是左右布局 ✅
+.rowCompact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: center;
 }
 
 .label {
@@ -33,69 +50,84 @@
   color: var(--vt-color-brand-primary);
 }
 
-.select {
-  height: t.$button-height-sm; // 28px，与按钮同高
-  padding: 0 t.$spacing-3;
-  font-size: t.$font-size-base; // 14px，与正文一致
-  font-weight: 400; // 正常字重
-  color: var(--vt-color-text-primary);
-  background-color: #FFFFFF;
-  border: 1px solid var(--vt-color-border);
-  border-radius: t.$radius-sm;
-  outline: none;
-  cursor: pointer;
-
-  &:focus {
-    border-color: var(--vt-color-brand-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vt-color-brand-primary) 15%, transparent);
-  }
-}
+// Select 下拉框样式已移至全局统一文件 Select.module.scss ✅
 
 .slider {
   width: 100%;
   height: 6px;
-  border-radius: 3px;
-  background: linear-gradient(to right, #E5E7EB 0%, #E5E7EB 100%);
   outline: none;
   -webkit-appearance: none;
   appearance: none;
+  position: relative;
+  background: transparent;
 
+  // WebKit 浏览器的轨道样式
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    // 轨道背景：浅灰色底 + 中间黑色横线 ✅
+    background: 
+      linear-gradient(to bottom, transparent 2px, rgba(0,0,0,0.7) 2px, rgba(0,0,0,0.7) 3px, transparent 3px) center center,
+      var(--vt-color-surface);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  // Firefox 浏览器的轨道样式
+  &::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: 
+      linear-gradient(to bottom, transparent 2px, rgba(0,0,0,0.7) 2px, rgba(0,0,0,0.7) 3px, transparent 3px) center center,
+      var(--vt-color-surface);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  // WebKit 滑块圆点
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: var(--vt-color-brand-primary);
+    background: var(--vt-color-brand-primary); // 实心蓝色 ✅
+    border: none;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease;
+    margin-top: -4px; // 居中对齐
 
     &:hover {
-      transform: scale(1.15);
+      transform: scale(1.2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
 
     &:active {
-      transform: scale(0.95);
+      transform: scale(1.0);
     }
   }
 
+  // Firefox 滑块圆点
   &::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     border: none;
     border-radius: 50%;
-    background: var(--vt-color-brand-primary);
+    background: var(--vt-color-brand-primary); // 实心蓝色 ✅
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease;
 
     &:hover {
-      transform: scale(1.15);
+      transform: scale(1.2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
 
     &:active {
-      transform: scale(0.95);
+      transform: scale(1.0);
     }
   }
 }
@@ -103,28 +135,34 @@
 .sliderHint {
   display: flex;
   justify-content: space-between;
-  font-size: 11px; /* 更小的字号 */
+  font-size: 11px;
   color: var(--vt-color-text-secondary);
-  margin-top: 2px; /* 紧贴滑块 */
+  margin-top: 4px;
 }
 
 .input {
-  height: t.$button-height-sm;
+  height: t.$button-height-sm; // 28px
   padding: 0 t.$spacing-3;
-  font-size: t.$font-size-base;
+  font-size: t.$font-size-base; // 14px
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   color: var(--vt-color-text-primary);
-  background-color: #FFFFFF;
-  border: 1px solid var(--vt-color-border);
-  border-radius: t.$radius-sm;
+  background-color: var(--vt-color-surface-elev1) !important; // 使用主题变量 ✅
+  border: none !important; // 无边框 ✅
+  border-radius: 6px !important; // 统一圆角 ✅
   outline: none;
-
-  &:focus {
-    border-color: var(--vt-color-brand-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--vt-color-brand-primary) 15%, transparent);
-  }
+  box-shadow: none !important; // 默认无阴影 ✅
 
   &::placeholder {
     color: var(--vt-color-text-tertiary);
+  }
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important; // 悬停时出现阴影 ✅
+  }
+
+  &:focus {
+    background-color: var(--vt-color-surface) !important; // 使用主题变量 ✅
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 2px 4px rgba(0, 0, 0, 0.15) !important;
   }
 }
 
@@ -165,7 +203,7 @@
 .warning {
   margin-top: 12px;
   padding: 12px;
-  background-color: #FEF3C7;
+  background-color: color-mix(in srgb, #F59E0B 15%, var(--vt-color-surface-elev1)); // 使用主题变量 ✅
   border: 1px solid #F59E0B;
   border-radius: 6px;
   display: flex;

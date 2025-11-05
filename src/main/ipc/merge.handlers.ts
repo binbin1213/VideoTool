@@ -103,16 +103,16 @@ export function registerMergeHandlers() {
         return null;
       }
 
-      // 提取视频缩略图（从第 1 秒提取）
-      log.info('开始提取视频缩略图...');
-      const thumbnail = await FFmpegService.extractVideoThumbnail(videoPath, 1);
-      
-      if (thumbnail) {
-        info.thumbnail = thumbnail;
-        log.info('✅ 缩略图已添加到视频信息');
-      } else {
-        log.warn('⚠️ 缩略图提取失败，继续返回视频信息');
-      }
+      // 提取视频缩略图（已禁用）
+      // log.info('开始提取视频缩略图...');
+      // const thumbnail = await FFmpegService.extractVideoThumbnail(videoPath, 1);
+      // 
+      // if (thumbnail) {
+      //   info.thumbnail = thumbnail;
+      //   log.info('✅ 缩略图已添加到视频信息');
+      // } else {
+      //   log.warn('⚠️ 缩略图提取失败，继续返回视频信息');
+      // }
 
       return info;
     } catch (error) {

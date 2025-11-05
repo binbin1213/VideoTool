@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import basicStyles from '../ManualMode/BasicTab.module.scss';
+import buttonStyles from '../../../../../styles/components/Button.module.scss';
 
 interface AIConfigProps {
   platform: 'deepseek' | 'openai';
@@ -58,41 +59,20 @@ export const AIConfig = ({
             value={apiKey}
             onChange={(e) => onApiKeyChange(e.target.value)}
             placeholder={t('transcode.enterApiKey')}
-            style={{ height: '28px' }}
           />
         </div>
 
         <div className={basicStyles.field}>
           <label className={basicStyles.label}>&nbsp;</label>
-          <button
-            onClick={onTestConnection}
-            disabled={!apiKey || testing}
-            style={{
-              padding: '0 16px',
-              backgroundColor: apiKey ? '#52c41a' : '#d9d9d9',
-              color: '#fff',
-              border: `1px solid ${apiKey ? '#52c41a' : '#d9d9d9'}`,
-              borderRadius: '4px',
-              cursor: apiKey ? 'pointer' : 'not-allowed',
-              fontSize: '13px',
-              width: '100%',
-              height: '28px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.2s',
-              boxSizing: 'border-box',
-              opacity: testing ? 0.6 : 1
-            }}
-            onMouseEnter={(e) => {
-              if (apiKey && !testing) e.currentTarget.style.backgroundColor = '#73d13d';
-            }}
-            onMouseLeave={(e) => {
-              if (apiKey) e.currentTarget.style.backgroundColor = '#52c41a';
-            }}
-          >
-            {testing ? t('transcode.testing') : t('transcode.testConnection')}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <button
+              onClick={onTestConnection}
+              disabled={!apiKey || testing}
+              className={buttonStyles.buttonPrimary}
+            >
+              {testing ? t('transcode.testing') : t('transcode.testConnection')}
+            </button>
+          </div>
         </div>
       </div>
 

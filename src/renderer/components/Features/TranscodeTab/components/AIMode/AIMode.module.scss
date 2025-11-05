@@ -3,12 +3,12 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: t.$spacing-4;
+  gap: t.$spacing-5; // 增加间距，更清爽 ✅
 }
 
 .analyzeSection {
   display: flex;
   justify-content: center;
-  padding: t.$spacing-4 0;
+  padding: t.$spacing-5 0; // 增加上下间距 ✅
 }
 

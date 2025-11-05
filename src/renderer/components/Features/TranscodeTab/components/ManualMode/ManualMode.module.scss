@@ -9,27 +9,26 @@
 .tabs {
   display: flex;
   gap: t.$spacing-2;
-  border-bottom: 2px solid var(--vt-color-border);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08); // 更淡的分隔线 ✅
 }
 
 .tab {
   display: flex;
   align-items: center;
   gap: t.$spacing-2;
-  padding: t.$spacing-3 t.$spacing-4;
+  padding: t.$spacing-2 t.$spacing-4;
   font-size: t.$font-size-sm;
   font-weight: t.$font-weight-medium;
   color: var(--vt-color-text-secondary);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
+  margin-bottom: -1px; // 对齐到分隔线 ✅
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 
   &:hover {
     color: var(--vt-color-text-primary);
-    background-color: color-mix(in srgb, var(--vt-color-brand-primary) 5%, transparent);
   }
 
   &.active {
@@ -39,10 +38,8 @@
 }
 
 .tabContent {
-  background-color: #FFFFFF;
-  border: 1px solid var(--vt-color-border);
-  border-radius: t.$radius-lg;
-  padding: t.$spacing-4;
+  // 去掉边框和背景色，保持简洁 ✅
+  padding: t.$spacing-4 0;
   min-height: 400px;
 }
 

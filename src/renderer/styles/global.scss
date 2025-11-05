@@ -118,19 +118,23 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--vt-color-surface); // 使用主题变量 ✅
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--vt-color-text-secondary); // 使用主题变量 ✅
   border-radius: 4px;
+  opacity: 0.5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--vt-color-text-primary); // 使用主题变量 ✅
+  opacity: 0.7;
 }
 
 /* 全局覆盖 Bootstrap 的 form-select 样式 */
+/* 注释掉全局 select 样式，改用 Select.module.scss 模块化样式 ✅ */
+/*
 select,
 .form-select,
 .form-select-sm,
@@ -141,7 +145,7 @@ select,
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;
-  background-color: #fff !important;
+  background-color: var(--vt-color-surface-elev1) !important;
   background-image: var(--bs-form-select-bg-img), var(--bs-form-select-bg-icon, none) !important;
   background-repeat: no-repeat !important;
   background-position: right 0.75rem center !important;
@@ -155,6 +159,29 @@ select:focus,
   outline: none !important;
   border-color: #dee2e6 !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
-  background-color: #fff !important;
+  background-color: var(--vt-color-surface-elev1) !important;
+}
+*/
+
+/* ============================================
+   Bootstrap Modal 样式覆盖 - 统一背景色
+   ============================================ */
+.modal-content {
+  background-color: var(--vt-color-surface) !important; // 与页面背景统一 ✅
+  border: 1px solid var(--vt-color-border) !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  background-color: var(--vt-color-surface) !important; // 与页面背景统一 ✅
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--vt-color-border) !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--vt-color-border) !important;
 }
 

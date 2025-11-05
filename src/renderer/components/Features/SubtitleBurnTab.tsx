@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaPlay, FaInfoCircle } from 'react-icons/fa';
 import type { VideoInfo } from '../../../shared/types/merge.types';
 import type { SubtitleFileInfo, SubtitleBurnProgress } from '../../../shared/types/subtitle-burn.types';
 import type { TaskProgress } from '../../App';
 import styles from './SubtitleBurnTab.module.scss';
 import buttonStyles from '../../styles/components/Button.module.scss';
-import Switch from '../common/Switch';
+import selectStyles from '../../styles/components/Select.module.scss';
+import Switch from '../Common/Switch';
 
 const { ipcRenderer } = (window as any).electron;
 
@@ -25,14 +25,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [subtitleInfo, setSubtitleInfo] = useState<SubtitleFileInfo | null>(null);
   const [result, setResult] = useState<{ success: boolean; message: string; outputPath?: string } | null>(null);
-  const [videoCodec, setVideoCodec] = useState<'libx264' | 'libx265'>('libx264');
-  const [audioCodec, setAudioCodec] = useState<'copy' | 'aac'>('copy');
-  const [crf, setCrf] = useState(18);
-  const [preset, setPreset] = useState<'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow' | 'slower' | 'veryslow'>('slow');
-  const [tune, setTune] = useState<'film' | 'grain' | 'none'>('film');
   const [qualityPreset, setQualityPreset] = useState<'h264_quality' | 'h264_balanced' | 'h264_hw' | 'hevc_size'>('h264_quality');
-  const [useHardwareAccel, setUseHardwareAccel] = useState(false);
-  const [hwaccel, setHwaccel] = useState<'videotoolbox' | 'nvenc' | 'qsv' | 'none'>('videotoolbox');
   const [subtitleType, setSubtitleType] = useState<'hard' | 'soft'>('soft'); // 默认软字幕
 
   // 监听进度更新（使用全局状态）
@@ -54,36 +47,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
       ipcRenderer.removeListener('subtitle-burn-progress', progressHandler);
     };
   }, [setTaskProgress]);
-
-  // 根据质量预设自动设置参数
-  useEffect(() => {
-    if (qualityPreset === 'h264_quality') {
-      setUseHardwareAccel(false);
-      setVideoCodec('libx264');
-      setCrf(18);
-      setPreset('slow');
-      setTune('film');
-    } else if (qualityPreset === 'h264_balanced') {
-      setUseHardwareAccel(false);
-      setVideoCodec('libx264');
-      setCrf(19);
-      setPreset('medium');
-      setTune('film');
-    } else if (qualityPreset === 'h264_hw') {
-      setUseHardwareAccel(true);
-      setHwaccel('videotoolbox');
-      setVideoCodec('libx264');
-      setCrf(20);
-      setPreset('medium');
-      setTune('none');
-    } else if (qualityPreset === 'hevc_size') {
-      setUseHardwareAccel(false);
-      setVideoCodec('libx265');
-      setCrf(21);
-      setPreset('slow');
-      setTune('grain');
-    }
-  }, [qualityPreset]);
 
   const addLocalLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     addLog(message, type);
@@ -243,11 +206,41 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
 
       addLocalLog(`输出路径: ${outputPath}`, 'info');
       addLocalLog(`字幕类型: ${subtitleType === 'soft' ? '软字幕（封装）' : '硬字幕（烧录）'}`, 'info');
+
+      // 根据质量预设确定参数
+      let videoCodec: 'libx264' | 'libx265' = 'libx264';
+      let audioCodec: 'copy' | 'aac' = 'copy';
+      let crf = 18;
+      let preset: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow' | 'slower' | 'veryslow' = 'slow';
+      let tune: 'film' | 'grain' | 'none' = 'film';
+      let useHardwareAccel = false;
+      let hwaccel: 'videotoolbox' | 'nvenc' | 'qsv' | 'none' = 'none';
+
       if (subtitleType === 'hard') {
-        addLocalLog(`编码参数: ${videoCodec}, CRF=${crf}, Preset=${preset}, Tune=${tune}${useHardwareAccel ? ', HW=' + hwaccel : ''}`, 'info');
-        if (useHardwareAccel) {
-          addLocalLog(`硬件加速: ${hwaccel.toUpperCase()}`, 'info');
+        if (qualityPreset === 'h264_quality') {
+          videoCodec = 'libx264';
+          crf = 18;
+          preset = 'slow';
+          tune = 'film';
+        } else if (qualityPreset === 'h264_balanced') {
+          videoCodec = 'libx264';
+          crf = 19;
+          preset = 'medium';
+          tune = 'film';
+        } else if (qualityPreset === 'h264_hw') {
+          videoCodec = 'libx264';
+          crf = 20;
+          preset = 'medium';
+          tune = 'none';
+          useHardwareAccel = true;
+          hwaccel = 'videotoolbox';
+        } else if (qualityPreset === 'hevc_size') {
+          videoCodec = 'libx265';
+          crf = 21;
+          preset = 'slow';
+          tune = 'grain';
         }
+        addLocalLog(`编码参数: ${videoCodec}, CRF=${crf}, Preset=${preset}, Tune=${tune}${useHardwareAccel ? ', HW=' + hwaccel : ''}`, 'info');
       } else {
         addLocalLog(`软字幕模式：视频/音频直接复制，无需重新编码`, 'info');
       }
@@ -263,7 +256,7 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
         preset,
         tune,
         useHardwareAccel,
-        hwaccel: useHardwareAccel ? hwaccel : 'none',
+        hwaccel,
         subtitleType,
       });
 
@@ -329,7 +322,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
       {/* 标题栏（支持拖拽） */}
       <div className={styles.header}>
         <h2>
-          <FaPlay />
           {t('subtitleBurn.title')}
         </h2>
       </div>
@@ -342,7 +334,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
           {ffmpegAvailable === false && (
             <div className={`${styles.alert} ${styles.alertError}`}>
               <div className={styles.alertHeading}>
-                <FaInfoCircle />
                 {t('subtitleBurn.ffmpegNotAvailable')}
               </div>
               <p className={styles.alertText}>{t('subtitleBurn.ffmpegNotAvailableDetail')}</p>
@@ -351,16 +342,13 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
 
           {/* 文件选择 */}
           <div className={styles.fileSection}>
-            <h3 className={styles.fileSectionTitle}>{t('subtitleBurn.selectFiles')}</h3>
-            
             {/* 视频文件选择 */}
             <div className={styles.fileRow}>
-              <div className={styles.fileLabel}>{t('subtitleBurn.video')}:</div>
               <button 
                   onClick={handleSelectVideo}
-                className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
+                className={buttonStyles.buttonSecondary}
               >
-                {t('subtitleBurn.browse')}
+                {t('subtitleBurn.selectVideo')}
               </button>
               <div className={styles.fileInfo}>
                   {videoFile ? (
@@ -370,24 +358,25 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
                   )}
                 </div>
               </div>
-              {videoFile && videoInfo && (
               <div className={styles.fileDetails}>
-                <span>{t('subtitleBurn.resolution')}: {videoInfo.width}×{videoInfo.height}</span>
-                <span>{t('subtitleBurn.codec')}: {videoInfo.codec.toUpperCase()}</span>
-                <span>{t('subtitleBurn.duration')}: {formatDuration(videoInfo.duration)}</span>
-                <span>{t('subtitleBurn.frameRate')}: {videoInfo.fps.toFixed(2)}fps</span>
-                <span>{t('subtitleBurn.size')}: {formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}</span>
-                </div>
-              )}
+                {videoFile && videoInfo && (
+                  <>
+                    <span>{t('subtitleBurn.resolution')}: {videoInfo.width}×{videoInfo.height}</span>
+                    <span>{t('subtitleBurn.codec')}: {videoInfo.codec.toUpperCase()}</span>
+                    <span>{t('subtitleBurn.duration')}: {formatDuration(videoInfo.duration)}</span>
+                    <span>{t('subtitleBurn.frameRate')}: {videoInfo.fps.toFixed(2)}fps</span>
+                    <span>{t('subtitleBurn.size')}: {formatFileSize(videoInfo.bitrate / 8 * videoInfo.duration)}</span>
+                  </>
+                )}
+              </div>
 
             {/* 字幕文件选择 */}
             <div className={styles.fileRow}>
-              <div className={styles.fileLabel}>{t('subtitleBurn.subtitle')}:</div>
               <button 
                   onClick={handleSelectSubtitle}
-                className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
+                className={buttonStyles.buttonSecondary}
               >
-                {t('subtitleBurn.browse')}
+                {t('subtitleBurn.selectSubtitle')}
               </button>
               <div className={styles.fileInfo}>
                   {subtitleType === 'soft' ? (
@@ -420,18 +409,19 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
                 </div>
               </div>
             
-              {/* 硬字幕：显示详细信息 */}
-              {subtitleType === 'hard' && subtitleFile && subtitleInfo && (
-              <div className={styles.fileDetails}>
-                <span>{t('subtitleBurn.format')}: {subtitleInfo.format.toUpperCase()}</span>
-                <span>{t('subtitleBurn.size')}: {formatFileSize(subtitleInfo.size)}</span>
+              {/* 字幕详细信息 */}
+              {subtitleType === 'hard' ? (
+                <div className={styles.fileDetails}>
+                  {subtitleFile && subtitleInfo && (
+                    <>
+                      <span>{t('subtitleBurn.format')}: {subtitleInfo.format.toUpperCase()}</span>
+                      <span>{t('subtitleBurn.size')}: {formatFileSize(subtitleInfo.size)}</span>
+                    </>
+                  )}
                 </div>
-              )}
-            
-              {/* 软字幕：显示文件数量提示 */}
-              {subtitleType === 'soft' && subtitleFiles.length > 0 && (
-              <div className={styles.fileCount}>
-                {t('subtitleBurn.filesSelected', { count: subtitleFiles.length })}
+              ) : (
+                <div className={styles.fileCount}>
+                  {subtitleFiles.length > 0 && t('subtitleBurn.filesSelected', { count: subtitleFiles.length })}
                 </div>
               )}
           </div>
@@ -464,10 +454,9 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
             {/* 质量预设（仅硬字幕） */}
             {subtitleType === 'hard' && (
               <div className={styles.formField}>
-                <label className={styles.formLabel}>{t('subtitleBurn.qualityPreset')}:</label>
                 <div className={styles.formControl}>
                   <select
-                    className={styles.select}
+                    className={selectStyles.select}
                       value={qualityPreset}
                       onChange={(e) => setQualityPreset(e.target.value as any)}
                       disabled={taskProgress.isRunning}
@@ -487,111 +476,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
               </div>
             )}
           </div>
-
-          {/* 高级设置（仅硬字幕显示且软件编码时显示详细参数） */}
-          {subtitleType === 'hard' && qualityPreset !== 'h264_hw' && (
-            <div className={styles.advancedSection}>
-              <h3 className={styles.advancedSectionTitle}>{t('subtitleBurn.advancedSettings')}</h3>
-
-              {/* 视频编码器 */}
-              <div className={styles.formField}>
-                <label className={styles.formLabel}>{t('subtitleBurn.videoCodec')}:</label>
-                <div className={styles.formControl}>
-                  <select
-                    className={styles.select}
-                      value={videoCodec}
-                      onChange={(e) => setVideoCodec(e.target.value as any)}
-                      disabled={taskProgress.isRunning}
-                    >
-                    <option value="libx264">{t('subtitleBurn.videoCodecH264')}</option>
-                    <option value="libx265">{t('subtitleBurn.videoCodecH265')}</option>
-                  </select>
-                  <div className={styles.fieldHelp}>{t('subtitleBurn.videoCodecDesc')}</div>
-                </div>
-              </div>
-
-              {/* 音频编码 */}
-              <div className={styles.formField}>
-                <label className={styles.formLabel}>{t('subtitleBurn.audioCodec')}:</label>
-                <div className={styles.formControl}>
-                  <select
-                    className={styles.select}
-                      value={audioCodec}
-                      onChange={(e) => setAudioCodec(e.target.value as any)}
-                      disabled={taskProgress.isRunning}
-                    >
-                    <option value="copy">{t('subtitleBurn.audioCodecCopy')}</option>
-                    <option value="aac">{t('subtitleBurn.audioCodecAAC')}</option>
-                  </select>
-                  <div className={styles.fieldHelp}>{t('subtitleBurn.audioCodecDesc')}</div>
-                </div>
-              </div>
-
-              {/* 调优 */}
-              <div className={styles.formField}>
-                <label className={styles.formLabel}>{t('subtitleBurn.tune')}:</label>
-                <div className={styles.formControl}>
-                  <select
-                    className={styles.select}
-                      value={tune}
-                      onChange={(e) => setTune(e.target.value as any)}
-                      disabled={taskProgress.isRunning}
-                    >
-                    <option value="film">{t('subtitleBurn.tuneFilm')}</option>
-                    <option value="grain">{t('subtitleBurn.tuneGrain')}</option>
-                    <option value="none">{t('subtitleBurn.tuneNone')}</option>
-                  </select>
-                  <div className={styles.fieldHelp}>{t('subtitleBurn.tuneDesc')}</div>
-                </div>
-              </div>
-
-              {/* 质量控制 CRF */}
-              <div className={styles.formField}>
-                <label className={styles.formLabel}>{t('subtitleBurn.qualityControl')}: {crf}</label>
-                <div className={styles.formControl}>
-                  <input
-                    type="range"
-                    className={styles.range}
-                      min={18}
-                      max={28}
-                      value={crf}
-                      onChange={(e) => setCrf(parseInt(e.target.value))}
-                      disabled={taskProgress.isRunning}
-                    />
-                  <div className={styles.fieldHelp}>{t('subtitleBurn.qualityControlDesc')}</div>
-                </div>
-              </div>
-
-              {/* 编码速度 */}
-              <div className={styles.formField}>
-                <label className={styles.formLabel}>{t('subtitleBurn.encodingSpeed')}:</label>
-                <div className={styles.formControl}>
-                  <select
-                    className={styles.select}
-                      value={preset}
-                      onChange={(e) => setPreset(e.target.value as any)}
-                      disabled={taskProgress.isRunning}
-                    >
-                    <option value="ultrafast">{t('subtitleBurn.speedUltrafast')}</option>
-                    <option value="superfast">{t('subtitleBurn.speedSuperfast')}</option>
-                    <option value="veryfast">{t('subtitleBurn.speedVeryfast')}</option>
-                    <option value="faster">{t('subtitleBurn.speedFaster')}</option>
-                    <option value="fast">{t('subtitleBurn.speedFast')}</option>
-                    <option value="medium">{t('subtitleBurn.speedMedium')}</option>
-                    <option value="slow">{t('subtitleBurn.speedSlow')}</option>
-                    <option value="slower">{t('subtitleBurn.speedSlower')}</option>
-                    <option value="veryslow">{t('subtitleBurn.speedVeryslow')}</option>
-                  </select>
-                  <div className={styles.fieldHelp}>{t('subtitleBurn.encodingSpeedDesc')}</div>
-                </div>
-              </div>
-
-              <div className={`${styles.alert} ${styles.alertInfo}`}>
-                <FaInfoCircle />
-                <span>{t('subtitleBurn.advancedTip')}</span>
-              </div>
-            </div>
-          )}
 
           {/* 开始烧录/封装按钮 */}
           <div className={styles.buttonGroup}>
@@ -637,7 +521,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
                 <div className={styles.progressText}>{taskProgress.progressText}</div>
                 )}
               <div className={`${styles.alert} ${styles.alertWarning}`}>
-                <FaInfoCircle />
                 <span>{t('subtitleBurn.progressWait')}</span>
               </div>
             </div>
@@ -647,7 +530,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
           {result && (
             <div className={`${styles.alert} ${result.success ? styles.alertSuccess : styles.alertError}`}>
               <div className={styles.alertHeading}>
-                <FaInfoCircle />
                 {result.success ? `✅ ${t('subtitleBurn.burnSuccess')}` : `❌ ${t('subtitleBurn.burnFailed')}`}
               </div>
               <p className={styles.alertText}>{result.message}</p>
@@ -664,10 +546,6 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
         <div className={styles.infoArea}>
           {/* 功能说明 */}
           <div className={styles.infoSection}>
-            <div className={styles.infoHeader}>
-              <FaInfoCircle />
-              <span>{t('subtitleBurn.guideTitle')}</span>
-            </div>
             <div className={styles.infoContent}>
               <h4 className={styles.infoSubtitle}>{t('subtitleBurn.guideSubtitleTypes')}</h4>
               <ul className={styles.infoList}>

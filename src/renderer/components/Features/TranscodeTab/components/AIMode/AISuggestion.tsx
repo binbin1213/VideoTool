@@ -22,7 +22,7 @@ export const AISuggestion = ({ suggestion, onAccept, onTweak, onReanalyze }: AIS
       border: '2px solid #1890ff',
       borderRadius: '8px',
       padding: '12px',
-      backgroundColor: '#f0f8ff',
+      backgroundColor: 'color-mix(in srgb, #1890ff 8%, var(--vt-color-surface-elev1))', // 使用主题变量 ✅
       marginTop: '16px'
     }}>
       {/* 标题 */}
@@ -82,7 +82,7 @@ export const AISuggestion = ({ suggestion, onAccept, onTweak, onReanalyze }: AIS
           marginBottom: '8px',
           fontSize: '11px',
           padding: '8px',
-          backgroundColor: '#fff',
+          backgroundColor: 'var(--vt-color-surface-elev1)', // 使用主题变量 ✅
           borderLeft: '3px solid #1890ff'
         }}>
           <strong>{t('transcode.reason')}:</strong> {reason}

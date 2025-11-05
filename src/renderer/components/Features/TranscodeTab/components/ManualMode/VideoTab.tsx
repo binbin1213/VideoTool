@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import styles from './BasicTab.module.scss';
+import selectStyles from '../../../../../styles/components/Select.module.scss';
 
 interface VideoTabProps {
   config: any;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string | Record<string, any>, value?: any) => void;
 }
 
 export const VideoTab = ({ config, onChange }: VideoTabProps) => {
@@ -21,7 +22,7 @@ export const VideoTab = ({ config, onChange }: VideoTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.resolution')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.resolution || 'original'}
             onChange={(e) => onChange('resolution', e.target.value)}
           >
@@ -39,7 +40,7 @@ export const VideoTab = ({ config, onChange }: VideoTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.framerate')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.framerate || 'original'}
             onChange={(e) => onChange('framerate', e.target.value)}
           >
@@ -56,7 +57,7 @@ export const VideoTab = ({ config, onChange }: VideoTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.aspectRatio')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.aspectRatio || 'original'}
             onChange={(e) => onChange('aspectRatio', e.target.value)}
           >
@@ -118,7 +119,7 @@ export const VideoTab = ({ config, onChange }: VideoTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.rotate')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.rotate || '0'}
             onChange={(e) => onChange('rotate', e.target.value)}
           >

@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import styles from './BasicTab.module.scss';
+import selectStyles from '../../../../../styles/components/Select.module.scss';
 
 interface BasicTabProps {
   config: any;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string | Record<string, any>, value?: any) => void;
 }
 
 export const BasicTab = ({ config, onChange }: BasicTabProps) => {
@@ -60,7 +61,7 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.format')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.format || 'mp4'}
             onChange={(e) => onChange('format', e.target.value)}
           >
@@ -75,7 +76,7 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.videoCodec')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.videoCodec || 'libx264'}
             onChange={(e) => {
               const codec = e.target.value;
@@ -143,7 +144,7 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
       <div className={styles.field}>
         <label className={styles.label}>{t('transcode.preset')}:</label>
         <select
-          className={styles.select}
+          className={selectStyles.select}
           value={config.preset || 'medium'}
           onChange={(e) => onChange('preset', e.target.value)}
         >
@@ -164,7 +165,7 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.audioCodec')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.audioCodec || 'aac'}
             onChange={(e) => onChange('audioCodec', e.target.value)}
           >
@@ -181,7 +182,7 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.audioBitrate')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.audioBitrate || '128k'}
             onChange={(e) => onChange('audioBitrate', e.target.value)}
           >
@@ -198,7 +199,7 @@ export const BasicTab = ({ config, onChange }: BasicTabProps) => {
           <div className={styles.field}>
             <label className={styles.label}>{t('transcode.audioChannels')}:</label>
             <select
-              className={styles.select}
+              className={selectStyles.select}
               value={config.audioChannels || '2'}
               onChange={(e) => onChange('audioChannels', e.target.value)}
             >

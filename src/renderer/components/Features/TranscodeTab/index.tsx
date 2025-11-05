@@ -208,7 +208,6 @@ function TranscodeTab() {
         >
           <FaRobot />
           <span>{t('transcode.aiMode') || 'AI决策模式'}</span>
-          <span className={styles.badge}>{t('transcode.recommended') || '推荐'}</span>
         </button>
         <button
           className={`${styles.modeButton} ${mode === 'manual' ? styles.active : ''}`}
@@ -216,7 +215,6 @@ function TranscodeTab() {
         >
           <FaTools />
           <span>{t('transcode.manualMode') || '手动模式'}</span>
-          <span className={styles.badge}>{t('transcode.professional') || '专业'}</span>
         </button>
       </div>
 

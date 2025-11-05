@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import basicStyles from '../ManualMode/BasicTab.module.scss';
+import selectStyles from '../../../../../styles/components/Select.module.scss';
 
 interface SceneSelectorProps {
   selectedScene: string;
@@ -25,7 +26,7 @@ export const SceneSelector = ({ selectedScene, onSelectScene, disabled }: SceneS
     <div className={basicStyles.field}>
       <label className={basicStyles.label}>{t('transcode.selectScene')}</label>
       <select
-        className={basicStyles.select}
+        className={`${selectStyles.select} ${selectStyles.selectFull}`}
         value={selectedScene}
         onChange={(e) => onSelectScene(e.target.value)}
         disabled={disabled}
@@ -36,7 +37,7 @@ export const SceneSelector = ({ selectedScene, onSelectScene, disabled }: SceneS
           </option>
         ))}
       </select>
-      <div className={basicStyles.hint} style={{ marginTop: '4px' }}>
+      <div className={basicStyles.hint} style={{ marginTop: '6px' }}>
         {currentScene && t(`transcode.${currentScene.desc}`)}
       </div>
     </div>

@@ -21,11 +21,20 @@ export const ManualMode = ({ config, videoInfo, onConfigChange }: ManualModeProp
   // 调试：打印接收到的配置
   console.log('🎨 ManualMode 接收到的配置:', config);
 
-  const handleFieldChange = (field: string, value: any) => {
-    onConfigChange({
-      ...config,
-      [field]: value,
-    });
+  const handleFieldChange = (field: string | Record<string, any>, value?: any) => {
+    // 支持批量更新：handleFieldChange({field1: value1, field2: value2})
+    // 或单个字段更新：handleFieldChange('field', value)
+    if (typeof field === 'object') {
+      onConfigChange({
+        ...config,
+        ...field,
+      });
+    } else {
+      onConfigChange({
+        ...config,
+        [field]: value,
+      });
+    }
   };
 
   return (

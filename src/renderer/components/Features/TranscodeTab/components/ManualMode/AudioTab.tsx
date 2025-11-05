@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import styles from './BasicTab.module.scss';
+import selectStyles from '../../../../../styles/components/Select.module.scss';
 
 interface AudioTabProps {
   config: any;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string | Record<string, any>, value?: any) => void;
 }
 
 export const AudioTab = ({ config, onChange }: AudioTabProps) => {
@@ -63,7 +64,7 @@ export const AudioTab = ({ config, onChange }: AudioTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.sampleRate')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.sampleRate || 'original'}
             onChange={(e) => onChange('sampleRate', e.target.value)}
           >
@@ -80,7 +81,7 @@ export const AudioTab = ({ config, onChange }: AudioTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.normalization')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.normalization || 'none'}
             onChange={(e) => onChange('normalization', e.target.value)}
           >
@@ -94,7 +95,7 @@ export const AudioTab = ({ config, onChange }: AudioTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.compression')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.compression || 'none'}
             onChange={(e) => onChange('compression', e.target.value)}
           >
@@ -107,7 +108,7 @@ export const AudioTab = ({ config, onChange }: AudioTabProps) => {
       </div>
 
       {/* 提示 */}
-      <div className={styles.hint} style={{ marginTop: '8px', padding: '12px', backgroundColor: '#F3F4F6', borderRadius: '6px' }}>
+      <div className={styles.hint} style={{ marginTop: '8px', padding: '12px', backgroundColor: 'var(--vt-color-surface)', borderRadius: '6px' }}> {/* 使用主题变量 ✅ */}
         💡 {t('transcode.audioHint') || '音频处理可能影响音质，建议保持原始设置或轻度调整'}
       </div>
     </div>

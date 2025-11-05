@@ -1,100 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import { FaGithub, FaEnvelope, FaSync, FaDownload, FaCheckCircle, FaMoon, FaSun, FaDesktop, FaLanguage } from 'react-icons/fa';
+import { FaGithub, FaEnvelope, FaSync } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../store';
 import packageJson from '../../../../package.json';
+import logoImage from '../../assets/logo.png';
 import styles from './AboutTab.module.scss';
 import buttonStyles from '../../styles/components/Button.module.scss';
 
 // IPC Renderer
 const ipcRenderer = (window as any).electron?.ipcRenderer;
 
-// 更新状态类型
-interface UpdateStatus {
-  event: string;
-  data: any;
-}
-
 function AboutTab() {
   const { t, i18n } = useTranslation();
-  const { theme, effectiveTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   
   const [checking, setChecking] = useState(false);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [updateInfo, setUpdateInfo] = useState<any>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadProgress, setDownloadProgress] = useState(0);
-  const [downloadInfo, setDownloadInfo] = useState<{ transferred: number; total: number } | null>(null);
-  const [updateMessage, setUpdateMessage] = useState('');
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [showFeaturesModal, setShowFeaturesModal] = useState(false);
 
-  // 格式化文件大小
-  const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
-  };
-
-  useEffect(() => {
-    // 监听更新状态
-    if (!ipcRenderer) return;
-
-    const handleUpdateStatus = (_: any, status: UpdateStatus) => {
-      console.log('更新状态:', status);
-
-      switch (status.event) {
-        case 'checking-for-update':
-          setChecking(true);
-          setUpdateMessage('正在检查更新...');
-          break;
-
-        case 'update-available':
-          setChecking(false);
-          setUpdateAvailable(true);
-          setUpdateInfo(status.data);
-          setUpdateMessage(`发现新版本 v${status.data.version}`);
-          setShowUpdateModal(true);
-          break;
-
-        case 'update-not-available':
-          setChecking(false);
-          setUpdateMessage('当前已是最新版本');
-          setTimeout(() => setUpdateMessage(''), 3000);
-          break;
-
-        case 'download-progress':
-          setDownloading(true);
-          setDownloadProgress(Math.round(status.data.percent));
-          setDownloadInfo({
-            transferred: status.data.transferred,
-            total: status.data.total,
-          });
-          break;
-
-        case 'update-downloaded':
-          setDownloading(false);
-          setDownloadProgress(100);
-          setUpdateMessage('更新下载完成，重启应用即可安装');
-          break;
-
-        case 'update-error':
-          setChecking(false);
-          setDownloading(false);
-          setUpdateMessage(`检查更新失败: ${status.data.message}`);
-          setTimeout(() => setUpdateMessage(''), 5000);
-          break;
-      }
-    };
-
-    ipcRenderer.on('update-status', handleUpdateStatus);
-
-    return () => {
-      ipcRenderer.removeListener('update-status', handleUpdateStatus);
-    };
-  }, []);
 
   // 检查更新
   const handleCheckForUpdates = async () => {
@@ -104,338 +28,288 @@ function AboutTab() {
     }
 
     setChecking(true);
-    setUpdateMessage('正在检查更新...');
 
     try {
       const result = await ipcRenderer.invoke('check-for-updates');
       if (!result.success) {
-        // 检查是否是开发环境错误
         if (result.error && result.error.includes('not packed')) {
-          setUpdateMessage('开发环境下自动更新功能已禁用。打包后的应用可正常使用自动更新功能。');
+          alert('开发环境下自动更新功能已禁用。打包后的应用可正常使用自动更新功能。');
         } else {
-          setUpdateMessage(`检查更新失败: ${result.error}`);
+          alert(`检查更新失败: ${result.error}`);
         }
-        setTimeout(() => setUpdateMessage(''), 8000);
+      } else {
+        alert('当前已是最新版本');
       }
     } catch (error: any) {
       if (error.message && error.message.includes('not packed')) {
-        setUpdateMessage('开发环境下自动更新功能已禁用。打包后的应用可正常使用自动更新功能。');
+        alert('开发环境下自动更新功能已禁用。打包后的应用可正常使用自动更新功能。');
       } else {
-        setUpdateMessage(`检查更新失败: ${error.message}`);
+        alert(`检查更新失败: ${error.message}`);
       }
-      setTimeout(() => setUpdateMessage(''), 8000);
     } finally {
       setChecking(false);
     }
   };
 
-  // 下载更新
-  const handleDownloadUpdate = async () => {
-    if (!ipcRenderer) return;
-
-    setShowUpdateModal(false);
-    setDownloading(true);
-    setUpdateMessage('正在下载更新...');
-
-    try {
-      await ipcRenderer.invoke('download-update');
-    } catch (error: any) {
-      setDownloading(false);
-      setUpdateMessage(`下载失败: ${error.message}`);
-      setTimeout(() => setUpdateMessage(''), 5000);
-    }
-  };
-
-  // 退出并安装
-  const handleQuitAndInstall = async () => {
-    if (!ipcRenderer) return;
-
-    try {
-      await ipcRenderer.invoke('quit-and-install');
-    } catch (error: any) {
-      setUpdateMessage(`安装失败: ${error.message}`);
-    }
-  };
-
   return (
-    <div className={styles.aboutContainer}>
-      {/* 标题区域 */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>{t('about.title')}</h1>
-        <p className={styles.subtitle}>
-          {t('about.subtitle', { version: packageJson.version })}
-        </p>
+    <div className={styles.container}>
+      {/* 页面标题 */}
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>{t('about.title')}</h1>
+        <p className={styles.pageSubtitle}>{t('about.subtitle', { version: packageJson.version })}</p>
       </div>
 
-      {/* 偏好设置 */}
-      <div className={styles.preferencesSection}>
-        <h4 className={styles.preferencesSectionTitle}>
-          {t('preferences.title')}
-        </h4>
-        
-        {/* 主题切换 */}
-        <div className={styles.preferenceItem}>
-          <div className={styles.preferenceItemHeader}>
-            <div className={styles.preferenceLabel}>
-              <FaMoon style={{ color: 'var(--vt-color-brand-primary)' }} />
-              <span>{t('preferences.theme')}</span>
+      {/* 卡片网格 */}
+      <div className={styles.cardGrid}>
+        {/* 应用信息卡片 */}
+        <div className={styles.card} onClick={() => setShowLicenseModal(true)}>
+          <div className={styles.logoCard}>
+            <img src={logoImage} alt="VideoTool Logo" className={styles.logoImage} />
+            <div className={styles.logoInfo}>
+              <h3 className={styles.logoTitle}>{t('about.title')}</h3>
+              <p className={styles.logoVersion}>v{packageJson.version}</p>
             </div>
-            <span className={styles.preferenceStatus}>
-              {t('preferences.current')}: {effectiveTheme === 'light' ? t('preferences.theme_light') : t('preferences.theme_dark')}
-            </span>
           </div>
-          <div className={styles.segmentedControl}>
-            <button
-              className={`${styles.segmentButton} ${theme === 'light' ? styles.segmentButtonActive : ''}`}
-              onClick={() => setTheme('light')}
-            >
-              <FaSun />
-              <span>{t('preferences.theme_light')}</span>
-            </button>
-            <button
-              className={`${styles.segmentButton} ${theme === 'dark' ? styles.segmentButtonActive : ''}`}
-              onClick={() => setTheme('dark')}
-            >
-              <FaMoon />
-              <span>{t('preferences.theme_dark')}</span>
-            </button>
-            <button
-              className={`${styles.segmentButton} ${theme === 'system' ? styles.segmentButtonActive : ''}`}
-              onClick={() => setTheme('system')}
-            >
-              <FaDesktop />
-              <span>{t('preferences.theme_system')}</span>
-            </button>
+          <div className={styles.cardBadge}>{t('about.licenseTitle')}</div>
+        </div>
+
+        {/* 核心功能卡片 */}
+        <div className={styles.card} onClick={() => setShowFeaturesModal(true)}>
+          <h3 className={styles.cardTitle}>{t('about.features')}</h3>
+          <p className={styles.cardDescription}>
+            {t('about.feature1Title')}、{t('about.feature2Title')}、{t('about.feature3Title')}、{t('about.feature4Title')}
+          </p>
+          <div className={styles.cardBadge}>查看详情</div>
+        </div>
+
+        {/* 技术特性卡片 */}
+        <div className={styles.card}>
+          <h3 className={styles.cardTitle}>{t('about.technicalFeatures')}</h3>
+          <div className={styles.techList}>
+            <div className={styles.techItem}>
+              <strong>{t('about.tech1Title')}</strong>
+              <span>{t('about.tech1')}</span>
+            </div>
+            <div className={styles.techItem}>
+              <strong>{t('about.tech2Title')}</strong>
+              <span>{t('about.tech2')}</span>
+            </div>
+            <div className={styles.techItem}>
+              <strong>{t('about.tech3Title')}</strong>
+              <span>{t('about.tech3')}</span>
+            </div>
           </div>
         </div>
 
-        {/* 语言切换 */}
-        <div className={styles.preferenceItem}>
-          <div className={styles.preferenceLabel}>
-            <FaLanguage style={{ color: 'var(--vt-color-brand-primary)' }} />
-            <span>{t('preferences.language')}</span>
-          </div>
-          <select 
-            className={styles.select}
-            value={i18n.language}
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
-          >
-            <option value="zh-CN">简体中文</option>
-            <option value="en-US">English</option>
-          </select>
-          <small className={styles.preferenceHint}>
-            {t('preferences.language_hint')}
-          </small>
-        </div>
-      </div>
-
-      {/* 软件介绍 */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t('about.introduction')}</h3>
-        <p style={{ marginBottom: '12px', lineHeight: '1.6' }}>
-          <span className={styles.title} style={{ display: 'inline', fontSize: '18px', marginBottom: 0 }}>{t('about.title')}</span> {t('about.introText1')}
-        </p>
-        <p style={{ marginBottom: 0, lineHeight: '1.6', color: 'var(--vt-color-text-secondary)' }}>
-          {t('about.introText2')}
-        </p>
-      </div>
-
-      {/* 更新检查 */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t('about.updateSection')}</h3>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <div>
-            <strong>{t('about.currentVersion')}:</strong> v{packageJson.version}
-            </div>
-          <button 
-            className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonSmall}`}
-              onClick={handleCheckForUpdates}
-              disabled={checking || downloading}
-            >
-            <FaSync className={checking ? 'fa-spin' : ''} />
-            <span>{checking ? t('about.checking') : t('about.checkUpdate')}</span>
-          </button>
-          </div>
-
-          {/* 更新消息 */}
-          {updateMessage && (
-          <div className={`${styles.alert} ${updateAvailable ? styles.alertSuccess : styles.alertInfo}`}>
-            <div>{updateMessage}</div>
-          </div>
-          )}
-
-          {/* 下载进度 */}
-          {downloading && (
-            <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <small>{t('about.downloadProgress')}</small>
-              <small className={styles.progressText}>
-                  {downloadProgress}%
-                  {downloadInfo && (
-                  <span style={{ marginLeft: '8px', color: 'var(--vt-color-text-secondary)' }}>
-                      ({formatBytes(downloadInfo.transferred)} / {formatBytes(downloadInfo.total)})
-                    </span>
-                  )}
-                </small>
+        {/* 偏好设置卡片 */}
+        <div className={`${styles.card} ${styles.cardSettings}`}>
+          <h3 className={styles.cardTitle}>{t('preferences.title')}</h3>
+          <div className={styles.settingsContent}>
+            {/* 主题切换 */}
+            <div className={styles.settingRow}>
+              <span className={styles.settingLabel}>{t('preferences.theme')}</span>
+              <div className={styles.themeButtons}>
+                <button
+                  className={`${styles.themeBtn} ${theme === 'light' ? styles.active : ''}`}
+                  onClick={(e) => { e.stopPropagation(); setTheme('light'); }}
+                  title={t('preferences.theme_light')}
+                >
+                  ☀️
+                </button>
+                <button
+                  className={`${styles.themeBtn} ${theme === 'dark' ? styles.active : ''}`}
+                  onClick={(e) => { e.stopPropagation(); setTheme('dark'); }}
+                  title={t('preferences.theme_dark')}
+                >
+                  🌙
+                </button>
+                <button
+                  className={`${styles.themeBtn} ${theme === 'system' ? styles.active : ''}`}
+                  onClick={(e) => { e.stopPropagation(); setTheme('system'); }}
+                  title={t('preferences.theme_system')}
+                >
+                  💻
+                </button>
               </div>
-            <div className={styles.progressBar}>
-              <div 
-                className={styles.progressFill}
-                style={{ width: `${downloadProgress}%` }}
-              />
             </div>
+            {/* 语言切换 */}
+            <div className={styles.settingRow}>
+              <span className={styles.settingLabel}>{t('preferences.language')}</span>
+              <select 
+                className={styles.langSelect}
+                value={i18n.language}
+                onChange={(e) => { e.stopPropagation(); i18n.changeLanguage(e.target.value); }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <option value="zh-CN">简体中文</option>
+                <option value="en-US">English</option>
+              </select>
             </div>
-          )}
-
-          {/* 下载完成，等待安装 */}
-          {downloadProgress === 100 && !downloading && (
-          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+            {/* 检查更新 */}
             <button 
-              className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonSmall}`}
-              onClick={handleQuitAndInstall}
+              className={styles.updateBtn}
+              onClick={(e) => { e.stopPropagation(); handleCheckForUpdates(); }}
+              disabled={checking}
             >
-              <FaCheckCircle />
-              <span>{t('about.quitAndInstall')}</span>
+              <FaSync className={checking ? 'fa-spin' : ''} />
+              <span>{checking ? t('about.checking') : t('about.checkUpdate')}</span>
             </button>
-            </div>
-          )}
+          </div>
+        </div>
       </div>
 
-      {/* 更新提示模态框 */}
-      <Modal show={showUpdateModal} onHide={() => setShowUpdateModal(false)} centered>
+
+      {/* 底部 */}
+      <div className={styles.footer}>
+        <span>{t('about.copyright')}</span>
+        <span>·</span>
+              <button 
+          onClick={() => setShowLicenseModal(true)}
+          className={styles.footerLink}
+              >
+          {t('about.licenseTitle')}
+              </button>
+      </div>
+
+      {/* 功能详情模态框 */}
+      <Modal show={showFeaturesModal} onHide={() => setShowFeaturesModal(false)} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{t('about.updateAvailable')}</Modal.Title>
+          <Modal.Title>{t('about.features')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>v{updateInfo?.version}</h5>
-          {updateInfo?.releaseNotes && (
-            <div className="mt-3">
-              <strong>{t('about.updateNotes')}:</strong>
-              <div 
-                className="mt-2" 
-                style={{ 
-                  maxHeight: '300px', 
-                  overflowY: 'auto',
-                  padding: '10px',
-                  backgroundColor: 'var(--vt-color-surface)',
-                  borderRadius: '4px',
-                  border: '1px solid var(--vt-color-border)'
-                }}
-                dangerouslySetInnerHTML={{ __html: updateInfo.releaseNotes }}
-              />
-            </div>
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {[1, 2, 3, 4].map((num) => (
+              <div key={num} style={{ 
+                padding: '16px',
+                backgroundColor: 'var(--vt-color-surface-elev1)',
+                borderRadius: '8px',
+                border: '1px solid var(--vt-color-border)'
+              }}>
+                <h5 style={{ 
+                  margin: '0 0 8px 0', 
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  color: 'var(--vt-color-text-primary)'
+                }}>
+                  {t(`about.feature${num}Title`)}
+                </h5>
+                <p style={{ 
+                  margin: 0, 
+                  fontSize: '14px',
+                  lineHeight: '1.6',
+                  color: 'var(--vt-color-text-secondary)'
+                }}>
+                  {t(`about.feature${num}`)}
+                </p>
+              </div>
+            ))}
+          </div>
         </Modal.Body>
         <Modal.Footer>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button
+              onClick={() => window.electron.shell.openExternal('https://github.com/binbin1213/VideoTool')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: 'var(--vt-color-text-primary)',
+                textDecoration: 'none',
+                fontSize: '14px',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer'
+              }}
+            >
+              <FaGithub />
+              <span>GitHub</span>
+            </button>
+            <button
+              onClick={() => window.electron.shell.openExternal('mailto:piaozhitian@gmail.com')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: 'var(--vt-color-text-primary)',
+                textDecoration: 'none',
+                fontSize: '14px',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer'
+              }}
+            >
+              <FaEnvelope />
+              <span>{t('about.email')}</span>
+            </button>
+          </div>
           <button 
-            className={`${buttonStyles.buttonSecondary} ${buttonStyles.buttonSmall}`}
-            onClick={() => setShowUpdateModal(false)}
+            className={buttonStyles.buttonSecondary}
+            onClick={() => setShowFeaturesModal(false)}
           >
-            {t('about.laterUpdate')}
-          </button>
-          <button 
-            className={`${buttonStyles.buttonPrimary} ${buttonStyles.buttonSmall}`}
-            onClick={handleDownloadUpdate}
-          >
-            <FaDownload />
-            <span>{t('about.downloadNow')}</span>
+            {t('common.close') || '关闭'}
           </button>
         </Modal.Footer>
       </Modal>
 
-      {/* 主要功能 */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t('about.features')}</h3>
-        <ul style={{ lineHeight: '1.6', color: 'var(--vt-color-text-primary)', margin: 0, paddingLeft: '20px' }}>
-          <li style={{ marginBottom: '8px' }}>{t('about.feature1')}</li>
-          <li style={{ marginBottom: '8px' }}>{t('about.feature2')}</li>
-          <li style={{ marginBottom: '8px' }}>{t('about.feature3')}</li>
-          <li style={{ marginBottom: '8px' }}>{t('about.feature4')}</li>
-          <li style={{ marginBottom: 0 }}>{t('about.feature5')}</li>
-          </ul>
-      </div>
 
-      {/* 技术特性 */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t('about.technicalFeatures')}</h3>
-        <ul style={{ lineHeight: '1.6', color: 'var(--vt-color-text-primary)', margin: 0, paddingLeft: '20px' }}>
-          <li style={{ marginBottom: '8px' }}>{t('about.tech1')}</li>
-          <li style={{ marginBottom: '8px' }}>{t('about.tech2')}</li>
-          <li style={{ marginBottom: '8px' }}>{t('about.tech3')}</li>
-          <li style={{ marginBottom: '8px' }}>{t('about.tech4')}</li>
-          <li style={{ marginBottom: 0 }}>{t('about.tech5')}</li>
-          </ul>
-      </div>
-
-      {/* 版权信息 */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t('about.license')}</h3>
-        <p style={{ marginBottom: '12px', fontWeight: 500 }}>
-          <strong>{t('about.licenseTitle')}</strong>
+      {/* 开源协议模态框 */}
+      <Modal show={showLicenseModal} onHide={() => setShowLicenseModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{t('about.license')}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5>{t('about.licenseTitle')}</h5>
+          <p style={{ marginTop: '16px', lineHeight: '1.6' }}>
+            {t('about.licenseText')}
           </p>
-        <p style={{ marginBottom: 0, color: 'var(--vt-color-text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
-          {t('about.licenseText')}
-          </p>
-      </div>
-
-      {/* 联系方式 */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t('about.contact')}</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <FaGithub size={20} style={{ color: 'var(--vt-color-text-primary)', flexShrink: 0 }} />
-            <div>
-              <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('about.github')}</div>
-              <a 
-                href="https://github.com/binbin1213/VideoTool" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{ 
-                  color: 'var(--vt-color-brand-primary)', 
-                  textDecoration: 'none',
-                  fontSize: '14px'
-                }}
-              >
-                https://github.com/binbin1213/VideoTool
-              </a>
-            </div>
+          <div style={{ 
+            marginTop: '16px', 
+            padding: '12px', 
+            backgroundColor: 'var(--vt-color-surface)',
+            borderRadius: '4px',
+            border: '1px solid var(--vt-color-border)',
+            fontSize: '12px',
+            lineHeight: '1.5',
+            fontFamily: 'monospace'
+          }}>
+            <p>MIT License</p>
+            <p style={{ marginTop: '8px' }}>Copyright (c) 2025 Binbin</p>
+            <p style={{ marginTop: '8px' }}>
+              Permission is hereby granted, free of charge, to any person obtaining a copy
+              of this software and associated documentation files (the "Software"), to deal
+              in the Software without restriction, including without limitation the rights
+              to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+              copies of the Software, and to permit persons to whom the Software is
+              furnished to do so, subject to the following conditions:
+            </p>
+            <p style={{ marginTop: '8px' }}>
+              The above copyright notice and this permission notice shall be included in all
+              copies or substantial portions of the Software.
+            </p>
+            <p style={{ marginTop: '8px' }}>
+              THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+              IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+              FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+              AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+              LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+              OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+              SOFTWARE.
+            </p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <FaEnvelope size={20} style={{ color: 'var(--vt-color-brand-primary)', flexShrink: 0 }} />
-            <div>
-              <div style={{ fontWeight: 600, marginBottom: '4px' }}>{t('about.email')}</div>
-              <a 
-                href="mailto:piaozhitian@gmail.com"
-                style={{ 
-                  color: 'var(--vt-color-brand-primary)', 
-                  textDecoration: 'none',
-                  fontSize: '14px'
-                }}
-              >
-                piaozhitian@gmail.com
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 版权声明 */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: '32px', 
-        color: 'var(--vt-color-text-secondary)', 
-        fontSize: '14px' 
-      }}>
-        <p style={{ marginBottom: '4px' }}>
-          {t('about.copyright')}
-        </p>
-        <p style={{ marginBottom: 0 }}>
-          {t('about.madeIn')}
-        </p>
-      </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button 
+            className={buttonStyles.buttonSecondary}
+            onClick={() => setShowLicenseModal(false)}
+          >
+            {t('common.close') || '关闭'}
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
 
 export default AboutTab;
-

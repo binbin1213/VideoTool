@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import styles from './BasicTab.module.scss';
+import selectStyles from '../../../../../styles/components/Select.module.scss';
 
 interface FiltersTabProps {
   config: any;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string | Record<string, any>, value?: any) => void;
 }
 
 export const FiltersTab = ({ config, onChange }: FiltersTabProps) => {
@@ -107,7 +108,7 @@ export const FiltersTab = ({ config, onChange }: FiltersTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.sharpen')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.sharpen || 'none'}
             onChange={(e) => onChange('sharpen', e.target.value)}
           >
@@ -121,7 +122,7 @@ export const FiltersTab = ({ config, onChange }: FiltersTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.denoise')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.denoise || 'none'}
             onChange={(e) => onChange('denoise', e.target.value)}
           >
@@ -135,7 +136,7 @@ export const FiltersTab = ({ config, onChange }: FiltersTabProps) => {
         <div className={styles.field}>
           <label className={styles.label}>{t('transcode.blur')}:</label>
           <select
-            className={styles.select}
+            className={selectStyles.select}
             value={config.blur || 'none'}
             onChange={(e) => onChange('blur', e.target.value)}
           >

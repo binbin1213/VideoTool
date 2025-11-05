@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaTrash, FaDownload, FaSearch, FaInfoCircle, FaSyncAlt } from 'react-icons/fa';
 import { LogEntry } from '../../App';
 import styles from './LogViewerTab.module.scss';
 import buttonStyles from '../../styles/components/Button.module.scss';
+import selectStyles from '../../styles/components/Select.module.scss';
 
 interface LogViewerTabProps {
   logs: LogEntry[];
@@ -112,7 +112,6 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>
-          <FaInfoCircle />
           {t('logs.title')}
         </h2>
       </div>
@@ -122,7 +121,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
         <div className={styles.toolbar}>
           <div className={styles.toolbarLeft}>
             <select 
-              className={styles.select}
+              className={selectStyles.select}
                   value={filterLevel}
                   onChange={(e) => setFilterLevel(e.target.value)}
                 >
@@ -134,9 +133,6 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
             </select>
 
             <div className={styles.searchGroup}>
-              <span className={styles.searchIcon}>
-                    <FaSearch size={12} />
-                  </span>
               <input
                     type="text"
                 className={styles.searchInput}
@@ -145,10 +141,6 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                     onChange={(e) => setSearchText(e.target.value)}
                   />
                 </div>
-
-            <span className={styles.badge}>
-                  {filteredLogs.length} / {allLogs.length}
-            </span>
               </div>
 
           <div className={styles.toolbarRight}>
@@ -157,21 +149,18 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                   onClick={loadSystemLogs}
                   disabled={loading}
                 >
-              <FaSyncAlt />
               {loading ? t('logs.refreshing') : t('logs.refresh')}
             </button>
-            <button 
-              className={buttonStyles.buttonSecondary}
+            <button
+                  className={buttonStyles.buttonSecondary}
                   onClick={handleExportLogs}
                 >
-              <FaDownload />
               {t('logs.export')}
             </button>
-            <button 
-              className={buttonStyles.buttonDanger}
+            <button
+                  className={buttonStyles.buttonDanger}
                   onClick={handleClearLogs}
                 >
-              <FaTrash />
               {t('logs.clear')}
             </button>
               </div>

@@ -1,26 +1,19 @@
-// ==========================================================================
-// MergeTab 样式 (音视频合并)
-// ==========================================================================
-
 @use '../../styles/tokens' as t;
 
-// ========================================
-// 1. 容器和布局
-// ========================================
-
+// 容器
 .container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #F5F5F5; // 浅灰色背景
-  user-select: none; // 禁止选中文字
-  -webkit-user-select: none; // Safari
+  background-color: var(--vt-color-surface);
+  user-select: none;
 }
 
+// 标题栏
 .header {
   padding: t.$spacing-4 t.$spacing-6;
   border-bottom: 1px solid var(--vt-color-border);
-  background-color: transparent; // 透明背景
+  background-color: transparent;
   -webkit-app-region: drag;
   user-select: none;
   
@@ -29,18 +22,10 @@
     font-size: t.$font-size-lg;
     font-weight: t.$font-weight-semibold;
     color: var(--vt-color-text-secondary);
-    display: flex;
-    align-items: center;
-    gap: t.$spacing-2;
-    
-    svg {
-      color: var(--vt-color-brand-primary);
-      font-size: t.$font-size-base;
-      opacity: 0.8;
-    }
   }
 }
 
+// 内容区
 .content {
   flex: 1;
   display: flex;
@@ -57,6 +42,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: t.$spacing-3;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -72,7 +58,6 @@
   border: 1px solid var(--vt-color-border);
   overflow-y: auto;
   overflow-x: hidden;
-  align-self: stretch;
   
   h6 {
     font-size: t.$font-size-sm;
@@ -93,38 +78,42 @@
       margin-bottom: t.$spacing-1;
     }
   }
-  
-  hr {
-    margin: t.$spacing-2 0;
-    border: none;
-    border-top: 1px solid var(--vt-color-border);
-  }
-  
-  p {
-    font-size: t.$font-size-xs;
-    margin-bottom: t.$spacing-2;
-    line-height: 1.5;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
 }
 
-// ========================================
-// 2. 区块和标题
-// ========================================
+// 文件选择行
+.fileRow {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-3;
+}
 
+.fileInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.fileName {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: var(--vt-color-text-primary);
+  word-break: break-all;
+}
+
+.fileHint {
+  font-size: t.$font-size-sm;
+  color: var(--vt-color-text-secondary);
+}
+
+.fileDetails {
+  font-size: t.$font-size-xs;
+  color: var(--vt-color-text-secondary);
+  margin-top: t.$spacing-2;
+  padding-left: t.$spacing-1;
+}
+
+// 区块
 .section {
-  margin-bottom: t.$spacing-3;
-  background-color: transparent; // 透明背景，与页面统一
-  border-radius: t.$radius-md;
-  overflow: hidden;
-  flex-shrink: 0;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
+  margin-top: t.$spacing-3;
 }
 
 .sectionTitle {
@@ -133,280 +122,29 @@
   color: var(--vt-color-text-primary);
   margin-bottom: t.$spacing-3;
   padding: 0 t.$spacing-1;
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
-  
-  svg {
-    font-size: t.$font-size-base;
-    color: var(--vt-color-brand-primary);
-  }
 }
 
-// ========================================
-// 3. 文件选择器
-// ========================================
-
-.fileSelector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: t.$spacing-6 t.$spacing-4;
-  border: 2px dashed var(--vt-color-border);
-  border-radius: t.$radius-md;
-  background-color: #FFFFFF; // 白色背景
-  cursor: pointer;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
-  flex-shrink: 0;
-  min-height: 120px;
-  
-  &:hover {
-    border-color: var(--vt-color-brand-primary);
-    background-color: var(--vt-color-bg-secondary);
-  }
-  
-  &:active {
-    transform: scale(0.99);
-  }
-  
-  &.hasFile {
-    border-style: solid;
-    background-color: color-mix(in srgb, var(--vt-color-semantic-success) 5%, var(--vt-color-bg));
-    border-color: var(--vt-color-semantic-success);
-  }
-}
-
-.fileIcon {
-  color: var(--vt-color-brand-primary);
-  margin-bottom: t.$spacing-2;
-  opacity: 0.8;
-  font-size: 48px;
-}
-
-.fileText {
-  font-size: t.$font-size-sm;
-  font-weight: t.$font-weight-semibold;
-  color: var(--vt-color-text-primary);
-  margin: 0 0 t.$spacing-1;
-  text-align: center;
-}
-
-.fileName {
-  font-size: t.$font-size-sm;
-  font-weight: t.$font-weight-semibold;
-  color: var(--vt-color-text-primary);
-  margin: 0;
-  text-align: center;
-  word-break: break-all;
-}
-
-.fileInfo {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  margin-left: t.$spacing-2;
-}
-
-.fileHint {
-  font-size: t.$font-size-xs;
-  color: var(--vt-color-text-secondary);
-}
-
-.fileDetails {
-  font-size: t.$font-size-xs;
-  color: var(--vt-color-text-secondary);
-  margin-top: t.$spacing-2;
-  padding: 0 t.$spacing-1;
-}
-
-// ========================================
-// 4. 表单元素
-// ========================================
-
+// 表单行
 .formRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: 120px 1fr;
   align-items: center;
+  gap: t.$spacing-3;
   margin-bottom: t.$spacing-3;
-  gap: t.$spacing-2;
   
   &:last-child {
     margin-bottom: 0;
   }
-  
-  // 确保表单行内的按钮与按钮组内的按钮样式一致
-  button {
-    min-width: 120px; // 设置最小宽度
-  }
 }
 
 .formLabel {
-  flex: 0 0 100px;
   font-size: t.$font-size-sm;
   font-weight: t.$font-weight-semibold;
   color: var(--vt-color-text-primary);
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
-  
-  svg {
-    font-size: t.$font-size-base;
-    color: var(--vt-color-brand-primary);
-  }
 }
 
-.formControl {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
-}
-
-.select {
-  flex: 1;
-  height: t.$button-height-sm; // 28px，与按钮同高
-  padding: 0 32px 0 t.$spacing-3;
-  font-size: t.$font-size-base; // 14px，与正文一致
-  font-weight: 400; // 正常字重
-  font-family: t.$font-family-sans;
-  color: var(--vt-color-text-primary);
-  background-color: #F5F5F5 !important;
-  border: 1px solid #D1D1D6;
-  border-radius: 6px;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  background-image: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'>\
-      <rect x='0.5' y='0.5' width='17' height='17' rx='4' fill='%239CA3AF'/>\
-      <path d='M6 7 L9 4 L12 7' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-      <path d='M6 11 L9 14 L12 11' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/>\
-    </svg>") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 6px center !important;
-  background-size: 18px 18px !important;
-  
-  &:hover:not(:disabled) {
-    border-color: #B8B8BD;
-    background-color: #EBEBEB !important;
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: var(--vt-color-focus);
-    background-color: #F5F5F5 !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-color-focus) 10%, transparent), 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
-  cursor: pointer;
-  user-select: none;
-  
-  input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: var(--vt-color-brand-primary);
-  }
-  
-  span {
-    font-size: t.$font-size-sm;
-    color: var(--vt-color-text-primary);
-  }
-}
-
-.hint {
-  font-size: t.$font-size-xs;
-  color: var(--vt-color-text-secondary);
-  margin: 0;
-  line-height: 1.4;
-}
-
-// ========================================
-// 4.5. Toggle Switch (硬件加速开关)
-// ========================================
-
-.switchWrapper {
-  display: flex;
-  align-items: center;
-  gap: t.$spacing-2;
-}
-
-.switchInput {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  appearance: none;
-  background-color: #9CA3AF;
-  border: 2px solid #9CA3AF;
-  border-radius: t.$radius-pill;
-  cursor: pointer;
-  transition: all t.$motion-duration-normal t.$motion-easing-standard;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-
-  &::before {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    top: 2px;
-    left: 2px;
-    background-color: white;
-    transition: transform t.$motion-duration-normal t.$motion-easing-standard;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  &:hover:not(:disabled) {
-    background-color: #6B7280;
-    border-color: #6B7280;
-  }
-
-  &:checked {
-    background-color: var(--vt-color-brand-primary);
-    border-color: var(--vt-color-brand-primary);
-
-    &::before {
-      transform: translateX(20px);
-    }
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--vt-color-focus);
-    outline-offset: 2px;
-  }
-}
-
-.switchLabel {
-  font-size: t.$font-size-sm;
-  font-weight: t.$font-weight-medium;
-  color: var(--vt-color-text-primary);
-  cursor: pointer;
-  user-select: none;
-}
-
-// ========================================
-// 5. 按钮（使用全局样式）
-// ========================================
-
-// 按钮组布局
+// 按钮组
 .buttonGroup {
   display: flex;
   gap: t.$spacing-2;
@@ -414,15 +152,16 @@
   margin-top: t.$spacing-4;
 }
 
-// ========================================
-// 6. 进度条
-// ========================================
+// 进度条
+.progressSection {
+  margin-top: t.$spacing-4;
+}
 
 .progressBar {
   width: 100%;
   height: 24px;
-  background-color: var(--vt-color-bg-secondary);
-  border-radius: t.$radius-pill;
+  background-color: var(--vt-color-bg);
+  border-radius: t.$radius-md;
   overflow: hidden;
   position: relative;
   border: 1px solid var(--vt-color-border);
@@ -432,27 +171,17 @@
   height: 100%;
   background-color: var(--vt-color-brand-primary);
   transition: width 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
 }
 
 .progressText {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin-top: t.$spacing-2;
   font-size: t.$font-size-xs;
   font-weight: t.$font-weight-semibold;
   color: var(--vt-color-text-primary);
-  z-index: 1;
+  text-align: center;
 }
 
-// ========================================
-// 7. Alert 提示框
-// ========================================
-
+// Alert 提示框
 .alert {
   padding: t.$spacing-3;
   border-radius: t.$radius-md;
@@ -468,14 +197,8 @@
 }
 
 .alertError {
-  background-color: color-mix(in srgb, var(--vt-color-semantic-error) 10%, var(--vt-color-bg));
-  border-color: var(--vt-color-semantic-error);
-  color: var(--vt-color-text-primary);
-}
-
-.alertInfo {
-  background-color: color-mix(in srgb, var(--vt-color-semantic-info) 10%, var(--vt-color-bg));
-  border-color: var(--vt-color-semantic-info);
+  background-color: color-mix(in srgb, var(--vt-color-semantic-danger) 10%, var(--vt-color-bg));
+  border-color: var(--vt-color-semantic-danger);
   color: var(--vt-color-text-primary);
 }
 
@@ -488,10 +211,7 @@
   margin: 0;
 }
 
-// ========================================
-// 8. 响应式调整
-// ========================================
-
+// 响应式
 @media (max-width: 660px) {
   .content {
     flex-direction: column;
@@ -509,13 +229,8 @@
   }
   
   .formRow {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .formLabel {
-    flex: none;
-    margin-bottom: t.$spacing-2;
+    grid-template-columns: 1fr;
+    gap: t.$spacing-2;
   }
   
   .buttonGroup {
@@ -527,4 +242,3 @@
     }
   }
 }
-

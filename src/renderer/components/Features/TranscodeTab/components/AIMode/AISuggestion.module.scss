@@ -1,16 +1,17 @@
 @use '../../../../../styles/tokens' as t;
 
 .container {
-  background-color: #FFFFFF;
-  border: 2px solid var(--vt-color-brand-primary);
-  border-radius: t.$radius-lg;
+  background-color: #FFFFFF; // 白色背景 ✅
+  border: 1px solid var(--vt-color-brand-primary);
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1); // 品牌色阴影 ✅
 }
 
 .header {
   padding: t.$spacing-3 t.$spacing-4;
-  background-color: color-mix(in srgb, var(--vt-color-brand-primary) 10%, #FFFFFF);
-  border-bottom: 1px solid var(--vt-color-border);
+  background-color: transparent; // 透明背景 ✅
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06); // 更淡的分隔线 ✅
   display: flex;
   align-items: center;
   gap: t.$spacing-2;
@@ -58,8 +59,8 @@
   justify-content: space-between;
   font-size: t.$font-size-xs;
   padding: t.$spacing-2;
-  background-color: #F9FAFB;
-  border-radius: t.$radius-sm;
+  background-color: rgba(0, 0, 0, 0.02); // 非常淡的背景 ✅
+  border-radius: 4px;
 
   .label {
     color: var(--vt-color-text-secondary);
@@ -77,9 +78,9 @@
   color: var(--vt-color-text-secondary);
   margin: 0;
   padding: t.$spacing-3;
-  background-color: #F9FAFB;
-  border-radius: t.$radius-sm;
-  border-left: 3px solid var(--vt-color-brand-primary);
+  background-color: rgba(102, 126, 234, 0.04); // 品牌色淡背景 ✅
+  border-radius: 4px;
+  border-left: 2px solid var(--vt-color-brand-primary); // 更细的左边框 ✅
 }
 
 .estimates {
@@ -90,7 +91,7 @@
 
 .actions {
   padding: t.$spacing-4;
-  border-top: 1px solid var(--vt-color-border);
+  border-top: 1px solid rgba(0, 0, 0, 0.06); // 更淡的分隔线 ✅
   display: flex;
   gap: t.$spacing-2;
   justify-content: center;
