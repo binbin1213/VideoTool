@@ -114,18 +114,33 @@ git push origin v1.3.0
 VideoTool/
 ├── src/
 │   ├── main/              # Electron 主进程
-│   │   ├── index.ts
-│   │   ├── services/      # 服务层
-│   │   └── utils/         # 工具函数
+│   │   ├── index.ts       # 主进程入口
+│   │   ├── preload.ts     # 预加载脚本
+│   │   ├── ipc/           # IPC 通信处理器
+│   │   ├── services/      # 服务层（FFmpeg、转码、更新等）
+│   │   └── utils/         # 工具函数（字幕处理等）
 │   ├── renderer/          # React 渲染进程
+│   │   ├── App.tsx        # 应用入口
 │   │   ├── components/    # React 组件
+│   │   │   ├── Common/    # 通用组件
+│   │   │   ├── Features/  # 功能模块（字幕转换、转码、合并等）
+│   │   │   └── Layout/    # 布局组件
 │   │   ├── hooks/         # 自定义 Hooks
-│   │   └── styles/        # 样式文件
-│   └── shared/            # 共享代码
-│       ├── types/         # 类型定义
-│       └── presets/       # 预设配置
+│   │   ├── store/         # 状态管理（Zustand）
+│   │   ├── i18n/          # 国际化配置
+│   │   ├── locales/       # 语言文件（zh-CN、en-US）
+│   │   ├── styles/        # 样式文件（SCSS）
+│   │   ├── types/         # TypeScript 类型定义
+│   │   └── utils/         # 工具函数
+│   ├── shared/            # 主进程和渲染进程共享代码
+│   │   ├── types/         # 共享类型定义
+│   │   ├── presets/       # 预设配置（样式、规则等）
+│   │   └── constants/     # 常量定义
+│   ├── types/             # 全局类型定义
+│   └── assets/            # 资源文件（模板等）
 ├── public/                # 静态资源
-└── resources/             # 构建资源
+├── resources/             # 构建资源（图标、FFmpeg 等）
+└── scripts/               # 构建和开发脚本
 ```
 
 ### 技术栈
