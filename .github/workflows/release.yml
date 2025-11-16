@@ -66,6 +66,15 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
+      - name: 缓存 FFmpeg (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/cache@v4
+        with:
+          path: resources/ffmpeg/mac
+          key: ffmpeg-${{ runner.os }}-v1
+          restore-keys: |
+            ffmpeg-${{ runner.os }}-
+
       - name: 下载 FFmpeg (macOS)
         if: runner.os == 'macOS'
         shell: bash
@@ -74,16 +83,20 @@ jobs:
           mkdir -p resources/ffmpeg/mac
           cd resources/ffmpeg/mac
           
-          # 下载 FFmpeg Universal Binary（同时支持 arm64 和 x64）
-          echo "下载 FFmpeg (Universal Binary)..."
-          curl -L -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
-          unzip -o ffmpeg.zip
-          rm ffmpeg.zip
-          
-          echo "下载 FFprobe (Universal Binary)..."
-          curl -L -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
-          unzip -o ffprobe.zip
-          rm ffprobe.zip
+          if [[ -x ffmpeg && -x ffprobe ]]; then
+            echo "使用缓存的 FFmpeg/FFprobe，跳过下载"
+          else
+            # 下载 FFmpeg Universal Binary（同时支持 arm64 和 x64）
+            echo "下载 FFmpeg (Universal Binary)..."
+            curl -L -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
+            unzip -o ffmpeg.zip
+            rm ffmpeg.zip
+            
+            echo "下载 FFprobe (Universal Binary)..."
+            curl -L -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
+            unzip -o ffprobe.zip
+            rm ffprobe.zip
+          fi
           
           # 设置执行权限
           chmod +x ffmpeg ffprobe
@@ -108,18 +121,32 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "=== 下载 FFmpeg for Windows ==="
-          $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
-          $output = "$env:TEMP\ffmpeg.zip"
-          Write-Host "下载中..."
-          Invoke-WebRequest -Uri $url -OutFile $output
-          Write-Host "解压中..."
-          Expand-Archive -Path $output -DestinationPath "$env:TEMP\ffmpeg" -Force
-          $ffmpegDir = Get-ChildItem -Path "$env:TEMP\ffmpeg" -Directory | Select-Object -First 1
-          Write-Host "找到 FFmpeg 目录: $($ffmpegDir.FullName)"
-          New-Item -ItemType Directory -Force -Path "resources\ffmpeg\win"
-          Copy-Item "$($ffmpegDir.FullName)\bin\ffmpeg.exe" "resources\ffmpeg\win\"
-          Copy-Item "$($ffmpegDir.FullName)\bin\ffprobe.exe" "resources\ffmpeg\win\"
-          Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
+          if (Test-Path "resources\ffmpeg\win\ffmpeg.exe" -and Test-Path "resources\ffmpeg\win\ffprobe.exe") {
+            Write-Host "使用缓存的 FFmpeg/FFprobe，跳过下载"
+            Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
+          } else {
+            $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+            $output = "$env:TEMP\ffmpeg.zip"
+            Write-Host "下载中..."
+            Invoke-WebRequest -Uri $url -OutFile $output
+            Write-Host "解压中..."
+            Expand-Archive -Path $output -DestinationPath "$env:TEMP\ffmpeg" -Force
+            $ffmpegDir = Get-ChildItem -Path "$env:TEMP\ffmpeg" -Directory | Select-Object -First 1
+            Write-Host "找到 FFmpeg 目录: $($ffmpegDir.FullName)"
+            New-Item -ItemType Directory -Force -Path "resources\ffmpeg\win"
+            Copy-Item "$($ffmpegDir.FullName)\bin\ffmpeg.exe" "resources\ffmpeg\win\"
+            Copy-Item "$($ffmpegDir.FullName)\bin\ffprobe.exe" "resources\ffmpeg\win\"
+            Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
+          }
+
+      - name: 缓存 FFmpeg (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: resources\ffmpeg\win
+          key: ffmpeg-${{ runner.os }}-v1
+          restore-keys: |
+            ffmpeg-${{ runner.os }}-
 
       - name: 构建应用
         run: pnpm build
