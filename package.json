@@ -3,7 +3,7 @@
   "productName": "VideoTool",
   "version": "1.3.0",
   "description": "强大的跨平台视频处理工具 - 支持 SRT/ASS/VTT 字幕格式互转、视频转码、字幕烧录、音视频合并，内置 ASS 样式编辑器和实时预览",
-  "main": "dist/main/main/index.js",
+  "main": "dist/main/main/index.cjs",
   "author": {
     "name": "Binbin",
     "email": "piaozhitian@gmail.com"
@@ -20,7 +20,7 @@
     "kill-dev": "node scripts/kill-dev.cjs",
     "build": "pnpm run build:renderer && pnpm run build:main",
     "build:renderer": "vite build",
-    "build:main": "tsc --build tsconfig.main.json",
+    "build:main": "tsc --build tsconfig.main.json && node -e \"const fs=require('fs');const p='dist/main/main/index.js';if(fs.existsSync(p))fs.renameSync(p,'dist/main/main/index.cjs');const pkgPath='dist/main/package.json';fs.writeFileSync(pkgPath, JSON.stringify({type:'commonjs'}));\"",
     "build:mac": "pnpm run build && electron-builder --mac",
     "build:mac:universal": "pnpm run build && electron-builder --mac --universal",
     "build:win": "pnpm run build && electron-builder --win",
@@ -95,6 +95,7 @@
       "dist/**/*",
       "public/**/*",
       "node_modules/**/*",
+      "!node_modules/@ffmpeg-installer/ffmpeg/**",
       "package.json"
     ],
     "extraResources": [

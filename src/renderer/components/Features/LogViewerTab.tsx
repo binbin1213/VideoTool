@@ -16,6 +16,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
   const [searchText, setSearchText] = useState('');
   const [systemLogs, setSystemLogs] = useState<LogEntry[]>([]); // 从文件读取的日志
   const [loading, setLoading] = useState<boolean>(false);
+  const [conciseMode, setConciseMode] = useState<boolean>(true);
   const logListRef = useRef<HTMLDivElement>(null); // 日志列表容器引用
 
   // 滚动到日志底部（最新日志）
@@ -69,6 +70,41 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
     const matchSearch = !searchText || log.message.toLowerCase().includes(searchText.toLowerCase());
     return matchLevel && matchSearch;
   });
+
+  const toBasename = (p: string) => {
+    const m = p.match(/([^\\/]+)$/);
+    return m ? m[1] : p;
+  };
+
+  const summarizeMessage = (msg: string): string => {
+    const m = msg.trim();
+    if (m.startsWith('FFmpeg 命令:')) {
+      const cmd = m.replace(/^FFmpeg 命令:\s*/, '');
+      const isCopy = /-c:v\s+copy/.test(cmd) || /-vcodec\s+copy/.test(cmd);
+      const hasSubFilter = /subtitles=/.test(cmd);
+      const codecMatch = cmd.match(/\b(h264_videotoolbox|h264_nvenc|h264_qsv|libx264|libx265|copy)\b/);
+      const outMatch = cmd.match(/\s([^\s]+\.(mp4|mkv|mov|avi))\s*$/);
+      const out = outMatch ? toBasename(outMatch[1]) : '';
+      if (hasSubFilter && !isCopy) {
+        const codec = codecMatch ? codecMatch[1] : '编码';
+        return `FFmpeg: 硬字幕烧录 | 编码: ${codec}${out ? ` | 输出: ${out}` : ''}`;
+      }
+      if (!hasSubFilter && isCopy) {
+        return `FFmpeg: 合并/封装（不重编码）${out ? ` | 输出: ${out}` : ''}`;
+      }
+      if (!hasSubFilter && !isCopy) {
+        const codec = codecMatch ? codecMatch[1] : '编码';
+        return `FFmpeg: 转码 | 编码: ${codec}${out ? ` | 输出: ${out}` : ''}`;
+      }
+      const codec = codecMatch ? codecMatch[1] : '编码';
+      return `FFmpeg: 处理 | 编码: ${codec}${out ? ` | 输出: ${out}` : ''}`;
+    }
+    const startUp = /^=+\s*$/m.test(m) || /VideoTool 启动/.test(m);
+    if (startUp) {
+      return '应用启动';
+    }
+    return m;
+  };
 
   // 当日志更新或过滤条件变化时自动滚动到底部
   useEffect(() => {
@@ -140,8 +176,14 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                   />
-                </div>
               </div>
+              <div className={styles.switchGroup}>
+                <label className={styles.switchLabel}>
+                  <input type="checkbox" checked={conciseMode} onChange={(e) => setConciseMode(e.target.checked)} />
+                  <span>精简模式</span>
+                </label>
+              </div>
+            </div>
 
           <div className={styles.toolbarRight}>
             <button 
@@ -179,7 +221,7 @@ function LogViewerTab({ logs, onClearLogs }: LogViewerTabProps) {
                       [{log.level.toUpperCase()}]
                     </span>
                 <span className={styles.logTimestamp}>{log.timestamp}</span>
-                <span className={styles.logMessage}>{log.message}</span>
+                <span className={styles.logMessage}>{conciseMode ? summarizeMessage(log.message) : log.message}</span>
                   </div>
                 ))
               )}

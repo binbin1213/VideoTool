@@ -454,6 +454,10 @@
   }
 }
 
+.resultSection {
+  margin-top: t.$spacing-5;
+}
+
 // ========================================
 // 7. 提示框
 // ========================================
@@ -480,9 +484,9 @@
 }
 
 .alertSuccess {
-  background-color: #D1FAE5;
-  border-color: #6EE7B7;
-  color: #065F46;
+  background-color: #F0FDF4;
+  border-color: #86EFAC;
+  color: #166534;
 }
 
 .alertInfo {

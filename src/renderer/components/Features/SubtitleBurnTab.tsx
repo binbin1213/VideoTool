@@ -528,16 +528,18 @@ function SubtitleBurnTab({ addLog, taskProgress, setTaskProgress, ffmpegAvailabl
 
           {/* 烧录结果 */}
           {result && (
-            <div className={`${styles.alert} ${result.success ? styles.alertSuccess : styles.alertError}`}>
-              <div className={styles.alertHeading}>
-                {result.success ? `✅ ${t('subtitleBurn.burnSuccess')}` : `❌ ${t('subtitleBurn.burnFailed')}`}
+            <div className={styles.resultSection}>
+              <div className={`${styles.alert} ${result.success ? styles.alertSuccess : styles.alertError}`}>
+                <div className={styles.alertHeading}>
+                  {result.success ? `✅ ${t('subtitleBurn.burnSuccess')}` : `❌ ${t('subtitleBurn.burnFailed')}`}
+                </div>
+                <p className={styles.alertText}>{result.message}</p>
+                {result.outputPath && (
+                  <p className={styles.alertText}>
+                    <strong>{t('subtitleBurn.outputFile')}：</strong>{result.outputPath}
+                  </p>
+                )}
               </div>
-              <p className={styles.alertText}>{result.message}</p>
-              {result.outputPath && (
-                <p className={styles.alertText}>
-                  <strong>{t('subtitleBurn.outputFile')}：</strong>{result.outputPath}
-                </p>
-              )}
             </div>
           )}
         </div>
