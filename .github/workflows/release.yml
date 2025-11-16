@@ -99,6 +99,20 @@ jobs:
             curl -L -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
             unzip -o ffprobe.zip
             rm ffprobe.zip
+            
+            # 将通用二进制瘦身为当前架构（arm64 或 x86_64），显著降低体积
+            ARCH=$(uname -m)
+            echo "瘦身到架构: ${ARCH}"
+            if command -v lipo >/dev/null 2>&1; then
+              if [[ -f ffmpeg ]]; then
+                lipo ffmpeg -thin "${ARCH}" -output ffmpeg.thin && mv ffmpeg.thin ffmpeg || echo "lipo 瘦身 ffmpeg 失败，保持原样"
+              fi
+              if [[ -f ffprobe ]]; then
+                lipo ffprobe -thin "${ARCH}" -output ffprobe.thin && mv ffprobe.thin ffprobe || echo "lipo 瘦身 ffprobe 失败，保持原样"
+              fi
+            else
+              echo "未找到 lipo，跳过瘦身"
+            fi
           fi
           
           # 设置执行权限
