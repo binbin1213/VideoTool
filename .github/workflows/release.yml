@@ -21,6 +21,11 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 配置 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: 配置 Node.js
         uses: actions/setup-node@v4
         with:
@@ -28,15 +33,6 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
 
-      - name: 启用 pnpm (Corepack)
-        run: |
-          corepack enable
-          corepack prepare pnpm@9 --activate
-
-      - name: 配置 pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: 获取 pnpm 缓存目录 (macOS)
         if: runner.os == 'macOS'
