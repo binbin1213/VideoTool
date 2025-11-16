@@ -1,0 +1,11 @@
+ignoredBuiltDependencies:
+  - '@ffmpeg-installer/darwin-arm64'
+  - '@ffmpeg-installer/darwin-x64'
+  - '@ffmpeg-installer/linux-arm'
+  - '@ffmpeg-installer/linux-arm64'
+  - '@ffmpeg-installer/linux-ia32'
+  - '@ffmpeg-installer/linux-x64'
+  - '@parcel/watcher'
+  - electron
+  - electron-winstaller
+  - esbuild

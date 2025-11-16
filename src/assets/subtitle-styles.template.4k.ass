@@ -15,10 +15,10 @@ Synch Point: 1
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: 电影字幕 双语原文,Microsoft YaHei,116,&H00F0FFFE,&H004E4E4E,&H00000000,&H60000000,0,0,0,0,100,100,2,0,1,1.0,6,2,60,60,110,1
-Style: 电影字幕 双语译文,Microsoft YaHei,144,&H00F0FFFE,&H004E4E4E,&H00000000,&H60000000,1,0,0,0,100,100,2,0,1,1.0,6,2,60,60,60,1
-Style: 电影字幕 底部,Microsoft YaHei,144,&H00F0FFFE,&H00535353,&H00000000,&H60000000,1,0,0,0,100,100,2,0,1,1.0,6,2,60,60,60,1
-Style: 电影字幕 顶部,Microsoft YaHei,144,&H00F0FFFE,&H00535353,&H00000000,&H60000000,1,0,0,0,100,100,2,0,1,1.0,6,8,60,60,100,1
+Style: 电影字幕 双语原文,Microsoft YaHei,116,&H00F8FFFE,&H004E4E4E,&H00000000,&H60000000,0,0,0,0,100,100,2,0,1,1.0,6,2,60,60,110,1
+Style: 电影字幕 双语译文,Microsoft YaHei,148,&H00F8FFFE,&H004E4E4E,&H00000000,&H60000000,1,0,0,0,100,100,2,0,1,1.0,6,2,60,60,50,1
+Style: 电影字幕 底部,Microsoft YaHei,148,&H00F8FFFE,&H00535353,&H00000000,&H60000000,1,0,0,0,100,100,2,0,1,1.0,6,2,60,60,50,1
+Style: 电影字幕 顶部,Microsoft YaHei,148,&H00F8FFFE,&H00535353,&H00000000,&H60000000,1,0,0,0,100,100,2,0,1,1.0,6,8,60,60,100,1
 Style: 电影字幕 注释底部,Microsoft YaHei,110,&H00CCCCCC,&H00535353,&H00000000,&H60000000,1,1,0,0,100,100,2,0,1,1.0,6,2,60,60,70,1
 Style: 电影字幕 注释顶部,Microsoft YaHei,110,&H00CCCCCC,&H00535353,&H00000000,&H60000000,1,1,0,0,100,100,2,0,1,1.0,6,8,60,60,100,1
 

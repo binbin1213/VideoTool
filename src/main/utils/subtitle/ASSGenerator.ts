@@ -104,7 +104,8 @@ ScaledBorderAndShadow: ${this.options.scaledBorderAndShadow ? 'yes' : 'no'}
     const hours = parseInt(timeParts[0], 10);
     const minutes = timeParts[1];
     const seconds = timeParts[2];
-    const centiseconds = ms.substring(0, 2);
+    const msNum = Number(ms);
+    const centiseconds = String(Math.floor(msNum / 10)).padStart(2, '0');
     
     return `${hours}:${minutes}:${seconds}.${centiseconds}`;
   }

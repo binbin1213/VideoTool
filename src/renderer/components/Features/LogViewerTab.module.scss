@@ -65,6 +65,23 @@
   align-items: center;
 }
 
+.switchGroup {
+  display: flex;
+  align-items: center;
+  gap: t.$spacing-2;
+}
+
+.switchLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$spacing-2;
+  color: var(--vt-color-text-secondary);
+  input {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 .toolbarRight {
   display: flex;
   gap: t.$spacing-2;
