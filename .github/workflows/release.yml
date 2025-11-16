@@ -124,7 +124,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "=== 下载 FFmpeg for Windows ==="
-          if (Test-Path "resources\ffmpeg\win\ffmpeg.exe" -and Test-Path "resources\ffmpeg\win\ffprobe.exe") {
+          if ((Test-Path "resources\ffmpeg\win\ffmpeg.exe") -and (Test-Path "resources\ffmpeg\win\ffprobe.exe")) {
             Write-Host "使用缓存的 FFmpeg/FFprobe，跳过下载"
             Get-ChildItem -Path "resources\ffmpeg\win\" | ForEach-Object { Write-Host "$($_.Name): $([math]::Round($_.Length / 1MB, 2)) MB" }
           } else {
